@@ -1,13 +1,17 @@
 "use strict";
 
+
 /*
 ========================================================
-PROJECT FILE HUB FRONTEND
+HELPER
 ========================================================
 */
 
-const $ = selector =>
-    document.querySelector(selector);
+const $ =
+    selector =>
+        document.querySelector(
+            selector
+        );
 
 
 /*
@@ -15,6 +19,19 @@ const $ = selector =>
 ELEMENTS
 ========================================================
 */
+
+const landingPage =
+    $("#landingPage");
+
+const hubPage =
+    $("#hubPage");
+
+const enterProjectButton =
+    $("#enterProjectButton");
+
+const backButton =
+    $("#backButton");
+
 
 const publishForm =
     $("#publishForm");
@@ -46,6 +63,7 @@ const progressFill =
 const progressText =
     $("#progressText");
 
+
 const deleteKeyModal =
     $("#deleteKeyModal");
 
@@ -60,6 +78,7 @@ const copyMessage =
 
 const savedKeyButton =
     $("#savedKeyButton");
+
 
 const deleteModal =
     $("#deleteModal");
@@ -76,6 +95,7 @@ const cancelDeleteButton =
 const deleteMessage =
     $("#deleteMessage");
 
+
 const previewModal =
     $("#previewModal");
 
@@ -84,6 +104,7 @@ const previewTitle =
 
 const previewContent =
     $("#previewContent");
+
 
 const library =
     $("#library");
@@ -99,6 +120,7 @@ const sortSelect =
 
 const refreshButton =
     $("#refreshButton");
+
 
 const serverStatus =
     $("#serverStatus");
@@ -128,6 +150,66 @@ let selectedDeleteFileId =
 
 /*
 ========================================================
+ENTER PROJECT
+========================================================
+*/
+
+enterProjectButton.addEventListener(
+    "click",
+    () => {
+
+        landingPage.classList.add(
+            "hidden"
+        );
+
+        hubPage.classList.remove(
+            "hidden"
+        );
+
+        window.scrollTo(
+            {
+                top: 0,
+                behavior: "instant"
+            }
+        );
+
+        loadEverything();
+
+    }
+);
+
+
+/*
+========================================================
+BACK
+========================================================
+*/
+
+backButton.addEventListener(
+    "click",
+    () => {
+
+        hubPage.classList.add(
+            "hidden"
+        );
+
+        landingPage.classList.remove(
+            "hidden"
+        );
+
+        window.scrollTo(
+            {
+                top: 0,
+                behavior: "instant"
+            }
+        );
+
+    }
+);
+
+
+/*
+========================================================
 FORMAT BYTES
 ========================================================
 */
@@ -144,42 +226,44 @@ function formatBytes(
     ) {
 
         return "0 B";
+
     }
 
-    const units = [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-    ];
+
+    const units =
+        [
+            "B",
+            "KB",
+            "MB",
+            "GB"
+        ];
+
 
     const index =
         Math.min(
             Math.floor(
-                Math.log(
-                    Number(bytes)
-                ) /
+                Math.log(bytes) /
                 Math.log(1024)
             ),
             units.length - 1
         );
 
-    const value =
-        Number(bytes) /
+
+    return (
+        bytes /
         Math.pow(
             1024,
             index
-        );
-
-    return (
-        value.toFixed(
+        )
+    )
+        .toFixed(
             index === 0
                 ? 0
                 : 1
         ) +
         " " +
-        units[index]
-    );
+        units[index];
+
 }
 
 
@@ -193,27 +277,16 @@ function formatDate(
     timestamp
 ) {
 
-    const date =
-        new Date(
-            timestamp
-        );
+    return new Date(
+        timestamp
+    ).toLocaleString();
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "Unknown date";
-    }
-
-    return date.toLocaleString();
 }
 
 
 /*
 ========================================================
-ESCAPE HTML
+ESCAPE
 ========================================================
 */
 
@@ -244,12 +317,13 @@ function escapeHtml(
             /'/g,
             "&#039;"
         );
+
 }
 
 
 /*
 ========================================================
-MESSAGES
+MESSAGE
 ========================================================
 */
 
@@ -264,12 +338,13 @@ function showPublishMessage(
     publishMessage.className =
         "message " +
         type;
+
 }
 
 
 /*
 ========================================================
-FILE INPUT
+FILE SELECT
 ========================================================
 */
 
@@ -280,25 +355,29 @@ fileInput.addEventListener(
         const file =
             fileInput.files[0];
 
+
         if (!file) {
 
             selectedFile.textContent =
                 "No file selected.";
 
             return;
+
         }
+
 
         selectedFile.textContent =
             `${file.name} • ${formatBytes(
                 file.size
             )}`;
+
     }
 );
 
 
 /*
 ========================================================
-PUBLISH FORM
+PUBLISH
 ========================================================
 */
 
@@ -309,30 +388,22 @@ publishForm.addEventListener(
         event.preventDefault();
 
         publishFile();
+
     }
 );
 
-
-/*
-========================================================
-PUBLISH FILE
-========================================================
-*/
 
 function publishFile() {
 
     const username =
         usernameInput.value.trim();
 
-    let displayName =
+    const displayName =
         displayNameInput.value.trim();
 
     const file =
         fileInput.files[0];
 
-    /*
-    USERNAME REQUIRED
-    */
 
     if (!username) {
 
@@ -344,29 +415,9 @@ function publishFile() {
         usernameInput.focus();
 
         return;
+
     }
 
-    /*
-    USERNAME LENGTH
-    */
-
-    if (
-        username.length > 80
-    ) {
-
-        showPublishMessage(
-            "Username must be 80 characters or less.",
-            "error"
-        );
-
-        usernameInput.focus();
-
-        return;
-    }
-
-    /*
-    FILE REQUIRED
-    */
 
     if (!file) {
 
@@ -375,14 +426,10 @@ function publishFile() {
             "error"
         );
 
-        fileInput.focus();
-
         return;
+
     }
 
-    /*
-    MAX SIZE
-    */
 
     if (
         file.size >
@@ -390,38 +437,18 @@ function publishFile() {
     ) {
 
         showPublishMessage(
-            "The maximum file size is 50 MB.",
+            "Maximum file size is 50 MB.",
             "error"
         );
 
         return;
+
     }
 
-    /*
-    If display name is empty,
-    use filename automatically.
-    */
-
-    if (!displayName) {
-
-        displayName =
-            file.name
-                .replace(
-                    /\.[^/.]+$/,
-                    ""
-                )
-                .slice(
-                    0,
-                    100
-                );
-    }
-
-    /*
-    FORM DATA
-    */
 
     const formData =
         new FormData();
+
 
     formData.append(
         "file",
@@ -438,15 +465,13 @@ function publishFile() {
         displayName
     );
 
-    /*
-    LOCK UI
-    */
 
     publishButton.disabled =
         true;
 
     publishButton.textContent =
-        "Publishing...";
+        "PUBLISHING...";
+
 
     uploadProgress.classList.remove(
         "hidden"
@@ -458,26 +483,21 @@ function publishFile() {
     progressText.textContent =
         "Starting upload...";
 
+
     showPublishMessage(
         ""
     );
 
-    /*
-    XHR FOR REAL UPLOAD PROGRESS
-    */
 
     const xhr =
         new XMLHttpRequest();
 
+
     xhr.open(
         "POST",
-        "/api/files",
-        true
+        "/api/files"
     );
 
-    /*
-    PROGRESS
-    */
 
     xhr.upload.addEventListener(
         "progress",
@@ -487,32 +507,28 @@ function publishFile() {
                 !event.lengthComputable
             ) {
 
-                progressText.textContent =
-                    "Uploading...";
-
                 return;
+
             }
+
 
             const percent =
                 Math.round(
-                    (
-                        event.loaded /
-                        event.total
-                    ) *
+                    event.loaded /
+                    event.total *
                     100
                 );
 
+
             progressFill.style.width =
-                `${percent}%`;
+                percent + "%";
 
             progressText.textContent =
                 `Uploading ${percent}%`;
+
         }
     );
 
-    /*
-    SUCCESS / ERROR RESPONSE
-    */
 
     xhr.onload =
         () => {
@@ -521,16 +537,17 @@ function publishFile() {
                 false;
 
             publishButton.textContent =
-                "Publish";
+                "PUBLISH FILE";
+
 
             let result;
+
 
             try {
 
                 result =
                     JSON.parse(
-                        xhr.responseText ||
-                        "{}"
+                        xhr.responseText
                     );
 
             }
@@ -543,12 +560,11 @@ function publishFile() {
 
                     error:
                         "Invalid server response."
+
                 };
+
             }
 
-            /*
-            SERVER ERROR
-            */
 
             if (
                 xhr.status < 200 ||
@@ -567,39 +583,36 @@ function publishFile() {
                 );
 
                 return;
+
             }
 
+
             /*
-            ====================================================
-            THE SERVER GENERATED THE DELETE KEY
-            ====================================================
+            ============================================
+            CRITICAL:
+            DELETE KEY CAME FROM BACKEND.
+            ============================================
             */
 
-            const deleteToken =
+            const deleteKey =
                 result.deleteToken;
 
-            /*
-            This should NEVER be empty if the backend
-            is configured correctly.
-            */
 
-            if (!deleteToken) {
+            if (!deleteKey) {
+
+                showPublishMessage(
+                    "The server did not return a delete key.",
+                    "error"
+                );
 
                 uploadProgress.classList.add(
                     "hidden"
                 );
 
-                showPublishMessage(
-                    "The file was uploaded, but no delete key was returned. Contact the administrator.",
-                    "error"
-                );
-
                 return;
+
             }
 
-            /*
-            COMPLETE PROGRESS
-            */
 
             progressFill.style.width =
                 "100%";
@@ -607,18 +620,18 @@ function publishFile() {
             progressText.textContent =
                 "Published successfully.";
 
+
             /*
-            ====================================================
-            SHOW DELETE KEY POPUP
-            ====================================================
+            SHOW SERVER-GENERATED KEY
             */
 
             showDeleteKeyModal(
-                deleteToken
+                deleteKey
             );
 
+
             /*
-            RESET PUBLISH FORM
+            RESET UPLOAD FORM
             */
 
             publishForm.reset();
@@ -626,15 +639,13 @@ function publishFile() {
             selectedFile.textContent =
                 "No file selected.";
 
+
             /*
-            REFRESH LIBRARY
+            UPDATE LIBRARY
             */
 
             loadEverything();
 
-            /*
-            Hide progress later.
-            */
 
             setTimeout(
                 () => {
@@ -646,11 +657,9 @@ function publishFile() {
                 },
                 1200
             );
+
         };
 
-    /*
-    NETWORK ERROR
-    */
 
     xhr.onerror =
         () => {
@@ -659,7 +668,7 @@ function publishFile() {
                 false;
 
             publishButton.textContent =
-                "Publish";
+                "PUBLISH FILE";
 
             uploadProgress.classList.add(
                 "hidden"
@@ -669,56 +678,29 @@ function publishFile() {
                 "Unable to connect to the server.",
                 "error"
             );
+
         };
 
-    /*
-    TIMEOUT
-    */
-
-    xhr.ontimeout =
-        () => {
-
-            publishButton.disabled =
-                false;
-
-            publishButton.textContent =
-                "Publish";
-
-            uploadProgress.classList.add(
-                "hidden"
-            );
-
-            showPublishMessage(
-                "The upload timed out.",
-                "error"
-            );
-        };
-
-    xhr.timeout =
-        5 * 60 * 1000;
-
-    /*
-    SEND
-    */
 
     xhr.send(
         formData
     );
+
 }
 
 
 /*
 ========================================================
-DELETE KEY POPUP
+DELETE KEY MODAL
 ========================================================
 */
 
 function showDeleteKeyModal(
-    deleteToken
+    key
 ) {
 
     generatedDeleteKey.value =
-        deleteToken;
+        key;
 
     copyMessage.textContent =
         "";
@@ -727,27 +709,12 @@ function showDeleteKeyModal(
         "hidden"
     );
 
-    /*
-    Automatically select the key
-    so it is easy to copy manually.
-    */
-
-    setTimeout(
-        () => {
-
-            generatedDeleteKey.focus();
-
-            generatedDeleteKey.select();
-
-        },
-        50
-    );
 }
 
 
 /*
 ========================================================
-CLOSE DELETE KEY MODAL
+CLOSE KEY MODAL
 ========================================================
 */
 
@@ -757,21 +724,12 @@ function closeDeleteKeyModal() {
         "hidden"
     );
 
-    /*
-    Clear the key from the DOM after closing.
-    */
-
-    generatedDeleteKey.value =
-        "";
-
-    copyMessage.textContent =
-        "";
 }
 
 
 /*
 ========================================================
-SAVED KEY
+SAVE KEY
 ========================================================
 */
 
@@ -785,6 +743,7 @@ savedKeyButton.addEventListener(
             "File published. Make sure you saved your delete key.",
             "success"
         );
+
     }
 );
 
@@ -802,9 +761,11 @@ copyKeyButton.addEventListener(
         const key =
             generatedDeleteKey.value;
 
+
         if (!key) {
             return;
         }
+
 
         try {
 
@@ -816,30 +777,26 @@ copyKeyButton.addEventListener(
                 "Delete key copied.";
 
         }
-
         catch {
-
-            generatedDeleteKey.focus();
 
             generatedDeleteKey.select();
 
-            const copied =
-                document.execCommand(
-                    "copy"
-                );
+            document.execCommand(
+                "copy"
+            );
 
             copyMessage.textContent =
-                copied
-                    ? "Delete key copied."
-                    : "Select the key and copy it manually.";
+                "Delete key copied.";
+
         }
+
     }
 );
 
 
 /*
 ========================================================
-CLOSE KEY MODAL
+CLOSE KEY BACKDROP
 ========================================================
 */
 
@@ -852,6 +809,7 @@ document.querySelectorAll(
             "click",
             closeDeleteKeyModal
         );
+
     }
 );
 
@@ -867,6 +825,7 @@ async function loadFiles() {
     const params =
         new URLSearchParams();
 
+
     const search =
         searchInput.value.trim();
 
@@ -876,13 +835,16 @@ async function loadFiles() {
     const sort =
         sortSelect.value;
 
+
     if (search) {
 
         params.set(
             "search",
             search
         );
+
     }
+
 
     if (uploader) {
 
@@ -890,33 +852,36 @@ async function loadFiles() {
             "uploader",
             uploader
         );
+
     }
+
 
     params.set(
         "sort",
         sort
     );
 
+
     library.innerHTML =
         `
         <div class="empty">
-            Loading files...
+            Loading project files...
         </div>
         `;
+
 
     try {
 
         const response =
             await fetch(
-                `/api/files?${params.toString()}`,
-                {
-                    cache:
-                        "no-store"
-                }
+                "/api/files?" +
+                params.toString()
             );
+
 
         const result =
             await response.json();
+
 
         if (
             !response.ok ||
@@ -927,28 +892,30 @@ async function loadFiles() {
                 result.error ||
                 "Unable to load files."
             );
+
         }
+
 
         renderFiles(
             result.files
         );
 
     }
-
     catch (error) {
 
         console.error(
-            "FILES:",
             error
         );
 
         library.innerHTML =
             `
             <div class="empty">
-                Unable to load files.
+                Unable to load project files.
             </div>
             `;
+
     }
+
 }
 
 
@@ -963,30 +930,26 @@ function renderFiles(
 ) {
 
     if (
-        !Array.isArray(files) ||
         !files.length
     ) {
 
         library.innerHTML =
             `
             <div class="empty">
-                No files found.
+                No published files found.
             </div>
             `;
 
         return;
+
     }
 
-    library.innerHTML =
-        files
-            .map(
-                createFileCard
-            )
-            .join("");
 
-    /*
-    DOWNLOAD
-    */
+    library.innerHTML =
+        files.map(
+            createFileCard
+        ).join("");
+
 
     library
         .querySelectorAll(
@@ -999,21 +962,17 @@ function renderFiles(
                     "click",
                     () => {
 
-                        const id =
-                            button.dataset.download;
-
                         window.location.href =
                             `/api/files/${encodeURIComponent(
-                                id
+                                button.dataset.download
                             )}/download`;
+
                     }
                 );
+
             }
         );
 
-    /*
-    DELETE
-    */
 
     library
         .querySelectorAll(
@@ -1029,14 +988,13 @@ function renderFiles(
                         openDeleteModal(
                             button.dataset.delete
                         );
+
                     }
                 );
+
             }
         );
 
-    /*
-    PREVIEW
-    */
 
     library
         .querySelectorAll(
@@ -1053,10 +1011,13 @@ function renderFiles(
                             button.dataset.preview,
                             button.dataset.name
                         );
+
                     }
                 );
+
             }
         );
+
 }
 
 
@@ -1074,7 +1035,6 @@ function createFileCard(
         file.script
             ? `
                 <button
-                    type="button"
                     data-preview="${escapeHtml(
                         file.id
                     )}"
@@ -1082,10 +1042,11 @@ function createFileCard(
                         file.displayName
                     )}"
                 >
-                    Preview
+                    PREVIEW
                 </button>
             `
             : "";
+
 
     return `
         <article class="file-card">
@@ -1109,10 +1070,8 @@ function createFileCard(
                         •
 
                         ${escapeHtml(
-                            String(
-                                file.extension
-                            ).toUpperCase()
-                        )}
+                            file.extension
+                        ).toUpperCase()}
 
                         •
 
@@ -1123,7 +1082,6 @@ function createFileCard(
                         <br>
 
                         Published by
-
                         <strong>
                             ${escapeHtml(
                                 file.uploader
@@ -1139,13 +1097,12 @@ function createFileCard(
                         <br>
 
                         Downloads:
-                        ${Number(
-                            file.downloads || 0
-                        )}
+                        ${file.downloads}
 
                     </div>
 
                 </div>
+
 
                 <span class="badge">
 
@@ -1159,33 +1116,33 @@ function createFileCard(
 
             </div>
 
+
             <div class="file-actions">
 
                 ${previewButton}
 
                 <button
-                    type="button"
                     data-download="${escapeHtml(
                         file.id
                     )}"
                 >
-                    Download
+                    DOWNLOAD
                 </button>
 
                 <button
-                    type="button"
                     class="delete-file"
                     data-delete="${escapeHtml(
                         file.id
                     )}"
                 >
-                    Delete
+                    DELETE
                 </button>
 
             </div>
 
         </article>
     `;
+
 }
 
 
@@ -1217,12 +1174,11 @@ function openDeleteModal(
 
     setTimeout(
         () => {
-
             deleteTokenInput.focus();
-
         },
         50
     );
+
 }
 
 
@@ -1232,19 +1188,11 @@ function closeDeleteModal() {
         "hidden"
     );
 
-    deleteTokenInput.value =
-        "";
-
     selectedDeleteFileId =
         null;
+
 }
 
-
-/*
-========================================================
-CANCEL DELETE
-========================================================
-*/
 
 cancelDeleteButton.addEventListener(
     "click",
@@ -1261,6 +1209,7 @@ document.querySelectorAll(
             "click",
             closeDeleteModal
         );
+
     }
 );
 
@@ -1282,13 +1231,14 @@ deleteTokenInput.addEventListener(
     event => {
 
         if (
-            event.key === "Enter"
+            event.key ===
+            "Enter"
         ) {
 
-            event.preventDefault();
-
             deleteFile();
+
         }
+
     }
 );
 
@@ -1298,9 +1248,11 @@ async function deleteFile() {
     const token =
         deleteTokenInput.value.trim();
 
+
     if (!selectedDeleteFileId) {
         return;
     }
+
 
     if (!token) {
 
@@ -1310,19 +1262,17 @@ async function deleteFile() {
         deleteMessage.className =
             "message error";
 
-        deleteTokenInput.focus();
-
         return;
+
     }
+
 
     confirmDeleteButton.disabled =
         true;
 
-    cancelDeleteButton.disabled =
-        true;
-
     confirmDeleteButton.textContent =
-        "Deleting...";
+        "DELETING...";
+
 
     try {
 
@@ -1340,18 +1290,24 @@ async function deleteFile() {
 
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body:
                         JSON.stringify({
+
                             deleteToken:
                                 token
+
                         })
+
                 }
             );
 
+
         const result =
             await response.json();
+
 
         if (
             !response.ok ||
@@ -1366,23 +1322,25 @@ async function deleteFile() {
                 "message error";
 
             return;
+
         }
 
+
         closeDeleteModal();
+
 
         showPublishMessage(
             "File deleted successfully.",
             "success"
         );
 
+
         await loadEverything();
 
     }
-
     catch (error) {
 
         console.error(
-            "DELETE:",
             error
         );
 
@@ -1393,24 +1351,22 @@ async function deleteFile() {
             "message error";
 
     }
-
     finally {
 
         confirmDeleteButton.disabled =
             false;
 
-        cancelDeleteButton.disabled =
-            false;
-
         confirmDeleteButton.textContent =
-            "Delete";
+            "DELETE FILE";
+
     }
+
 }
 
 
 /*
 ========================================================
-SCRIPT PREVIEW
+PREVIEW
 ========================================================
 */
 
@@ -1430,6 +1386,7 @@ async function previewScript(
         "hidden"
     );
 
+
     try {
 
         const response =
@@ -1439,8 +1396,10 @@ async function previewScript(
                 )}/preview`
             );
 
+
         const result =
             await response.json();
+
 
         if (
             !response.ok ||
@@ -1451,18 +1410,21 @@ async function previewScript(
                 result.error ||
                 "Preview failed."
             );
+
         }
+
 
         previewContent.textContent =
             result.file.content;
 
     }
-
     catch (error) {
 
         previewContent.textContent =
             error.message;
+
     }
+
 }
 
 
@@ -1485,10 +1447,9 @@ document.querySelectorAll(
                     "hidden"
                 );
 
-                previewContent.textContent =
-                    "";
             }
         );
+
     }
 );
 
@@ -1505,22 +1466,21 @@ async function loadStats() {
 
         const response =
             await fetch(
-                "/api/stats",
-                {
-                    cache:
-                        "no-store"
-                }
+                "/api/stats"
             );
 
         const result =
             await response.json();
+
 
         if (
             !result.success
         ) {
 
             return;
+
         }
+
 
         statFiles.textContent =
             result.stats.files;
@@ -1537,14 +1497,15 @@ async function loadStats() {
             );
 
     }
-
     catch (error) {
 
         console.error(
-            "STATS:",
+            "Stats:",
             error
         );
+
     }
+
 }
 
 
@@ -1560,25 +1521,25 @@ async function loadUploaders() {
 
         const response =
             await fetch(
-                "/api/uploaders",
-                {
-                    cache:
-                        "no-store"
-                }
+                "/api/uploaders"
             );
 
         const result =
             await response.json();
+
 
         if (
             !result.success
         ) {
 
             return;
+
         }
+
 
         const current =
             uploaderFilter.value;
+
 
         uploaderFilter.innerHTML =
             `
@@ -1586,6 +1547,7 @@ async function loadUploaders() {
                 All uploaders
             </option>
             `;
+
 
         result.uploaders.forEach(
             uploader => {
@@ -1604,8 +1566,10 @@ async function loadUploaders() {
                 uploaderFilter.appendChild(
                     option
                 );
+
             }
         );
+
 
         if (
             result.uploaders.includes(
@@ -1615,17 +1579,19 @@ async function loadUploaders() {
 
             uploaderFilter.value =
                 current;
+
         }
 
     }
-
     catch (error) {
 
         console.error(
-            "UPLOADERS:",
+            "Uploaders:",
             error
         );
+
     }
+
 }
 
 
@@ -1641,15 +1607,13 @@ async function checkHealth() {
 
         const response =
             await fetch(
-                "/api/health",
-                {
-                    cache:
-                        "no-store"
-                }
+                "/api/health"
             );
+
 
         const result =
             await response.json();
+
 
         if (
             response.ok &&
@@ -1657,26 +1621,29 @@ async function checkHealth() {
         ) {
 
             serverStatus.textContent =
-                "Server Online";
+                "SERVER ONLINE";
 
             serverStatus.className =
                 "status online";
 
-            return;
+        }
+        else {
+
+            throw new Error();
+
         }
 
-        throw new Error();
-
     }
-
     catch {
 
         serverStatus.textContent =
-            "Server Offline";
+            "SERVER OFFLINE";
 
         serverStatus.className =
             "status offline";
+
     }
+
 }
 
 
@@ -1689,11 +1656,17 @@ LOAD EVERYTHING
 async function loadEverything() {
 
     await Promise.all([
+
         loadFiles(),
+
         loadStats(),
+
         loadUploaders(),
+
         checkHealth()
+
     ]);
+
 }
 
 
@@ -1705,6 +1678,7 @@ FILTERS
 
 let searchTimer =
     null;
+
 
 searchInput.addEventListener(
     "input",
@@ -1719,6 +1693,7 @@ searchInput.addEventListener(
                 loadFiles,
                 250
             );
+
     }
 );
 
@@ -1743,60 +1718,7 @@ refreshButton.addEventListener(
 
 /*
 ========================================================
-ESCAPE KEY
-========================================================
-*/
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key !== "Escape"
-        ) {
-
-            return;
-        }
-
-        if (
-            !deleteKeyModal.classList.contains(
-                "hidden"
-            )
-        ) {
-
-            closeDeleteKeyModal();
-
-            return;
-        }
-
-        if (
-            !deleteModal.classList.contains(
-                "hidden"
-            )
-        ) {
-
-            closeDeleteModal();
-
-            return;
-        }
-
-        if (
-            !previewModal.classList.contains(
-                "hidden"
-            )
-        ) {
-
-            previewModal.classList.add(
-                "hidden"
-            );
-        }
-    }
-);
-
-
-/*
-========================================================
-REAL-TIME EVENTS
+REALTIME
 ========================================================
 */
 
@@ -1807,37 +1729,34 @@ function connectEvents() {
     ) {
 
         return;
+
     }
+
 
     const events =
         new EventSource(
             "/api/events"
         );
 
+
     events.addEventListener(
         "library-update",
         () => {
 
-            loadEverything();
+            if (
+                !hubPage.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                loadEverything();
+
+            }
+
         }
     );
 
-    events.onerror =
-        () => {
-
-            /*
-            Browser automatically reconnects.
-            */
-        };
 }
 
-
-/*
-========================================================
-START
-========================================================
-*/
-
-loadEverything();
 
 connectEvents();
