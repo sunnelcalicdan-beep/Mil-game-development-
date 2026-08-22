@@ -1,19 +1,1023 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050817"><title>MIL Project • Project File Hub</title><link rel="stylesheet" href="/style.css"></head><body><canvas id="particleCanvas"></canvas><div class="ambient a"></div><div class="ambient b"></div><main>
-<section id="landing" class="screen active"><div class="hero"><div class="eyebrow">MIL PROJECT • GAME DEVELOPMENT</div><h1>WELCOME TO<br><span>PROJECT FILE HUB</span></h1><p>This website is handled by:</p><div class="people"><span class="featured">Sunnel John Rebano 🧑🏻‍🔧</span><span>Rhea Kim</span><span>Kimberly</span><span>Charles Tiong</span><span>Reyden Osia</span><span>Mc Lawrence Conzaga</span><span>Kimmy Clavo</span><span>Dianne Gadia</span><span>Carl Caabay</span><span>Mark Camaso</span><span>Maynard Cabada</span><span>Mark Anthony Canta</span></div><p>For MIL Project Game Development.</p><button id="enter" class="primary">ENTER PROJECT <b>→</b></button></div></section>
-<section id="hub" class="screen"><div class="hub"><header><div><div class="eyebrow">MIL PROJECT • ONLINE HUB</div><h2>PROJECT FILE HUB</h2><p>Upload, publish, browse and download project files.</p></div><button id="home" class="ghost">← HOME</button></header><div id="status"></div>
-<section class="card"><h3>↑ UPLOAD PROJECT FILE</h3><p>Your delete key is generated after publishing.</p><form id="upload"><div class="grid"><label>YOUR NAME<input name="uploader" maxlength="80" required placeholder="e.g. Sunnel John Rebano"></label><label>PROJECT / FILE NAME<input name="title" maxlength="120" required placeholder="Game Prototype"></label><label class="full">DESCRIPTION<textarea name="description" maxlength="500" rows="3"></textarea></label><label class="drop full" id="drop"><input id="file" name="file" type="file" required><strong id="fileName">Choose a project file</strong><small>Maximum 100 MB</small></label></div><button class="primary" type="submit">PUBLISH PROJECT ↗</button></form></section>
-<section class="card"><div class="libraryHead"><div><h3>◈ PUBLIC PROJECT LIBRARY</h3><p id="count">Loading…</p></div><div class="controls"><input id="search" type="search" placeholder="Search files…"><select id="sort"><option value="new">Newest</option><option value="old">Oldest</option><option value="name">Name A–Z</option><option value="size">Largest</option></select></div></div><div id="list"></div></section><footer>MIL PROJECT • GAME DEVELOPMENT <span>PROJECT HUB ONLINE</span></footer></div></section></main>
-<div id="modal" class="modal"><div class="modalbox"><button id="close">×</button><div class="check">✓</div><div class="eyebrow">PROJECT PUBLISHED</div><h3>KEEP YOUR DELETE KEY</h3><p>This key is required to delete this upload later.</p><code id="key"></code><button id="copy" class="primary">COPY DELETE KEY</button></div></div>
-<script src="/particle.js" defer></script><script>
-const $=s=>document.querySelector(s),landing=$('#landing'),hub=$('#hub'),status=$('#status');
-$('#enter').onclick=()=>{landing.classList.remove('active');hub.classList.add('active');history.replaceState(null,'','#project');load()};$('#home').onclick=()=>{hub.classList.remove('active');landing.classList.add('active');history.replaceState(null,'',location.pathname)};
-if(location.hash==='#project')$('#enter').click();
-const file=$('#file');file.onchange=()=>$('#fileName').textContent=file.files[0]?file.files[0].name:'Choose a project file';
-$('#drop').ondragover=e=>{e.preventDefault();$('#drop').classList.add('drag')};$('#drop').ondragleave=()=>$('#drop').classList.remove('drag');$('#drop').ondrop=e=>{e.preventDefault();file.files=e.dataTransfer.files;$('#drop').classList.remove('drag');file.onchange()};
-$('#upload').onsubmit=async e=>{e.preventDefault();if(!file.files[0])return msg('Choose a file first.','err');if(file.files[0].size>104857600)return msg('File exceeds 100 MB.','err');msg('Publishing…','load');try{let r=await fetch('/api/files',{method:'POST',body:new FormData(e.target)}),d=await r.json();if(!r.ok)throw Error(d.error);$('#key').textContent=d.deleteKey;$('#modal').classList.add('open');e.target.reset();$('#fileName').textContent='Choose a project file';msg('Project published.','ok');load()}catch(x){msg(x.message,'err')}};
-async function load(){try{let r=await fetch('/api/files'),d=await r.json();if(!r.ok)throw Error(d.error);window.files=d.files||[];render()}catch(x){$('#list').innerHTML='<div class="empty">'+esc(x.message)+'</div>';$count.textContent='Unavailable'}}
-const $count=$('#count');function render(){let q=$('#search').value.toLowerCase(),a=(window.files||[]).filter(x=>(x.title+' '+x.uploader+' '+x.originalName+' '+(x.description||'')).toLowerCase().includes(q));let s=$('#sort').value;a.sort((x,y)=>s==='old'?new Date(x.createdAt)-new Date(y.createdAt):s==='name'?x.title.localeCompare(y.title):s==='size'?y.size-x.size:new Date(y.createdAt)-new Date(x.createdAt));$count.textContent=a.length+' project'+(a.length===1?'':'s')+' available';$('#list').innerHTML=a.length?a.map(x=>`<article class="item"><div class="type">${ext(x.originalName)}</div><div><h4>${esc(x.title)}</h4><p>${esc(x.description||'No description.')}</p><small>Uploaded by <b>${esc(x.uploader)}</b> • ${size(x.size)} • ${new Date(x.createdAt).toLocaleString()}</small></div><div class="actions"><a class="small" href="/api/files/${encodeURIComponent(x.id)}/download">DOWNLOAD</a><button class="small danger" onclick="del('${x.id}')">DELETE</button></div></article>`).join(''):'<div class="empty">No projects found.</div>'}
-$('#search').oninput=render;$('#sort').onchange=render;async function del(id){let k=prompt('Enter the DELETE KEY for this file:');if(!k)return;let r=await fetch('/api/files/'+encodeURIComponent(id),{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({deleteKey:k.trim()})}),d=await r.json();if(!r.ok)return msg(d.error,'err');msg('Project deleted.','ok');load()}
-function msg(t,c){status.textContent=t;status.className=c||''}function size(n){let u=['B','KB','MB','GB'],i=Math.min(Math.floor(Math.log(n||1)/Math.log(1024)),3);return (n/1024**i).toFixed(i?1:0)+' '+u[i]}function ext(n){return esc((n.split('.').pop()||'FILE').slice(0,5).toUpperCase())}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-$('#close').onclick=()=>$('#modal').classList.remove('open');$('#copy').onclick=async()=>{await navigator.clipboard.writeText($('#key').textContent);$('#copy').textContent='COPIED!';setTimeout(()=>$('#copy').textContent='COPY DELETE KEY',1200)};
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050817">
+
+  <title>MIL Project • Project File Hub</title>
+
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="ambient a"></div>
+<div class="ambient b"></div>
+
+<main>
+
+  <!-- ==============================
+       ORIGINAL LANDING PAGE
+       ============================== -->
+
+  <section id="landing" class="screen active">
+
+    <div class="hero">
+
+      <div class="eyebrow">
+        MIL PROJECT • GAME DEVELOPMENT
+      </div>
+
+      <h1>
+        WELCOME TO<br>
+        <span>PROJECT FILE HUB</span>
+      </h1>
+
+      <p>
+        This website is handled by:
+      </p>
+
+      <div class="people">
+
+        <span class="featured">
+          Sunnel John Rebano 🧑🏻‍🔧
+        </span>
+
+        <span>Rhea Kim</span>
+        <span>Kimberly</span>
+        <span>Charles Tiong</span>
+        <span>Reyden Osia</span>
+        <span>Mc Lawrence Conzaga</span>
+        <span>Kimmy Clavo</span>
+        <span>Dianne Gadia</span>
+        <span>Carl Caabay</span>
+        <span>Mark Camaso</span>
+        <span>Maynard Cabada</span>
+        <span>Mark Anthony Canta</span>
+
+      </div>
+
+      <p>
+        For MIL Project Game Development.
+      </p>
+
+      <button id="enter" class="primary">
+        ENTER PROJECT <b>→</b>
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==============================
+       REAL PROJECT HUB
+       ============================== -->
+
+  <section id="hub" class="screen">
+
+    <div class="hub">
+
+      <header>
+
+        <div>
+
+          <div class="eyebrow">
+            MIL PROJECT • ONLINE HUB
+          </div>
+
+          <h2>
+            PROJECT FILE HUB
+          </h2>
+
+          <p>
+            Upload, publish, browse and download project files.
+          </p>
+
+        </div>
+
+        <button id="home" class="ghost">
+          ← HOME
+        </button>
+
+      </header>
+
+
+      <div id="status"></div>
+
+
+      <!-- UPLOAD -->
+
+      <section class="card">
+
+        <h3>
+          ↑ UPLOAD PROJECT FILE
+        </h3>
+
+        <p>
+          Upload a project file to the public project library.
+        </p>
+
+        <form id="upload">
+
+          <div class="grid">
+
+            <label>
+              YOUR NAME
+
+              <input
+                name="uploader"
+                maxlength="80"
+                required
+                placeholder="e.g. Sunnel John Rebano"
+              >
+            </label>
+
+
+            <label>
+              PROJECT / FILE NAME
+
+              <input
+                name="title"
+                maxlength="120"
+                required
+                placeholder="Game Prototype"
+              >
+            </label>
+
+
+            <label class="full">
+              DESCRIPTION
+
+              <textarea
+                name="description"
+                maxlength="500"
+                rows="3"
+                placeholder="Describe your project..."
+              ></textarea>
+
+            </label>
+
+
+            <label
+              class="drop full"
+              id="drop"
+            >
+
+              <input
+                id="file"
+                name="file"
+                type="file"
+                required
+              >
+
+              <strong id="fileName">
+                Choose a project file
+              </strong>
+
+              <small>
+                Maximum 100 MB
+              </small>
+
+            </label>
+
+          </div>
+
+
+          <button
+            class="primary"
+            type="submit"
+          >
+            PUBLISH PROJECT ↗
+          </button>
+
+        </form>
+
+      </section>
+
+
+      <!-- PUBLIC LIBRARY -->
+
+      <section class="card">
+
+        <div class="libraryHead">
+
+          <div>
+
+            <h3>
+              ◈ PUBLIC PROJECT LIBRARY
+            </h3>
+
+            <p id="count">
+              Loading…
+            </p>
+
+          </div>
+
+
+          <div class="controls">
+
+            <input
+              id="search"
+              type="search"
+              placeholder="Search files…"
+            >
+
+            <select id="sort">
+
+              <option value="new">
+                Newest
+              </option>
+
+              <option value="old">
+                Oldest
+              </option>
+
+              <option value="name">
+                Name A–Z
+              </option>
+
+              <option value="size">
+                Largest
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div id="list"></div>
+
+      </section>
+
+
+      <footer>
+
+        <span>
+          MIL PROJECT • GAME DEVELOPMENT
+        </span>
+
+        <span>
+          PROJECT HUB ONLINE
+        </span>
+
+      </footer>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- PUBLISH MODAL -->
+
+<div id="modal" class="modal">
+
+  <div class="modalbox">
+
+    <button id="close">
+      ×
+    </button>
+
+    <div class="check">
+      ✓
+    </div>
+
+    <div class="eyebrow">
+      PROJECT PUBLISHED
+    </div>
+
+    <h3>
+      UPLOAD SUCCESSFUL
+    </h3>
+
+    <p>
+      Your project has been added to the public library.
+    </p>
+
+    <button
+      id="done"
+      class="primary"
+    >
+      CONTINUE
+    </button>
+
+  </div>
+
+</div>
+
+
+<script src="/particle.js" defer></script>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const $ = selector =>
+  document.querySelector(selector);
+
+
+const landing =
+  $("#landing");
+
+const hub =
+  $("#hub");
+
+const status =
+  $("#status");
+
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+$("#enter").onclick = () => {
+
+  landing.classList.remove("active");
+
+  hub.classList.add("active");
+
+  history.replaceState(
+    null,
+    "",
+    location.pathname + "#project"
+  );
+
+  loadProjects();
+
+};
+
+
+$("#home").onclick = () => {
+
+  hub.classList.remove("active");
+
+  landing.classList.add("active");
+
+  history.replaceState(
+    null,
+    "",
+    location.pathname
+  );
+
+};
+
+
+if (
+  location.hash === "#project"
+) {
+
+  landing.classList.remove("active");
+
+  hub.classList.add("active");
+
+}
+
+
+/* =========================================
+   FILE INPUT
+========================================= */
+
+const fileInput =
+  $("#file");
+
+const drop =
+  $("#drop");
+
+const fileName =
+  $("#fileName");
+
+
+fileInput.onchange = () => {
+
+  if (
+    fileInput.files &&
+    fileInput.files[0]
+  ) {
+
+    fileName.textContent =
+      fileInput.files[0].name;
+
+  }
+
+  else {
+
+    fileName.textContent =
+      "Choose a project file";
+
+  }
+
+};
+
+
+/* =========================================
+   DRAG AND DROP
+========================================= */
+
+drop.ondragover = event => {
+
+  event.preventDefault();
+
+  drop.classList.add("drag");
+
+};
+
+
+drop.ondragleave = () => {
+
+  drop.classList.remove("drag");
+
+};
+
+
+drop.ondrop = event => {
+
+  event.preventDefault();
+
+  drop.classList.remove("drag");
+
+  if (
+    event.dataTransfer.files.length
+  ) {
+
+    fileInput.files =
+      event.dataTransfer.files;
+
+    fileInput.dispatchEvent(
+      new Event("change")
+    );
+
+  }
+
+};
+
+
+/* =========================================
+   UPLOAD
+========================================= */
+
+$("#upload").onsubmit =
+async event => {
+
+  event.preventDefault();
+
+
+  if (
+    !fileInput.files[0]
+  ) {
+
+    showStatus(
+      "Choose a file first.",
+      "err"
+    );
+
+    return;
+
+  }
+
+
+  const selected =
+    fileInput.files[0];
+
+
+  if (
+    selected.size >
+    104857600
+  ) {
+
+    showStatus(
+      "File exceeds 100 MB.",
+      "err"
+    );
+
+    return;
+
+  }
+
+
+  showStatus(
+    "Publishing project…",
+    "load"
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/files",
+        {
+          method: "POST",
+          body: new FormData(event.target)
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Upload failed."
+      );
+
+    }
+
+
+    $("#modal").classList.add("open");
+
+
+    event.target.reset();
+
+    fileName.textContent =
+      "Choose a project file";
+
+
+    showStatus(
+      "Project published successfully.",
+      "ok"
+    );
+
+
+    loadProjects();
+
+  }
+
+  catch (error) {
+
+    showStatus(
+      error.message,
+      "err"
+    );
+
+  }
+
+};
+
+
+/* =========================================
+   PROJECT DATA
+========================================= */
+
+window.files = [];
+
+
+async function loadProjects() {
+
+  try {
+
+    const response =
+      await fetch("/api/files");
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Unable to load projects."
+      );
+
+    }
+
+
+    window.files =
+      data.files || [];
+
+
+    renderProjects();
+
+  }
+
+  catch (error) {
+
+    $("#list").innerHTML =
+      `<div class="empty">
+        ${escapeHTML(error.message)}
+      </div>`;
+
+  }
+
+}
+
+
+/* =========================================
+   RENDER PROJECTS
+========================================= */
+
+const count =
+  $("#count");
+
+
+function renderProjects() {
+
+  const query =
+    $("#search")
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  let projects =
+    window.files.filter(project => {
+
+      const text =
+        (
+          project.title +
+          " " +
+          project.uploader +
+          " " +
+          project.originalName +
+          " " +
+          (project.description || "")
+        ).toLowerCase();
+
+
+      return text.includes(query);
+
+    });
+
+
+  const sort =
+    $("#sort").value;
+
+
+  projects.sort(
+    (a, b) => {
+
+      if (
+        sort === "old"
+      ) {
+
+        return (
+          new Date(a.createdAt) -
+          new Date(b.createdAt)
+        );
+
+      }
+
+
+      if (
+        sort === "name"
+      ) {
+
+        return a.title.localeCompare(
+          b.title
+        );
+
+      }
+
+
+      if (
+        sort === "size"
+      ) {
+
+        return b.size - a.size;
+
+      }
+
+
+      return (
+        new Date(b.createdAt) -
+        new Date(a.createdAt)
+      );
+
+    }
+  );
+
+
+  count.textContent =
+    projects.length +
+    " project" +
+    (
+      projects.length === 1
+        ? ""
+        : "s"
+    ) +
+    " available";
+
+
+  if (!projects.length) {
+
+    $("#list").innerHTML =
+      `<div class="empty">
+        No projects found.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("#list").innerHTML =
+    projects.map(project => `
+
+      <article class="item">
+
+        <div class="type">
+          ${fileExtension(
+            project.originalName
+          )}
+        </div>
+
+
+        <div>
+
+          <h4>
+            ${escapeHTML(
+              project.title
+            )}
+          </h4>
+
+
+          <p>
+            ${escapeHTML(
+              project.description ||
+              "No description."
+            )}
+          </p>
+
+
+          <small>
+            Uploaded by
+            <b>
+              ${escapeHTML(
+                project.uploader
+              )}
+            </b>
+
+            •
+            ${formatSize(
+              project.size
+            )}
+
+            •
+            ${new Date(
+              project.createdAt
+            ).toLocaleString()}
+          </small>
+
+        </div>
+
+
+        <div class="actions">
+
+          <a
+            class="small"
+            href="/api/files/${encodeURIComponent(project.id)}/download"
+          >
+            DOWNLOAD
+          </a>
+
+
+          <button
+            class="small danger"
+            onclick="deleteProject('${project.id}')"
+          >
+            DELETE
+          </button>
+
+        </div>
+
+      </article>
+
+    `).join("");
+
+}
+
+
+/* =========================================
+   SEARCH / SORT
+========================================= */
+
+$("#search").oninput =
+  renderProjects;
+
+$("#sort").onchange =
+  renderProjects;
+
+
+/* =========================================
+   DELETE
+========================================= */
+
+async function deleteProject(id) {
+
+  const confirmed =
+    confirm(
+      "Delete this project from the public library?"
+    );
+
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/files/" +
+        encodeURIComponent(id),
+        {
+          method: "DELETE"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Delete failed."
+      );
+
+    }
+
+
+    showStatus(
+      "Project deleted successfully.",
+      "ok"
+    );
+
+
+    loadProjects();
+
+  }
+
+  catch (error) {
+
+    showStatus(
+      error.message,
+      "err"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+function showStatus(
+  text,
+  type = ""
+) {
+
+  status.textContent =
+    text;
+
+  status.className =
+    type;
+
+}
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
+function formatSize(bytes) {
+
+  const units =
+    [
+      "B",
+      "KB",
+      "MB",
+      "GB"
+    ];
+
+
+  if (!bytes) {
+
+    return "0 B";
+
+  }
+
+
+  const index =
+    Math.min(
+      Math.floor(
+        Math.log(bytes) /
+        Math.log(1024)
+      ),
+      3
+    );
+
+
+  return (
+    bytes /
+    Math.pow(
+      1024,
+      index
+    )
+  ).toFixed(
+    index ? 1 : 0
+  ) +
+  " " +
+  units[index];
+
+}
+
+
+function fileExtension(name) {
+
+  return escapeHTML(
+    (
+      name
+        .split(".")
+        .pop() ||
+      "FILE"
+    )
+      .slice(0, 5)
+      .toUpperCase()
+  );
+
+}
+
+
+function escapeHTML(value) {
+
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[character]
+  );
+
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+$("#close").onclick =
+() => {
+
+  $("#modal")
+    .classList
+    .remove("open");
+
+};
+
+
+$("#done").onclick =
+() => {
+
+  $("#modal")
+    .classList
+    .remove("open");
+
+};
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+if (
+  location.hash === "#project"
+) {
+
+  loadProjects();
+
+}
+
+</script>
+
+</body>
+</html>
