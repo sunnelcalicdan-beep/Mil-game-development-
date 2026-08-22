@@ -59,6 +59,7 @@ html {
 body {
     min-height: 100vh;
     color: var(--text);
+
     background:
         radial-gradient(
             circle at 10% 10%,
@@ -449,6 +450,7 @@ main {
     min-height: 650px;
 
     display: grid;
+
     grid-template-columns:
         minmax(0,1.1fr)
         minmax(320px,.9fr);
@@ -631,7 +633,7 @@ section {
 
 .section-heading span {
     color: var(--cyan);
-    font-size: .78rem;
+    font-size: .78em;
     letter-spacing: .2em;
     font-weight: 800;
 }
@@ -1499,18 +1501,11 @@ footer {
             This website is handled by:
         </p>
 
-        <div class="intro-team">
-            <span>Sunnel John Rebano</span>
-            <span>Rhea Kim</span>
-            <span>Kimberly</span>
-            <span>Charles Tiong</span>
-            <span>Reyden Osia</span>
-            <span>Mc Lawrence Conzaga</span>
-            <span>Kimmy Clavo</span>
-            <span>Dianne Gadia</span>
-            <span>Carl Caabay</span>
-            <span>Mark Camaso</span>
-        </div>
+        <!-- Generated automatically by JavaScript -->
+        <div
+            class="intro-team"
+            id="introTeam"
+        ></div>
 
         <p>
             For MIL Project Game Development.
@@ -1715,6 +1710,7 @@ footer {
             id="sortSelect"
             aria-label="Sort files"
         >
+
             <option value="newest">
                 Newest
             </option>
@@ -1730,6 +1726,7 @@ footer {
             <option value="largest">
                 Largest
             </option>
+
         </select>
 
     </div>
@@ -1790,6 +1787,7 @@ footer {
     <div class="guide-grid">
 
         <div class="guide-step">
+
             <span class="guide-number">
                 STEP 01
             </span>
@@ -1802,9 +1800,11 @@ footer {
                 Write your game-development script
                 and save it as a text file.
             </p>
+
         </div>
 
         <div class="guide-step">
+
             <span class="guide-number">
                 STEP 02
             </span>
@@ -1817,9 +1817,11 @@ footer {
                 Choose your .txt file from your
                 device.
             </p>
+
         </div>
 
         <div class="guide-step">
+
             <span class="guide-number">
                 STEP 03
             </span>
@@ -1834,9 +1836,11 @@ footer {
                 Enemy AI,
                 Player Movement.
             </p>
+
         </div>
 
         <div class="guide-step">
+
             <span class="guide-number">
                 STEP 04
             </span>
@@ -1849,6 +1853,7 @@ footer {
                 Review your information and
                 publish it to the public library.
             </p>
+
         </div>
 
     </div>
@@ -1874,6 +1879,7 @@ footer {
     <div class="code-example">
 
         <div class="code-header">
+
             <span>
                 Door Script
             </span>
@@ -1881,6 +1887,7 @@ footer {
             <span>
                 Godot Example
             </span>
+
         </div>
 
         <pre><code>extends Area3D
@@ -1924,57 +1931,11 @@ func open_door():
 
     </div>
 
-    <div class="team-grid">
-
-        <span class="team-member">
-            Sunnel John Rebano(kupal lang eme)
-        </span>
-
-        <span class="team-member">
-            Rhea Kim
-        </span>
-
-        <span class="team-member">
-            Kimberly
-        </span>
-
-        <span class="team-member">
-            Charles Tiong
-        </span>
-
-        <span class="team-member">
-            Reyden Osia
-        </span>
-
-        <span class="team-member">
-            Mc Lawrence Conzaga
-        </span>
-
-        <span class="team-member">
-            Kimmy Clavo
-        </span>
-
-        <span class="team-member">
-            Dianne Gadia
-        </span>
-
-        <span class="team-member">
-            Carl Caabay
-        </span>
-
-        <span class="team-member">
-            Mark Camaso
-        </span>
-
-        <span class="team-member">
-            Maynard Cabada
-        </span>
-
-        <span class="team-member">
-            Mark Anthony Canta
-        </span>
-
-    </div>
+    <!-- Generated automatically -->
+    <div
+        class="team-grid"
+        id="projectTeam"
+    ></div>
 
 </section>
 
@@ -2000,20 +1961,11 @@ func open_door():
             Created by Sunnel John Rebano
         </p>
 
-        <div class="footer-team">
-
-            <span>Sunnel John Rebano</span>
-            <span>• Rhea Kim</span>
-            <span>• Kimberly</span>
-            <span>• Charles Tiong</span>
-            <span>• Reyden Osia</span>
-            <span>• Mc Lawrence Conzaga</span>
-            <span>• Kimmy Clavo</span>
-            <span>• Dianne Gadia</span>
-            <span>• Carl Caabay</span>
-            <span>• Mark Camaso</span>
-
-        </div>
+        <!-- Generated automatically -->
+        <div
+            class="footer-team"
+            id="footerTeam"
+        ></div>
 
     </div>
 
@@ -2213,6 +2165,7 @@ func open_door():
         <div class="modal-header">
 
             <div>
+
                 <h3 id="scriptTitle">
                     SCRIPT
                 </h3>
@@ -2224,6 +2177,7 @@ func open_door():
                         margin-top:5px;
                     "
                 ></p>
+
             </div>
 
             <button
@@ -2350,6 +2304,101 @@ func open_door():
 <script>
 
 /* ======================================================
+   TEAM MEMBERS
+   ======================================================
+
+   IMPORTANT:
+   Add new team members ONLY HERE.
+
+   They will automatically appear in:
+   1. Intro popup
+   2. Project Team section
+   3. Footer
+
+====================================================== */
+
+const TEAM_MEMBERS = [
+    "Sunnel John Rebano(kupal lang)",
+    "Rhea Kim",
+    "Kimberly",
+    "Charles Tiong",
+    "Reyden Osia",
+    "Mc Lawrence Conzaga",
+    "Kimmy Clavo",
+    "Dianne Gadia",
+    "Carl Caabay",
+    "Mark Camaso",
+    "Maynard Cabada",
+    "Mark Anthony Canta"
+];
+
+/* ======================================================
+   GENERATE TEAM EVERYWHERE
+====================================================== */
+
+function renderTeamMembers() {
+
+    const introTeam =
+        document.getElementById("introTeam");
+
+    const projectTeam =
+        document.getElementById("projectTeam");
+
+    const footerTeam =
+        document.getElementById("footerTeam");
+
+    /* INTRO */
+
+    introTeam.innerHTML = "";
+
+    TEAM_MEMBERS.forEach(name => {
+
+        const span =
+            document.createElement("span");
+
+        span.textContent = name;
+
+        introTeam.appendChild(span);
+    });
+
+    /* PROJECT TEAM */
+
+    projectTeam.innerHTML = "";
+
+    TEAM_MEMBERS.forEach(name => {
+
+        const span =
+            document.createElement("span");
+
+        span.className = "team-member";
+
+        span.textContent = name;
+
+        projectTeam.appendChild(span);
+    });
+
+    /* FOOTER */
+
+    footerTeam.innerHTML = "";
+
+    TEAM_MEMBERS.forEach((name, index) => {
+
+        const span =
+            document.createElement("span");
+
+        span.textContent =
+            index === 0
+                ? name
+                : `• ${name}`;
+
+        footerTeam.appendChild(span);
+    });
+}
+
+/* Generate team immediately */
+renderTeamMembers();
+
+/* ======================================================
    CONFIGURATION
 ====================================================== */
 
@@ -2412,6 +2461,7 @@ const fileGrid =
 ====================================================== */
 
 function escapeHTML(value) {
+
     const div =
         document.createElement("div");
 
@@ -2422,7 +2472,9 @@ function escapeHTML(value) {
 }
 
 function formatBytes(bytes) {
-    if (!bytes) return "0 B";
+
+    if (!bytes)
+        return "0 B";
 
     const units = [
         "B",
@@ -2447,6 +2499,7 @@ function formatBytes(bytes) {
 }
 
 function formatDate(timestamp) {
+
     return new Date(timestamp)
         .toLocaleDateString(
             undefined,
@@ -2458,7 +2511,10 @@ function formatDate(timestamp) {
         );
 }
 
-function toast(message, type = "success") {
+function toast(
+    message,
+    type = "success"
+) {
 
     const container =
         document.getElementById(
@@ -2502,7 +2558,8 @@ document.addEventListener(
                 "[data-close]"
             );
 
-        if (!close) return;
+        if (!close)
+            return;
 
         const modal =
             document.getElementById(
@@ -2537,6 +2594,7 @@ if (
         "projectHubIntro"
     ) === "seen"
 ) {
+
     intro.classList.add("hidden");
 }
 
@@ -2596,6 +2654,7 @@ function createParticles() {
     ) {
 
         particles.push({
+
             x:
                 Math.random() *
                 canvas.width,
@@ -2677,6 +2736,7 @@ animateParticles();
 window.addEventListener(
     "resize",
     () => {
+
         resizeCanvas();
         createParticles();
     }
@@ -2686,7 +2746,9 @@ window.addEventListener(
    UPLOAD MODAL
 ====================================================== */
 
-function openUpload(script = false) {
+function openUpload(
+    script = false
+) {
 
     selectedScript = script;
     selectedFile = null;
@@ -2702,10 +2764,15 @@ function openUpload(script = false) {
     );
 
     if (script) {
-        fileInput.accept = ".txt";
+
+        fileInput.accept =
+            ".txt";
+
         displayNameInput.placeholder =
             "Example: Door Script";
+
     } else {
+
         fileInput.accept =
             ".txt,.json,.gd,.js,.css,.html,.glb,.gltf,.png,.jpg,.jpeg,.webp,.wav,.mp3,.zip";
 
@@ -2769,6 +2836,7 @@ fileInput.addEventListener(
 function handleSelectedFile(file) {
 
     if (!file) {
+
         toast(
             "Please select a file.",
             "error"
@@ -2818,13 +2886,17 @@ function handleSelectedFile(file) {
     selectedPreview.innerHTML = "";
 
     const title =
-        document.createElement("strong");
+        document.createElement(
+            "strong"
+        );
 
     title.textContent =
         file.name;
 
     const details =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     details.style.color =
         "#94a3b8";
@@ -3000,19 +3072,25 @@ async function buildConfirmation(
         ([label, value]) => {
 
             const row =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             row.className =
                 "confirm-row";
 
             const a =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
             a.textContent =
                 label;
 
             const b =
-                document.createElement("strong");
+                document.createElement(
+                    "strong"
+                );
 
             b.textContent =
                 value;
@@ -3027,16 +3105,22 @@ async function buildConfirmation(
     if (selectedScript) {
 
         const preview =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         preview.className =
             "script-preview";
 
         const pre =
-            document.createElement("pre");
+            document.createElement(
+                "pre"
+            );
 
         const code =
-            document.createElement("code");
+            document.createElement(
+                "code"
+            );
 
         code.textContent =
             "Reading file...";
@@ -3064,6 +3148,7 @@ async function buildConfirmation(
         };
 
         reader.onerror = () => {
+
             code.textContent =
                 "Unable to preview file.";
         };
@@ -3112,6 +3197,7 @@ document
 async function publishFile() {
 
     if (!selectedFile) {
+
         toast(
             "Please select a file.",
             "error"
@@ -3179,6 +3265,7 @@ async function publishFile() {
             await response.json();
 
         if (!response.ok) {
+
             throw new Error(
                 result.error ||
                 "Upload failed."
@@ -3256,11 +3343,13 @@ async function loadFiles() {
     const params =
         new URLSearchParams();
 
-    if (search)
+    if (search) {
+
         params.set(
             "search",
             search
         );
+    }
 
     params.set(
         "sort",
@@ -3278,6 +3367,7 @@ async function loadFiles() {
             await response.json();
 
         if (!response.ok) {
+
             throw new Error(
                 result.error ||
                 "Unable to load files."
@@ -3294,19 +3384,25 @@ async function loadFiles() {
         fileGrid.innerHTML = "";
 
         const empty =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         empty.className =
             "empty";
 
         const strong =
-            document.createElement("strong");
+            document.createElement(
+                "strong"
+            );
 
         strong.textContent =
             "Unable to connect";
 
         const text =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         text.textContent =
             error.message;
@@ -3329,19 +3425,25 @@ function renderFiles() {
     if (!allFiles.length) {
 
         const empty =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         empty.className =
             "empty";
 
         const strong =
-            document.createElement("strong");
+            document.createElement(
+                "strong"
+            );
 
         strong.textContent =
             "No files uploaded yet.";
 
         const text =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         text.textContent =
             "Be the first to contribute to the project.";
@@ -3350,7 +3452,9 @@ function renderFiles() {
         empty.appendChild(text);
 
         const button =
-            document.createElement("button");
+            document.createElement(
+                "button"
+            );
 
         button.className =
             "btn";
@@ -3394,13 +3498,17 @@ function renderFiles() {
 function createFileCard(file) {
 
     const card =
-        document.createElement("article");
+        document.createElement(
+            "article"
+        );
 
     card.className =
         "file-card";
 
     const icon =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     icon.className =
         "file-icon";
@@ -3413,7 +3521,9 @@ function createFileCard(file) {
     card.appendChild(icon);
 
     const title =
-        document.createElement("h4");
+        document.createElement(
+            "h4"
+        );
 
     title.textContent =
         file.displayName;
@@ -3421,7 +3531,9 @@ function createFileCard(file) {
     card.appendChild(title);
 
     const filename =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     filename.className =
         "filename";
@@ -3432,7 +3544,9 @@ function createFileCard(file) {
     card.appendChild(filename);
 
     const uploader =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     uploader.className =
         "uploader";
@@ -3441,7 +3555,9 @@ function createFileCard(file) {
         "by ";
 
     const uploaderName =
-        document.createElement("b");
+        document.createElement(
+            "b"
+        );
 
     uploaderName.textContent =
         file.uploader;
@@ -3453,13 +3569,17 @@ function createFileCard(file) {
     card.appendChild(uploader);
 
     const meta =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     meta.className =
         "file-meta";
 
     const type =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
     type.className =
         "badge";
@@ -3468,7 +3588,9 @@ function createFileCard(file) {
         file.extension.toUpperCase();
 
     const size =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
     size.className =
         "badge";
@@ -3477,7 +3599,9 @@ function createFileCard(file) {
         formatBytes(file.size);
 
     const downloads =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
     downloads.className =
         "badge";
@@ -3492,7 +3616,9 @@ function createFileCard(file) {
     card.appendChild(meta);
 
     const date =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     date.className =
         "file-date";
@@ -3503,7 +3629,9 @@ function createFileCard(file) {
     card.appendChild(date);
 
     const actions =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     actions.className =
         "card-actions";
@@ -3511,7 +3639,9 @@ function createFileCard(file) {
     if (file.script) {
 
         const view =
-            document.createElement("button");
+            document.createElement(
+                "button"
+            );
 
         view.textContent =
             "VIEW SCRIPT";
@@ -3527,7 +3657,9 @@ function createFileCard(file) {
     }
 
     const download =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
     download.textContent =
         "DOWNLOAD";
@@ -3537,12 +3669,12 @@ function createFileCard(file) {
         () => downloadFile(file)
     );
 
-    actions.appendChild(
-        download
-    );
+    actions.appendChild(download);
 
     const copy =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
     copy.textContent =
         "COPY LINK";
@@ -3552,12 +3684,12 @@ function createFileCard(file) {
         () => copyLink(file.id)
     );
 
-    actions.appendChild(
-        copy
-    );
+    actions.appendChild(copy);
 
     const del =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
     del.textContent =
         "DELETE";
@@ -3567,9 +3699,7 @@ function createFileCard(file) {
         () => openDelete(file)
     );
 
-    actions.appendChild(
-        del
-    );
+    actions.appendChild(del);
 
     card.appendChild(actions);
 
@@ -3594,6 +3724,7 @@ async function downloadFile(file) {
             );
 
         if (!response.ok) {
+
             throw new Error(
                 "Download failed."
             );
@@ -3603,9 +3734,7 @@ async function downloadFile(file) {
             await response.blob();
 
         const url =
-            URL.createObjectURL(
-                blob
-            );
+            URL.createObjectURL(blob);
 
         const anchor =
             document.createElement("a");
@@ -3663,7 +3792,9 @@ async function copyLink(id) {
         } else {
 
             const input =
-                document.createElement("textarea");
+                document.createElement(
+                    "textarea"
+                );
 
             input.value =
                 link;
@@ -3693,9 +3824,7 @@ async function copyLink(id) {
 
     } catch {
 
-        toast(
-            link
-        );
+        toast(link);
     }
 }
 
@@ -3716,6 +3845,7 @@ async function openScript(id) {
             await response.json();
 
         if (!response.ok) {
+
             throw new Error(
                 result.error ||
                 "Unable to open script."
@@ -3739,7 +3869,6 @@ async function openScript(id) {
             `by ${file.uploader} • ${file.name} • ${formatBytes(file.size)}`;
 
         /*
-        IMPORTANT:
         Uploaded code is rendered using textContent.
         It is never inserted as HTML.
         */
@@ -3801,11 +3930,6 @@ function openDelete(file) {
     document
         .getElementById("deleteTokenInput")
         .value = "";
-
-    /*
-    If the uploader previously uploaded this file from
-    this browser, automatically provide its delete key.
-    */
 
     const keys =
         JSON.parse(
@@ -3883,6 +4007,7 @@ async function deleteFile() {
             await response.json();
 
         if (!response.ok) {
+
             throw new Error(
                 result.error ||
                 "Delete failed."
@@ -3998,7 +4123,7 @@ async function loadStats() {
             result.stats.downloads;
 
     } catch {
-        // Keep UI stable if temporarily offline.
+        /* Keep UI stable if temporarily offline. */
     }
 }
 
@@ -4016,22 +4141,6 @@ async function refreshEverything() {
 
 /* ======================================================
    REAL-TIME PUBLIC LIBRARY
-======================================================
-
-Server-Sent Events means browsers can receive a signal
-when another user uploads/deletes/downloads something.
-
-The browser then refreshes the public library.
-
-This means:
-
-Sunnel uploads
-     ↓
-Server broadcasts
-     ↓
-Rhea's browser receives event
-     ↓
-Rhea's library refreshes
 ====================================================== */
 
 function connectRealtime() {
@@ -4069,9 +4178,11 @@ function handleHashLink() {
     const hash =
         location.hash;
 
-    if (!hash.startsWith(
-        "#file="
-    )) {
+    if (
+        !hash.startsWith(
+            "#file="
+        )
+    ) {
         return;
     }
 
@@ -4081,19 +4192,6 @@ function handleHashLink() {
     const check =
         setInterval(
             () => {
-
-                const card =
-                    [...document.querySelectorAll(
-                        ".file-card"
-                    )].find(
-                        element =>
-                            element
-                    );
-
-                /*
-                The actual file can be found
-                through the loaded data.
-                */
 
                 const file =
                     allFiles.find(
@@ -4147,6 +4245,13 @@ window.addEventListener(
 ====================================================== */
 
 async function initialize() {
+
+    /*
+    Make absolutely sure the team list is rendered
+    before anything else.
+    */
+
+    renderTeamMembers();
 
     await refreshEverything();
 
