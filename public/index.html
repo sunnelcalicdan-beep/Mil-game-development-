@@ -7,12 +7,17 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     >
 
     <meta
         name="theme-color"
-        content="#050719"
+        content="#050714"
+    >
+
+    <meta
+        name="description"
+        content="MIL Project Game Development — Project File Hub"
     >
 
     <title>
@@ -31,7 +36,7 @@
 
 
 <!-- =====================================================
-     ANIMATED PARTICLE BACKGROUND
+     PARTICLE BACKGROUND
 ===================================================== -->
 
 <canvas
@@ -41,40 +46,48 @@
 
 
 <!-- =====================================================
-     BACKGROUND AURAS
+     AMBIENT BACKGROUND
 ===================================================== -->
 
-<div class="background-effects">
+<div
+    class="ambient ambient-one"
+    aria-hidden="true"
+></div>
 
-    <div class="aurora aurora-one"></div>
+<div
+    class="ambient ambient-two"
+    aria-hidden="true"
+></div>
 
-    <div class="aurora aurora-two"></div>
-
-    <div class="aurora aurora-three"></div>
-
-</div>
+<div
+    class="ambient ambient-three"
+    aria-hidden="true"
+></div>
 
 
 <!-- =====================================================
-     MAIN LANDING PAGE
+     MAIN
 ===================================================== -->
 
-<main class="landing-page">
+<main class="welcome-page">
 
 
     <!-- =================================================
-         HERO CARD
+         ORIGINAL NEON CARD
     ================================================== -->
 
     <section class="welcome-card">
 
 
-        <!-- Animated border layers -->
+        <!-- animated border layer -->
 
-        <div class="card-glow"></div>
+        <div
+            class="card-border"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="welcome-content">
+        <div class="card-content">
 
 
             <!-- =========================================
@@ -86,15 +99,7 @@
                 <span class="label-line"></span>
 
                 <span>
-                    MIL PROJECT
-                </span>
-
-                <span class="label-dot">
-                    •
-                </span>
-
-                <span>
-                    GAME DEVELOPMENT
+                    MIL PROJECT • GAME DEVELOPMENT
                 </span>
 
                 <span class="label-line"></span>
@@ -106,23 +111,15 @@
                  TITLE
             ========================================== -->
 
-            <h1 class="hero-title">
+            <h1 class="welcome-title">
 
-                <span class="title-small">
+                <span>
                     WELCOME TO
                 </span>
 
-                <span class="title-main">
-
-                    <span class="cyan-text">
-                        PROJECT
-                    </span>
-
-                    <span class="white-text">
-                        FILE HUB
-                    </span>
-
-                </span>
+                <strong>
+                    PROJECT FILE HUB
+                </strong>
 
             </h1>
 
@@ -131,13 +128,13 @@
                  DESCRIPTION
             ========================================== -->
 
-            <p class="handled-text">
+            <p class="handled-title">
                 This website is handled by:
             </p>
 
 
             <!-- =========================================
-                 TEAM MEMBERS
+                 TEAM
             ========================================== -->
 
             <div class="team-list">
@@ -194,12 +191,12 @@
                 </span>
 
 
-                <span class="team-member new-member">
+                <span class="team-member">
                     Maynard Cabada
                 </span>
 
 
-                <span class="team-member new-member">
+                <span class="team-member">
                     Mark Anthony Canta
                 </span>
 
@@ -208,13 +205,11 @@
 
 
             <!-- =========================================
-                 FOOTER MESSAGE
+                 FOOTER TEXT
             ========================================== -->
 
             <p class="project-description">
-
                 For MIL Project Game Development.
-
             </p>
 
 
@@ -223,18 +218,16 @@
             ========================================== -->
 
             <button
-                id="enterProjectButton"
-                class="enter-project-button"
+                id="enterProject"
+                class="enter-button"
                 type="button"
             >
 
-                <span class="button-shine"></span>
-
-                <span class="button-text">
+                <span>
                     ENTER PROJECT
                 </span>
 
-                <span class="button-arrow">
+                <span class="arrow">
                     →
                 </span>
 
@@ -242,12 +235,12 @@
 
 
             <!-- =========================================
-                 STATUS
+                 ONLINE STATUS
             ========================================== -->
 
-            <div class="landing-status">
+            <div class="online-status">
 
-                <span class="status-dot"></span>
+                <span class="online-dot"></span>
 
                 <span>
                     PROJECT HUB ONLINE
@@ -265,157 +258,52 @@
 
 
 <!-- =====================================================
-     SCRIPT
+     ENTER PROJECT SCRIPT
 ===================================================== -->
-
-<script src="/app.js"></script>
-
-
-<!-- =====================================================
-     ORIGINAL PARTICLE ENGINE
-===================================================== -->
-
-<script src="/particles.js"></script>
-
 
 <script>
 
 "use strict";
 
 
-/*
-========================================================
-ENTER PROJECT
-========================================================
-*/
-
-const enterButton =
+const enterProject =
     document.getElementById(
-        "enterProjectButton"
+        "enterProject"
     );
 
 
-if (enterButton) {
+if (enterProject) {
 
-    enterButton.addEventListener(
+    enterProject.addEventListener(
         "click",
         () => {
 
-            enterButton.classList.add(
-                "entering"
-            );
+            /*
+            ------------------------------------------------
+            This opens your actual project hub.
+            ------------------------------------------------
+            */
 
-
-            setTimeout(
-                () => {
-
-                    /*
-                    Change this if your actual
-                    project/library route is different.
-                    */
-
-                    window.location.href =
-                        "/project";
-
-                },
-                450
-            );
+            window.location.href =
+                "/hub";
 
         }
     );
 
 }
 
-
-/*
-========================================================
-TEAM MEMBER MICRO INTERACTION
-========================================================
-*/
-
-document
-    .querySelectorAll(
-        ".team-member"
-    )
-    .forEach(
-        member => {
-
-            member.addEventListener(
-                "mouseenter",
-                () => {
-
-                    member.classList.add(
-                        "member-active"
-                    );
-
-                }
-            );
-
-
-            member.addEventListener(
-                "mouseleave",
-                () => {
-
-                    member.classList.remove(
-                        "member-active"
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-/*
-========================================================
-CARD POINTER GLOW
-========================================================
-*/
-
-const card =
-    document.querySelector(
-        ".welcome-card"
-    );
-
-
-if (card) {
-
-    card.addEventListener(
-        "pointermove",
-        event => {
-
-            const rect =
-                card.getBoundingClientRect();
-
-
-            const x =
-                event.clientX -
-                rect.left;
-
-
-            const y =
-                event.clientY -
-                rect.top;
-
-
-            card.style.setProperty(
-                "--mouse-x",
-                `${x}px`
-            );
-
-
-            card.style.setProperty(
-                "--mouse-y",
-                `${y}px`
-            );
-
-        }
-    );
-
-}
 
 </script>
+
+
+<!-- =====================================================
+     PARTICLE ENGINE
+===================================================== -->
+
+<script
+    src="/particles.js"
+    defer
+></script>
 
 
 </body>
