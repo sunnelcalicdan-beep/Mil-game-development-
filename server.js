@@ -12,23 +12,20 @@ Backend:
     PostgreSQL
     Multer
 
-Architecture:
+DELETE KEY FORMAT:
 
-Frontend
-   ↓
-Express API
-   ↓
-PostgreSQL
-   └── metadata + file bytes
+    username-mil-RANDOMCODE
+
+Example:
+
+    Sunnel-mil-X7K2P9Q4
 
 IMPORTANT:
-This version stores file bytes in PostgreSQL BYTEA.
-For a larger production deployment, move file bytes
-to object storage such as S3-compatible storage.
-
-IMPORTANT SECURITY:
-Uploaded code/files are NEVER executed by this server.
-HTML, JS, CSS, GD, JSON and TXT files are treated as data.
+- No parentheses.
+- Delete keys are generated server-side.
+- Only the SHA-256 hash is stored in PostgreSQL.
+- The original delete key is returned only after upload.
+- Uploaded files are NEVER executed by this server.
 ========================================================
 */
 
@@ -46,13 +43,18 @@ CONFIGURATION
 
 const app = express();
 
-const PORT = Number(process.env.PORT) || 10000;
+const PORT =
+    Number(process.env.PORT) || 10000;
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MAX_FILE_SIZE =
+    50 * 1024 * 1024;
 
 /*
-Allowed public file extensions.
+========================================================
+ALLOWED FILE EXTENSIONS
+========================================================
 */
+
 const ALLOWED_EXTENSIONS = new Set([
     "txt",
     "json",
@@ -74,6 +76,7 @@ const ALLOWED_EXTENSIONS = new Set([
 /*
 Only TXT files can be published as custom scripts.
 */
+
 const SCRIPT_EXTENSIONS = new Set([
     "txt"
 ]);
@@ -82,26 +85,19 @@ const SCRIPT_EXTENSIONS = new Set([
 ========================================================
 DATABASE
 ========================================================
-
-Render PostgreSQL should provide:
-
-DATABASE_URL
-
-Example:
-
-postgresql://user:password@host/database
-
-========================================================
 */
 
 if (!process.env.DATABASE_URL) {
+
     console.warn(
         "WARNING: DATABASE_URL is not configured."
     );
 }
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+
+    connectionString:
+        process.env.DATABASE_URL,
 
     ssl:
         process.env.NODE_ENV === "production"
@@ -115,6 +111,7 @@ const pool = new Pool({
     idleTimeoutMillis: 30000,
 
     connectionTimeoutMillis: 10000
+
 });
 
 /*
@@ -142,36 +139,44 @@ app.use(
 ========================================================
 UPLOAD STORAGE
 ========================================================
-
-Memory storage is acceptable for this project because
-the maximum upload is 50 MB.
-
-For larger production systems, use object storage.
-========================================================
 */
 
 const upload = multer({
-    storage: multer.memoryStorage(),
+
+    storage:
+        multer.memoryStorage(),
 
     limits: {
-        fileSize: MAX_FILE_SIZE
+
+        fileSize:
+            MAX_FILE_SIZE
+
     },
 
-    fileFilter: (req, file, callback) => {
-        const extension = getExtension(
-            file.originalname
-        );
+    fileFilter:
+        (req, file, callback) => {
 
-        if (!ALLOWED_EXTENSIONS.has(extension)) {
-            return callback(
-                new Error(
-                    "This file type is not supported."
+            const extension =
+                getExtension(
+                    file.originalname
+                );
+
+            if (
+                !ALLOWED_EXTENSIONS.has(
+                    extension
                 )
-            );
+            ) {
+
+                return callback(
+                    new Error(
+                        "This file type is not supported."
+                    )
+                );
+            }
+
+            callback(null, true);
         }
 
-        callback(null, true);
-    }
 });
 
 /*
@@ -184,33 +189,56 @@ async function initializeDatabase() {
 
     await pool.query(`
         CREATE TABLE IF NOT EXISTS files (
+
             id UUID PRIMARY KEY,
+
             name TEXT NOT NULL,
+
             display_name TEXT NOT NULL,
+
             uploader TEXT NOT NULL,
+
             extension TEXT NOT NULL,
+
             mime_type TEXT NOT NULL,
+
             size BIGINT NOT NULL,
-            uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-            downloads BIGINT NOT NULL DEFAULT 0,
-            is_script BOOLEAN NOT NULL DEFAULT FALSE,
+
+            uploaded_at
+                TIMESTAMPTZ NOT NULL
+                DEFAULT NOW(),
+
+            downloads
+                BIGINT NOT NULL
+                DEFAULT 0,
+
+            is_script
+                BOOLEAN NOT NULL
+                DEFAULT FALSE,
+
             data BYTEA NOT NULL,
-            delete_token_hash TEXT NOT NULL
+
+            delete_token_hash
+                TEXT NOT NULL
+
         );
     `);
 
     await pool.query(`
-        CREATE INDEX IF NOT EXISTS files_uploaded_at_idx
+        CREATE INDEX IF NOT EXISTS
+        files_uploaded_at_idx
         ON files(uploaded_at DESC);
     `);
 
     await pool.query(`
-        CREATE INDEX IF NOT EXISTS files_uploader_idx
+        CREATE INDEX IF NOT EXISTS
+        files_uploader_idx
         ON files(uploader);
     `);
 
     await pool.query(`
-        CREATE INDEX IF NOT EXISTS files_extension_idx
+        CREATE INDEX IF NOT EXISTS
+        files_extension_idx
         ON files(extension);
     `);
 
@@ -225,26 +253,181 @@ HELPERS
 ========================================================
 */
 
+/*
+Generate UUID.
+*/
+
 function generateId() {
+
     return crypto.randomUUID();
 }
 
-function generateDeleteToken() {
-    return crypto
-        .randomBytes(32)
-        .toString("hex");
+/*
+========================================================
+DELETE KEY GENERATION
+========================================================
+
+Format:
+
+    username-mil-RANDOMCODE
+
+Example:
+
+    Sunnel-mil-X7K2P9Q4
+
+The random portion uses cryptographically secure
+random bytes.
+
+We use uppercase letters and numbers while avoiding
+ambiguous characters such as:
+
+    0
+    O
+    I
+    1
+========================================================
+*/
+
+function generateRandomCode(length = 8) {
+
+    const alphabet =
+        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let code = "";
+
+    while (
+        code.length < length
+    ) {
+
+        const randomByte =
+            crypto.randomBytes(1)[0];
+
+        const index =
+            randomByte %
+            alphabet.length;
+
+        code +=
+            alphabet[index];
+    }
+
+    return code;
 }
 
+/*
+========================================================
+USERNAME FOR DELETE KEY
+========================================================
+
+Only safe characters are allowed in the key.
+
+Spaces and symbols are converted into hyphens.
+
+Example:
+
+    "John Doe"
+        ↓
+    "John-Doe"
+
+    "john_123"
+        ↓
+    "john-123"
+========================================================
+*/
+
+function cleanUsernameForKey(
+    username
+) {
+
+    let value =
+        String(username || "")
+            .trim();
+
+    value =
+        value.replace(
+            /[^a-zA-Z0-9_-]+/g,
+            "-"
+        );
+
+    value =
+        value.replace(
+            /[-_]+/g,
+            "-"
+        );
+
+    value =
+        value.replace(
+            /^-+|-+$/g,
+            ""
+        );
+
+    /*
+    Prevent an empty username from creating
+    a malformed delete key.
+    */
+
+    if (!value) {
+
+        value = "User";
+    }
+
+    /*
+    Keep the generated key reasonably sized.
+    */
+
+    return value.slice(0, 40);
+}
+
+/*
+========================================================
+CREATE DELETE KEY
+========================================================
+*/
+
+function generateDeleteToken(
+    username
+) {
+
+    const safeUsername =
+        cleanUsernameForKey(
+            username
+        );
+
+    const randomCode =
+        generateRandomCode(8);
+
+    return `${safeUsername}-mil-${randomCode}`;
+}
+
+/*
+========================================================
+HASH DELETE KEY
+========================================================
+*/
+
 function hashToken(token) {
+
     return crypto
         .createHash("sha256")
         .update(token)
         .digest("hex");
 }
 
-function cleanText(value, maxLength) {
+/*
+========================================================
+CLEAN TEXT
+========================================================
+*/
 
-    if (typeof value !== "string") {
+function cleanText(
+    value,
+    maxLength
+) {
+
+    if (
+        typeof value !==
+        "string"
+    ) {
+
         return "";
     }
 
@@ -254,7 +437,15 @@ function cleanText(value, maxLength) {
         .slice(0, maxLength);
 }
 
-function getExtension(filename) {
+/*
+========================================================
+GET FILE EXTENSION
+========================================================
+*/
+
+function getExtension(
+    filename
+) {
 
     return path
         .extname(filename || "")
@@ -262,30 +453,48 @@ function getExtension(filename) {
         .toLowerCase();
 }
 
+/*
+========================================================
+PUBLIC FILE OBJECT
+========================================================
+*/
+
 function safePublicFile(row) {
 
     return {
-        id: row.id,
 
-        name: row.name,
+        id:
+            row.id,
 
-        displayName: row.display_name,
+        name:
+            row.name,
 
-        uploader: row.uploader,
+        displayName:
+            row.display_name,
 
-        extension: row.extension,
+        uploader:
+            row.uploader,
 
-        type: row.mime_type,
+        extension:
+            row.extension,
 
-        size: Number(row.size),
+        type:
+            row.mime_type,
 
-        date: new Date(
-            row.uploaded_at
-        ).getTime(),
+        size:
+            Number(row.size),
 
-        downloads: Number(row.downloads),
+        date:
+            new Date(
+                row.uploaded_at
+            ).getTime(),
 
-        script: row.is_script
+        downloads:
+            Number(row.downloads),
+
+        script:
+            row.is_script
+
     };
 }
 
@@ -295,28 +504,41 @@ REAL-TIME CLIENTS
 ========================================================
 */
 
-const clients = new Set();
+const clients =
+    new Set();
 
 function broadcastLibraryUpdate() {
 
     const payload = {
-        timestamp: Date.now()
+
+        timestamp:
+            Date.now()
+
     };
 
     const message =
         `event: library-update\n` +
-        `data: ${JSON.stringify(payload)}\n\n`;
+        `data: ${JSON.stringify(
+            payload
+        )}\n\n`;
 
-    for (const client of clients) {
+    for (
+        const client of clients
+    ) {
 
         try {
 
-            client.write(message);
+            client.write(
+                message
+            );
 
-        } catch {
+        }
 
-            clients.delete(client);
+        catch {
 
+            clients.delete(
+                client
+            );
         }
     }
 }
@@ -327,64 +549,84 @@ REAL-TIME EVENTS
 ========================================================
 */
 
-app.get("/api/events", (req, res) => {
+app.get(
+    "/api/events",
+    (req, res) => {
 
-    res.setHeader(
-        "Content-Type",
-        "text/event-stream"
-    );
+        res.setHeader(
+            "Content-Type",
+            "text/event-stream"
+        );
 
-    res.setHeader(
-        "Cache-Control",
-        "no-cache, no-transform"
-    );
+        res.setHeader(
+            "Cache-Control",
+            "no-cache, no-transform"
+        );
 
-    res.setHeader(
-        "Connection",
-        "keep-alive"
-    );
+        res.setHeader(
+            "Connection",
+            "keep-alive"
+        );
 
-    res.setHeader(
-        "X-Accel-Buffering",
-        "no"
-    );
+        res.setHeader(
+            "X-Accel-Buffering",
+            "no"
+        );
 
-    res.flushHeaders();
+        res.flushHeaders();
 
-    res.write(
-        `event: connected\n` +
-        `data: ${JSON.stringify({
-            connected: true
-        })}\n\n`
-    );
+        res.write(
+            `event: connected\n` +
+            `data: ${JSON.stringify({
+                connected: true
+            })}\n\n`
+        );
 
-    clients.add(res);
+        clients.add(res);
 
-    const heartbeat = setInterval(() => {
+        const heartbeat =
+            setInterval(
+                () => {
 
-        try {
+                    try {
 
-            res.write(
-                ": heartbeat\n\n"
+                        res.write(
+                            ": heartbeat\n\n"
+                        );
+
+                    }
+
+                    catch {
+
+                        clearInterval(
+                            heartbeat
+                        );
+
+                        clients.delete(
+                            res
+                        );
+                    }
+
+                },
+                25000
             );
 
-        } catch {
+        req.on(
+            "close",
+            () => {
 
-            clearInterval(heartbeat);
+                clearInterval(
+                    heartbeat
+                );
 
-            clients.delete(res);
-        }
+                clients.delete(
+                    res
+                );
 
-    }, 25000);
-
-    req.on("close", () => {
-
-        clearInterval(heartbeat);
-
-        clients.delete(res);
-
-    });
-});
+            }
+        );
+    }
+);
 
 /*
 ========================================================
@@ -392,148 +634,169 @@ GET PUBLIC FILES
 ========================================================
 */
 
-app.get("/api/files", async (req, res) => {
+app.get(
+    "/api/files",
+    async (req, res) => {
 
-    try {
+        try {
 
-        const search = cleanText(
-            req.query.search || "",
-            100
-        );
+            const search =
+                cleanText(
+                    req.query.search || "",
+                    100
+                );
 
-        const uploader = cleanText(
-            req.query.uploader || "",
-            100
-        );
+            const uploader =
+                cleanText(
+                    req.query.uploader || "",
+                    100
+                );
 
-        const sort =
-            String(req.query.sort || "newest");
+            const sort =
+                String(
+                    req.query.sort ||
+                    "newest"
+                );
 
-        const values = [];
+            const values = [];
 
-        const conditions = [];
+            const conditions = [];
 
-        /*
-        Search:
+            /*
+            Search filename,
+            display name,
+            uploader and extension.
+            */
 
-        filename
-        display name
-        uploader
-        extension
-        */
+            if (search) {
 
-        if (search) {
+                values.push(
+                    `%${search}%`
+                );
 
-            values.push(`%${search}%`);
+                const parameter =
+                    `$${values.length}`;
 
-            const parameter =
-                `$${values.length}`;
-
-            conditions.push(`
-                (
-                    name ILIKE ${parameter}
-                    OR display_name ILIKE ${parameter}
-                    OR uploader ILIKE ${parameter}
-                    OR extension ILIKE ${parameter}
-                )
-            `);
-        }
-
-        /*
-        Optional exact uploader filter.
-        */
-
-        if (uploader) {
-
-            values.push(uploader);
-
-            conditions.push(
-                `uploader = $${values.length}`
-            );
-        }
-
-        let orderBy =
-            "uploaded_at DESC";
-
-        if (sort === "oldest") {
-
-            orderBy =
-                "uploaded_at ASC";
-        }
-
-        else if (sort === "name") {
-
-            orderBy =
-                "LOWER(display_name) ASC";
-        }
-
-        else if (sort === "largest") {
-
-            orderBy =
-                "size DESC";
-        }
-
-        const query = `
-            SELECT
-                id,
-                name,
-                display_name,
-                uploader,
-                extension,
-                mime_type,
-                size,
-                uploaded_at,
-                downloads,
-                is_script
-            FROM files
-
-            ${
-                conditions.length
-                    ? `WHERE ${conditions.join(" AND ")}`
-                    : ""
+                conditions.push(`
+                    (
+                        name ILIKE ${parameter}
+                        OR display_name ILIKE ${parameter}
+                        OR uploader ILIKE ${parameter}
+                        OR extension ILIKE ${parameter}
+                    )
+                `);
             }
 
-            ORDER BY ${orderBy}
+            /*
+            Exact uploader filter.
+            */
 
-            LIMIT 500
-        `;
+            if (uploader) {
 
-        const result =
-            await pool.query(
-                query,
-                values
+                values.push(
+                    uploader
+                );
+
+                conditions.push(
+                    `uploader = $${values.length}`
+                );
+            }
+
+            let orderBy =
+                "uploaded_at DESC";
+
+            if (
+                sort === "oldest"
+            ) {
+
+                orderBy =
+                    "uploaded_at ASC";
+            }
+
+            else if (
+                sort === "name"
+            ) {
+
+                orderBy =
+                    "LOWER(display_name) ASC";
+            }
+
+            else if (
+                sort === "largest"
+            ) {
+
+                orderBy =
+                    "size DESC";
+            }
+
+            const query = `
+                SELECT
+
+                    id,
+                    name,
+                    display_name,
+                    uploader,
+                    extension,
+                    mime_type,
+                    size,
+                    uploaded_at,
+                    downloads,
+                    is_script
+
+                FROM files
+
+                ${
+                    conditions.length
+                        ? `WHERE ${conditions.join(
+                            " AND "
+                        )}`
+                        : ""
+                }
+
+                ORDER BY ${orderBy}
+
+                LIMIT 500
+            `;
+
+            const result =
+                await pool.query(
+                    query,
+                    values
+                );
+
+            res.json({
+
+                success:
+                    true,
+
+                files:
+                    result.rows.map(
+                        safePublicFile
+                    )
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "GET /api/files:",
+                error
             );
 
-        res.json({
+            res.status(500).json({
 
-            success: true,
+                success:
+                    false,
 
-            files:
-                result.rows.map(
-                    safePublicFile
-                )
+                error:
+                    "Unable to load public files."
 
-        });
-
+            });
+        }
     }
-
-    catch (error) {
-
-        console.error(
-            "GET /api/files:",
-            error
-        );
-
-        res.status(500).json({
-
-            success: false,
-
-            error:
-                "Unable to load public files."
-
-        });
-    }
-});
+);
 
 /*
 ========================================================
@@ -550,17 +813,22 @@ app.get(
             const result =
                 await pool.query(`
                     SELECT DISTINCT uploader
+
                     FROM files
-                    ORDER BY LOWER(uploader) ASC
+
+                    ORDER BY
+                        LOWER(uploader) ASC
                 `);
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 uploaders:
                     result.rows.map(
-                        row => row.uploader
+                        row =>
+                            row.uploader
                     )
 
             });
@@ -576,7 +844,8 @@ app.get(
 
             res.status(500).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Unable to load uploaders."
@@ -607,7 +876,8 @@ app.get(
 
                         COUNT(*)
                             FILTER (
-                                WHERE is_script = TRUE
+                                WHERE
+                                    is_script = TRUE
                             )::BIGINT
                             AS scripts,
 
@@ -631,21 +901,30 @@ app.get(
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 stats: {
 
                     files:
-                        Number(row.files),
+                        Number(
+                            row.files
+                        ),
 
                     scripts:
-                        Number(row.scripts),
+                        Number(
+                            row.scripts
+                        ),
 
                     totalSize:
-                        Number(row.total_size),
+                        Number(
+                            row.total_size
+                        ),
 
                     downloads:
-                        Number(row.downloads)
+                        Number(
+                            row.downloads
+                        )
 
                 }
 
@@ -662,7 +941,8 @@ app.get(
 
             res.status(500).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Unable to load statistics."
@@ -686,14 +966,17 @@ app.post(
         try {
 
             /*
-            Multer has already checked the file.
+            Make sure a file exists.
             */
 
             if (!req.file) {
 
-                return res.status(400).json({
+                return res.status(
+                    400
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "Please select a file."
@@ -701,17 +984,29 @@ app.post(
                 });
             }
 
+            /*
+            Get uploader name.
+            */
+
             const uploader =
                 cleanText(
                     req.body.uploader,
                     80
                 );
 
+            /*
+            Get display name.
+            */
+
             const displayName =
                 cleanText(
                     req.body.displayName,
                     100
                 );
+
+            /*
+            Get extension.
+            */
 
             const extension =
                 getExtension(
@@ -724,9 +1019,12 @@ app.post(
 
             if (!uploader) {
 
-                return res.status(400).json({
+                return res.status(
+                    400
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "Please enter your uploader name."
@@ -740,9 +1038,12 @@ app.post(
 
             if (!displayName) {
 
-                return res.status(400).json({
+                return res.status(
+                    400
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "Display name is required."
@@ -751,7 +1052,7 @@ app.post(
             }
 
             /*
-            Extension validation.
+            File extension check.
             */
 
             if (
@@ -760,9 +1061,12 @@ app.post(
                 )
             ) {
 
-                return res.status(400).json({
+                return res.status(
+                    400
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "This file type is not allowed."
@@ -771,7 +1075,7 @@ app.post(
             }
 
             /*
-            Explicit size validation.
+            File size check.
             */
 
             if (
@@ -779,9 +1083,12 @@ app.post(
                 MAX_FILE_SIZE
             ) {
 
-                return res.status(413).json({
+                return res.status(
+                    413
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "File is too large. Maximum allowed size is 50 MB."
@@ -790,7 +1097,8 @@ app.post(
             }
 
             /*
-            Script status.
+            Determine whether this is
+            a custom script.
             */
 
             const isScript =
@@ -799,8 +1107,8 @@ app.post(
                 );
 
             /*
-            If frontend says this is a script,
-            it MUST be TXT.
+            If frontend explicitly says
+            this is a script, it must be TXT.
             */
 
             if (
@@ -808,9 +1116,12 @@ app.post(
                 !isScript
             ) {
 
-                return res.status(400).json({
+                return res.status(
+                    400
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "Custom scripts must be .txt files."
@@ -819,14 +1130,30 @@ app.post(
             }
 
             /*
-            Generate identifiers.
+            Generate file UUID.
             */
 
             const id =
                 generateId();
 
+            /*
+            ========================================================
+            GENERATE DELETE KEY
+            ========================================================
+
+            Example:
+
+                Sunnel-mil-X7K2P9Q4
+            */
+
             const deleteToken =
-                generateDeleteToken();
+                generateDeleteToken(
+                    uploader
+                );
+
+            /*
+            Hash the key before database storage.
+            */
 
             const deleteTokenHash =
                 hashToken(
@@ -834,7 +1161,7 @@ app.post(
                 );
 
             /*
-            Insert into PostgreSQL.
+            Insert file.
             */
 
             await pool.query(
@@ -855,6 +1182,7 @@ app.post(
                 )
 
                 VALUES (
+
                     $1,
                     $2,
                     $3,
@@ -865,6 +1193,7 @@ app.post(
                     $8,
                     $9,
                     $10
+
                 )
                 `,
                 [
@@ -894,22 +1223,31 @@ app.post(
             );
 
             /*
-            Tell all connected clients
-            that the public library changed.
+            Notify connected clients.
             */
 
             broadcastLibraryUpdate();
 
             /*
-            IMPORTANT:
+            ========================================================
+            IMPORTANT
+            ========================================================
 
-            deleteToken is returned only once.
-            The frontend should save it privately.
+            The deleteToken is intentionally returned
+            here.
+
+            It should be displayed by the frontend
+            in the "Keep this key safe" popup.
+
+            It is NOT stored in plain text in PostgreSQL.
             */
 
-            res.status(201).json({
+            res.status(
+                201
+            ).json({
 
-                success: true,
+                success:
+                    true,
 
                 file: {
 
@@ -936,7 +1274,21 @@ app.post(
 
                 },
 
-                deleteToken
+                deleteToken,
+
+                /*
+                Helpful frontend metadata.
+                */
+
+                deleteKey: {
+
+                    format:
+                        "username-mil-RANDOMCODE",
+
+                    warning:
+                        "Keep this delete key safe. You need it to delete your uploaded file. It cannot be recovered if lost."
+
+                }
 
             });
 
@@ -954,9 +1306,12 @@ app.post(
                 "LIMIT_FILE_SIZE"
             ) {
 
-                return res.status(413).json({
+                return res.status(
+                    413
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "File is too large. Maximum allowed size is 50 MB."
@@ -964,9 +1319,12 @@ app.post(
                 });
             }
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Upload failed."
@@ -992,6 +1350,7 @@ app.get(
                 await pool.query(
                     `
                     SELECT
+
                         id,
                         name,
                         display_name,
@@ -1002,7 +1361,9 @@ app.get(
                         uploaded_at,
                         downloads,
                         is_script
+
                     FROM files
+
                     WHERE id = $1
                     `,
                     [
@@ -1014,9 +1375,12 @@ app.get(
                 !result.rows.length
             ) {
 
-                return res.status(404).json({
+                return res.status(
+                    404
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "File not found."
@@ -1026,7 +1390,8 @@ app.get(
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 file:
                     safePublicFile(
@@ -1044,9 +1409,12 @@ app.get(
                 error
             );
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Unable to load file."
@@ -1058,7 +1426,7 @@ app.get(
 
 /*
 ========================================================
-DOWNLOAD
+DOWNLOAD FILE
 ========================================================
 */
 
@@ -1072,10 +1440,13 @@ app.get(
                 await pool.query(
                     `
                     SELECT
+
                         name,
                         mime_type,
                         data
+
                     FROM files
+
                     WHERE id = $1
                     `,
                     [
@@ -1087,7 +1458,9 @@ app.get(
                 !result.rows.length
             ) {
 
-                return res.status(404).send(
+                return res.status(
+                    404
+                ).send(
                     "File not found."
                 );
             }
@@ -1096,25 +1469,22 @@ app.get(
                 result.rows[0];
 
             /*
-            Increment download count.
+            Increment download counter.
             */
 
             await pool.query(
                 `
                 UPDATE files
+
                 SET downloads =
                     downloads + 1
+
                 WHERE id = $1
                 `,
                 [
                     req.params.id
                 ]
             );
-
-            /*
-            Tell clients the statistics
-            have changed.
-            */
 
             broadcastLibraryUpdate();
 
@@ -1149,7 +1519,9 @@ app.get(
                 error
             );
 
-            res.status(500).send(
+            res.status(
+                500
+            ).send(
                 "Download failed."
             );
         }
@@ -1159,13 +1531,6 @@ app.get(
 /*
 ========================================================
 SCRIPT PREVIEW
-========================================================
-
-Only TXT files marked as scripts can be previewed.
-
-The content is returned as JSON.
-
-The frontend MUST display it using textContent.
 ========================================================
 */
 
@@ -1205,9 +1570,12 @@ app.get(
                 !result.rows.length
             ) {
 
-                return res.status(404).json({
+                return res.status(
+                    404
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "File not found."
@@ -1222,23 +1590,18 @@ app.get(
                 !file.is_script
             ) {
 
-                return res.status(400).json({
+                return res.status(
+                    400
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "This file is not a script."
 
                 });
             }
-
-            /*
-            Convert TXT bytes to UTF-8.
-
-            IMPORTANT:
-            This content is DATA.
-            It is never executed.
-            */
 
             const content =
                 file.data.toString(
@@ -1247,7 +1610,8 @@ app.get(
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 file: {
 
@@ -1270,7 +1634,9 @@ app.get(
                         file.mime_type,
 
                     size:
-                        Number(file.size),
+                        Number(
+                            file.size
+                        ),
 
                     date:
                         new Date(
@@ -1300,9 +1666,12 @@ app.get(
                 error
             );
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Unable to preview script."
@@ -1317,13 +1686,18 @@ app.get(
 DELETE FILE
 ========================================================
 
-The uploader receives a private delete token when
-the file is uploaded.
+Required key:
 
-Only the SHA-256 hash is stored in PostgreSQL.
+    username-mil-RANDOMCODE
 
-Production systems should use authenticated users
-and server-side authorization.
+Example:
+
+    Sunnel-mil-X7K2P9Q4
+
+The server hashes the supplied key and compares
+it with the stored hash.
+
+The actual delete key is never stored.
 ========================================================
 */
 
@@ -1339,11 +1713,18 @@ app.delete(
                     ? req.body.deleteToken.trim()
                     : "";
 
+            /*
+            Delete key required.
+            */
+
             if (!token) {
 
-                return res.status(401).json({
+                return res.status(
+                    401
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "Delete key required."
@@ -1351,8 +1732,19 @@ app.delete(
                 });
             }
 
+            /*
+            Hash supplied delete key.
+            */
+
             const tokenHash =
-                hashToken(token);
+                hashToken(
+                    token
+                );
+
+            /*
+            Delete only if both ID and
+            delete-key hash match.
+            */
 
             const result =
                 await pool.query(
@@ -1366,30 +1758,48 @@ app.delete(
                     RETURNING id
                     `,
                     [
+
                         req.params.id,
+
                         tokenHash
+
                     ]
                 );
+
+            /*
+            Invalid key.
+            */
 
             if (
                 !result.rows.length
             ) {
 
-                return res.status(403).json({
+                return res.status(
+                    403
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
-                        "Invalid delete key."
+                        "Invalid delete key. The file was not deleted."
 
                 });
             }
+
+            /*
+            Successful deletion.
+            */
 
             broadcastLibraryUpdate();
 
             res.json({
 
-                success: true
+                success:
+                    true,
+
+                message:
+                    "File deleted successfully."
 
             });
 
@@ -1402,9 +1812,12 @@ app.delete(
                 error
             );
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Delete failed."
@@ -1432,9 +1845,11 @@ app.get(
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
-                status: "online",
+                status:
+                    "online",
 
                 database:
                     "connected"
@@ -1450,11 +1865,15 @@ app.get(
                 error
             );
 
-            res.status(503).json({
+            res.status(
+                503
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
-                status: "offline",
+                status:
+                    "offline",
 
                 database:
                     "disconnected"
@@ -1486,28 +1905,6 @@ app.use(
 ========================================================
 EXPRESS 5 SPA FALLBACK
 ========================================================
-
-IMPORTANT:
-
-DO NOT use:
-
-    app.get("*", ...)
-
-with Express 5.
-
-DO NOT use:
-
-    app.get("/*", ...)
-
-with Express 5.
-
-The correct Express 5 wildcard syntax is:
-
-    /{*splat}
-
-This route MUST be after the API routes and
-after express.static().
-========================================================
 */
 
 app.get(
@@ -1532,7 +1929,9 @@ app.get(
                         !res.headersSent
                     ) {
 
-                        res.status(404).send(
+                        res.status(
+                            404
+                        ).send(
                             "PROJECT FILE HUB frontend not found. Make sure public/index.html exists."
                         );
                     }
@@ -1556,6 +1955,10 @@ app.use(
             error
         );
 
+        /*
+        Multer errors.
+        */
+
         if (
             error instanceof
             multer.MulterError
@@ -1566,9 +1969,12 @@ app.use(
                 "LIMIT_FILE_SIZE"
             ) {
 
-                return res.status(413).json({
+                return res.status(
+                    413
+                ).json({
 
-                    success: false,
+                    success:
+                        false,
 
                     error:
                         "File is too large. Maximum allowed size is 50 MB."
@@ -1576,9 +1982,12 @@ app.use(
                 });
             }
 
-            return res.status(400).json({
+            return res.status(
+                400
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     error.message ||
@@ -1588,7 +1997,7 @@ app.use(
         }
 
         /*
-        File filter errors.
+        Unsupported file extension.
         */
 
         if (
@@ -1597,9 +2006,12 @@ app.use(
                 "This file type is not supported."
         ) {
 
-            return res.status(400).json({
+            return res.status(
+                400
+            ).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "This file type is not supported."
@@ -1608,22 +2020,24 @@ app.use(
         }
 
         /*
-        Do not expose internal stack traces
-        to public users.
+        If headers were already sent.
         */
 
         if (
             res.headersSent
         ) {
 
-            return next(error);
+            return next(
+                error
+            );
         }
 
         res.status(
             error.statusCode || 500
         ).json({
 
-            success: false,
+            success:
+                false,
 
             error:
                 error.statusCode
@@ -1680,6 +2094,14 @@ async function startServer() {
                 );
 
                 console.log(
+                    "Delete key format:"
+                );
+
+                console.log(
+                    "username-mil-RANDOMCODE"
+                );
+
+                console.log(
                     "Express 5 wildcard routing: enabled"
                 );
 
@@ -1710,24 +2132,38 @@ GRACEFUL SHUTDOWN
 ========================================================
 */
 
-async function shutdown(signal) {
+async function shutdown(
+    signal
+) {
 
     console.log(
         `${signal} received. Shutting down...`
     );
 
-    for (const client of clients) {
+    /*
+    Close SSE clients.
+    */
+
+    for (
+        const client of clients
+    ) {
 
         try {
 
             client.end();
 
-        } catch {
+        }
 
-            // Ignore closed clients.
+        catch {
+
+            // Ignore already closed clients.
 
         }
     }
+
+    /*
+    Close PostgreSQL.
+    */
 
     try {
 
@@ -1752,78 +2188,18 @@ async function shutdown(signal) {
 
 process.on(
     "SIGTERM",
-    () => shutdown("SIGTERM")
+    () =>
+        shutdown("SIGTERM")
 );
 
 process.on(
     "SIGINT",
-    () => shutdown("SIGINT")
+    () =>
+        shutdown("SIGINT")
 );
 
 /*
 ========================================================
-FUTURE PRODUCTION ARCHITECTURE
-========================================================
-
-Current:
-
-Frontend
-   ↓
-Express API
-   ↓
-PostgreSQL
-   ├── metadata
-   └── BYTEA file data
-
-Larger production version:
-
-Frontend
-   ↓
-Express API
-   ↓
-PostgreSQL
-   └── metadata
-        ↓
-Object Storage
-   └── actual files
-
-Recommended API:
-
-POST   /api/files
-GET    /api/files
-GET    /api/files/:id
-GET    /api/files/:id/download
-GET    /api/files/:id/preview
-DELETE /api/files/:id
-GET    /api/stats
-GET    /api/uploaders
-GET    /api/events
-GET    /api/health
-
-========================================================
-SECURITY NOTES
-========================================================
-
-1. Uploaded JavaScript is never executed.
-
-2. Uploaded HTML is never rendered as a webpage.
-
-3. Uploaded CSS is never injected into the application.
-
-4. Uploaded Godot scripts are stored as data.
-
-5. Script preview is returned as JSON.
-
-6. The frontend must use textContent when displaying
-   uploaded script contents.
-
-7. Delete tokens are hashed before database storage.
-
-8. Production should eventually use authenticated
-   accounts for upload/delete authorization.
-
-9. PostgreSQL stores file bytes in this version.
-
-10. For large-scale deployment, use object storage.
+END
 ========================================================
 */
