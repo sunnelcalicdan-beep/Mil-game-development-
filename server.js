@@ -2,133 +2,125 @@
 
 const express = require("express");
 const multer = require("multer");
-const crypto = require("crypto");
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-
-const MAX_FILE_SIZE =
-    50 * 1024 * 1024;
-
-const DATA_DIR =
-    path.join(__dirname, "data");
-
-const UPLOAD_DIR =
-    path.join(DATA_DIR, "uploads");
-
-const DATABASE_FILE =
-    path.join(DATA_DIR, "files.json");
+const PORT =
+    process.env.PORT || 10000;
 
 
-/*
-========================================================
-CREATE DIRECTORIES
-========================================================
-*/
+const DATA =
+    path.join(
+        __dirname,
+        "data"
+    );
+
+
+const UPLOADS =
+    path.join(
+        DATA,
+        "uploads"
+    );
+
+
+const DATABASE =
+    path.join(
+        DATA,
+        "files.json"
+    );
+
+
+/* =========================================
+   DIRECTORIES
+========================================= */
 
 fs.mkdirSync(
-    UPLOAD_DIR,
+    UPLOADS,
     {
         recursive: true
     }
 );
 
-if (!fs.existsSync(DATABASE_FILE)) {
+
+if (
+    !fs.existsSync(DATABASE)
+) {
 
     fs.writeFileSync(
-        DATABASE_FILE,
-        JSON.stringify(
-            [],
-            null,
-            2
-        )
+        DATABASE,
+        "[]"
     );
 
 }
 
 
-/*
-========================================================
-DATABASE
-========================================================
-*/
+/* =========================================
+   MIDDLEWARE
+========================================= */
 
-function readFiles() {
-
-    try {
-
-        return JSON.parse(
-            fs.readFileSync(
-                DATABASE_FILE,
-                "utf8"
-            )
-        );
-
-    }
-    catch {
-
-        return [];
-
-    }
-
-}
+app.use(
+    express.json({
+        limit: "1mb"
+    })
+);
 
 
-function writeFiles(files) {
-
-    fs.writeFileSync(
-        DATABASE_FILE,
-        JSON.stringify(
-            files,
-            null,
-            2
+app.use(
+    express.static(
+        path.join(
+            __dirname,
+            "public"
         )
-    );
+    )
+);
 
-}
 
-
-/*
-========================================================
-MULTER
-========================================================
-*/
+/* =========================================
+   UPLOAD STORAGE
+========================================= */
 
 const storage =
     multer.diskStorage({
 
         destination:
-            function (
+            (
                 request,
                 file,
                 callback
-            ) {
+            ) => {
 
                 callback(
                     null,
-                    UPLOAD_DIR
+                    UPLOADS
                 );
 
             },
 
+
         filename:
-            function (
+            (
                 request,
                 file,
                 callback
-            ) {
+            ) => {
 
-                const random =
-                    crypto
-                        .randomBytes(16)
-                        .toString("hex");
+                const extension =
+                    path.extname(
+                        file.originalname
+                    ).slice(
+                        0,
+                        20
+                    );
+
 
                 callback(
                     null,
-                    random
+
+                    crypto.randomUUID() +
+                    extension
                 );
 
             }
@@ -144,306 +136,100 @@ const upload =
         limits: {
 
             fileSize:
-                MAX_FILE_SIZE
+                100 *
+                1024 *
+                1024
 
         }
 
     });
 
 
-/*
-========================================================
-MIDDLEWARE
-========================================================
-*/
+/* =========================================
+   DATABASE HELPERS
+========================================= */
 
-app.use(
-    express.json(
-        {
-            limit: "1mb"
-        }
-    )
-);
+function readDatabase() {
 
-app.use(
-    express.urlencoded(
-        {
-            extended: true
-        }
-    )
-);
+    try {
 
-app.use(
-    express.static(
-        path.join(
-            __dirname,
-            "public"
-        )
-    )
-);
-
-
-/*
-========================================================
-REALTIME CLIENTS
-========================================================
-*/
-
-const eventClients =
-    new Set();
-
-
-function broadcastUpdate() {
-
-    for (
-        const response
-        of eventClients
-    ) {
-
-        response.write(
-            "event: library-update\n" +
-            "data: {}\n\n"
+        return JSON.parse(
+            fs.readFileSync(
+                DATABASE,
+                "utf8"
+            )
         );
+
+    }
+
+    catch {
+
+        return [];
 
     }
 
 }
 
 
-/*
-========================================================
-NORMALIZE USERNAME
-========================================================
-*/
+function writeDatabase(
+    data
+) {
 
-function normalizeUsername(
-    username
+    fs.writeFileSync(
+        DATABASE,
+        JSON.stringify(
+            data,
+            null,
+            2
+        )
+    );
+
+}
+
+
+function clean(
+    value,
+    maxLength
 ) {
 
     return String(
-        username || ""
+        value || ""
     )
         .trim()
-        .replace(
-            /\s+/g,
-            " "
-        )
         .slice(
             0,
-            80
+            maxLength
         );
 
 }
 
 
-/*
-========================================================
-DELETE KEY
-========================================================
+/* =========================================
+   HOME
+========================================= */
 
-The actual key is generated ONLY on the server.
+app.get(
+    "/",
+    (
+        request,
+        response
+    ) => {
 
-The database stores a SHA-256 hash instead
-of storing the delete key itself.
-========================================================
-*/
-
-function generateDeleteKey(
-    username
-) {
-
-    const safeUsername =
-        username
-            .toLowerCase()
-            .replace(
-                /[^a-z0-9]+/g,
-                "-"
+        response.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "index.html"
             )
-            .replace(
-                /^-+|-+$/g,
-                ""
-            )
-            .slice(
-                0,
-                30
-            );
-
-    const randomCode =
-        crypto
-            .randomBytes(18)
-            .toString("base64url");
-
-    return `PFH-${safeUsername}-${randomCode}`;
-
-}
-
-
-function hashDeleteKey(
-    key
-) {
-
-    return crypto
-        .createHash("sha256")
-        .update(
-            String(key)
-        )
-        .digest("hex");
-
-}
-
-
-/*
-========================================================
-HEALTH
-========================================================
-*/
-
-app.get(
-    "/api/health",
-    (
-        request,
-        response
-    ) => {
-
-        response.json({
-
-            success:
-                true,
-
-            status:
-                "online",
-
-            time:
-                Date.now()
-
-        });
+        );
 
     }
 );
 
 
-/*
-========================================================
-UPLOADERS
-========================================================
-*/
-
-app.get(
-    "/api/uploaders",
-    (
-        request,
-        response
-    ) => {
-
-        const files =
-            readFiles();
-
-        const uploaders =
-            [
-                ...new Set(
-                    files.map(
-                        file =>
-                            file.uploader
-                    )
-                )
-            ]
-            .sort(
-                (a, b) =>
-                    a.localeCompare(b)
-            );
-
-        response.json({
-
-            success:
-                true,
-
-            uploaders
-
-        });
-
-    }
-);
-
-
-/*
-========================================================
-STATS
-========================================================
-*/
-
-app.get(
-    "/api/stats",
-    (
-        request,
-        response
-    ) => {
-
-        const files =
-            readFiles();
-
-        let downloads =
-            0;
-
-        let totalSize =
-            0;
-
-        let scripts =
-            0;
-
-        for (
-            const file
-            of files
-        ) {
-
-            downloads +=
-                Number(
-                    file.downloads || 0
-                );
-
-            totalSize +=
-                Number(
-                    file.size || 0
-                );
-
-            if (
-                file.script
-            ) {
-
-                scripts++;
-
-            }
-
-        }
-
-        response.json({
-
-            success:
-                true,
-
-            stats: {
-
-                files:
-                    files.length,
-
-                scripts,
-
-                downloads,
-
-                totalSize
-
-            }
-
-        });
-
-    }
-);
-
-
-/*
-========================================================
-LIST FILES
-========================================================
-*/
+/* =========================================
+   GET PROJECTS
+========================================= */
 
 app.get(
     "/api/files",
@@ -452,486 +238,159 @@ app.get(
         response
     ) => {
 
-        let files =
-            readFiles();
-
-        const search =
-            String(
-                request.query.search || ""
-            )
-                .trim()
-                .toLowerCase();
-
-        const uploader =
-            String(
-                request.query.uploader || ""
-            )
-                .trim();
-
-        const sort =
-            request.query.sort ||
-            "newest";
-
-
-        if (search) {
-
-            files =
-                files.filter(
-                    file => {
-
-                        return (
-                            String(
-                                file.name
-                            )
-                                .toLowerCase()
-                                .includes(search)
-                            ||
-
-                            String(
-                                file.displayName
-                            )
-                                .toLowerCase()
-                                .includes(search)
-                            ||
-
-                            String(
-                                file.uploader
-                            )
-                                .toLowerCase()
-                                .includes(search)
-                        );
-
-                    }
-                );
-
-        }
-
-
-        if (uploader) {
-
-            files =
-                files.filter(
-                    file =>
-                        file.uploader ===
-                        uploader
-                );
-
-        }
-
-
-        if (
-            sort ===
-            "oldest"
-        ) {
-
-            files.sort(
-                (a, b) =>
-                    a.date -
-                    b.date
-            );
-
-        }
-        else if (
-            sort ===
-            "name"
-        ) {
-
-            files.sort(
-                (a, b) =>
-                    a.displayName
-                        .localeCompare(
-                            b.displayName
-                        )
-            );
-
-        }
-        else if (
-            sort ===
-            "largest"
-        ) {
-
-            files.sort(
-                (a, b) =>
-                    b.size -
-                    a.size
-            );
-
-        }
-        else if (
-            sort ===
-            "downloads"
-        ) {
-
-            files.sort(
-                (a, b) =>
-                    b.downloads -
-                    a.downloads
-            );
-
-        }
-        else {
-
-            files.sort(
-                (a, b) =>
-                    b.date -
-                    a.date
-            );
-
-        }
+        const projects =
+            readDatabase();
 
 
         /*
-        Never expose the delete-key hash.
-        */
+         * Delete credentials are never
+         * exposed to the browser.
+         */
 
-        const publicFiles =
-            files.map(
-                file => ({
-
-                    id:
-                        file.id,
-
-                    name:
-                        file.name,
-
-                    displayName:
-                        file.displayName,
-
-                    uploader:
-                        file.uploader,
-
-                    extension:
-                        file.extension,
-
-                    size:
-                        file.size,
-
-                    date:
-                        file.date,
-
-                    downloads:
-                        file.downloads,
-
-                    script:
-                        file.script
-
-                })
+        const safeProjects =
+            projects.map(
+                ({
+                    deleteKey,
+                    ...project
+                }) =>
+                    project
             );
 
 
         response.json({
-
-            success:
-                true,
-
             files:
-                publicFiles
-
+                safeProjects
         });
 
     }
 );
 
 
-/*
-========================================================
-PUBLISH FILE
-========================================================
-*/
+/* =========================================
+   UPLOAD PROJECT
+========================================= */
 
 app.post(
     "/api/files",
+
     upload.single("file"),
+
     (
         request,
         response
     ) => {
 
-        try {
-
-            const username =
-                normalizeUsername(
-                    request.body.uploader
-                );
-
-            const displayName =
-                String(
-                    request.body.displayName ||
-                    ""
-                )
-                    .trim()
-                    .slice(
-                        0,
-                        100
-                    );
-
-
-            /*
-            USERNAME REQUIRED
-            */
-
-            if (!username) {
-
-                if (
-                    request.file
-                ) {
-
-                    fs.unlinkSync(
-                        request.file.path
-                    );
-
-                }
-
-                return response
-                    .status(400)
-                    .json({
-
-                        success:
-                            false,
-
-                        error:
-                            "Username is required."
-
-                    });
-
-            }
-
-
-            /*
-            FILE REQUIRED
-            */
-
-            if (
-                !request.file
-            ) {
-
-                return response
-                    .status(400)
-                    .json({
-
-                        success:
-                            false,
-
-                        error:
-                            "A file is required."
-
-                    });
-
-            }
-
-
-            const originalName =
-                request.file.originalname;
-
-            const extension =
-                path.extname(
-                    originalName
-                )
-                    .replace(
-                        ".",
-                        ""
-                    )
-                    .toLowerCase();
-
-
-            const scriptExtensions =
-                new Set([
-
-                    "js",
-                    "ts",
-                    "jsx",
-                    "tsx",
-                    "lua",
-                    "py",
-                    "json",
-                    "css",
-                    "html",
-                    "htm",
-                    "cs",
-                    "cpp",
-                    "c",
-                    "java",
-                    "gd",
-                    "shader",
-                    "txt"
-
-                ]);
-
-
-            const isScript =
-                scriptExtensions.has(
-                    extension
-                );
-
-
-            /*
-            SERVER-GENERATED DELETE KEY
-            */
-
-            const deleteKey =
-                generateDeleteKey(
-                    username
-                );
-
-            const deleteKeyHash =
-                hashDeleteKey(
-                    deleteKey
-                );
-
-
-            const id =
-                crypto
-                    .randomBytes(12)
-                    .toString("hex");
-
-
-            const fileRecord = {
-
-                id,
-
-                name:
-                    originalName,
-
-                displayName:
-                    displayName ||
-                    originalName,
-
-                uploader:
-                    username,
-
-                extension,
-
-                size:
-                    request.file.size,
-
-                date:
-                    Date.now(),
-
-                downloads:
-                    0,
-
-                script:
-                    isScript,
-
-                storedName:
-                    path.basename(
-                        request.file.path
-                    ),
-
-                deleteKeyHash
-
-            };
-
-
-            const files =
-                readFiles();
-
-            files.push(
-                fileRecord
-            );
-
-            writeFiles(
-                files
-            );
-
-
-            broadcastUpdate();
-
-
-            /*
-            IMPORTANT:
-            The delete key is returned exactly once
-            to the publisher.
-            */
-
-            return response.json({
-
-                success:
-                    true,
-
-                file: {
-
-                    id,
-
-                    name:
-                        fileRecord.name,
-
-                    displayName:
-                        fileRecord.displayName,
-
-                    uploader:
-                        fileRecord.uploader
-
-                },
-
-                deleteToken:
-                    deleteKey
-
-            });
-
-        }
-        catch (error) {
-
-            console.error(
-                error
-            );
-
-            if (
-                request.file &&
-                fs.existsSync(
-                    request.file.path
-                )
-            ) {
-
-                fs.unlinkSync(
-                    request.file.path
-                );
-
-            }
-
-            response
-                .status(500)
+        if (
+            !request.file
+        ) {
+
+            return response
+                .status(400)
                 .json({
-
-                    success:
-                        false,
-
                     error:
-                        "Unable to publish file."
-
+                        "A file is required."
                 });
 
         }
 
+
+        const project = {
+
+            id:
+                crypto.randomUUID(),
+
+            title:
+                clean(
+                    request.body.title,
+                    120
+                ) ||
+                request.file.originalname,
+
+            description:
+                clean(
+                    request.body.description,
+                    500
+                ),
+
+            uploader:
+                clean(
+                    request.body.uploader,
+                    80
+                ) ||
+                "Anonymous",
+
+            originalName:
+                clean(
+                    request.file.originalname,
+                    180
+                ),
+
+            storedName:
+                request.file.filename,
+
+            size:
+                request.file.size,
+
+            mime:
+                request.file.mimetype ||
+                "application/octet-stream",
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        const database =
+            readDatabase();
+
+
+        database.push(
+            project
+        );
+
+
+        writeDatabase(
+            database
+        );
+
+
+        response
+            .status(201)
+            .json({
+                file:
+                    project
+            });
+
     }
 );
 
 
-/*
-========================================================
-DOWNLOAD
-========================================================
-*/
+/* =========================================
+   DOWNLOAD
+========================================= */
 
 app.get(
     "/api/files/:id/download",
+
     (
         request,
         response
     ) => {
 
-        const files =
-            readFiles();
+        const database =
+            readDatabase();
 
-        const file =
-            files.find(
+
+        const project =
+            database.find(
                 item =>
                     item.id ===
                     request.params.id
             );
 
 
-        if (!file) {
+        if (!project) {
 
             return response
                 .status(404)
@@ -942,16 +401,16 @@ app.get(
         }
 
 
-        const storedPath =
+        const filePath =
             path.join(
-                UPLOAD_DIR,
-                file.storedName
+                UPLOADS,
+                project.storedName
             );
 
 
         if (
             !fs.existsSync(
-                storedPath
+                filePath
             )
         ) {
 
@@ -964,414 +423,106 @@ app.get(
         }
 
 
-        file.downloads =
-            Number(
-                file.downloads || 0
-            ) + 1;
-
-        writeFiles(
-            files
-        );
-
-
         response.download(
-            storedPath,
-            file.name
+            filePath,
+            project.originalName
         );
 
     }
 );
 
 
-/*
-========================================================
-SCRIPT PREVIEW
-========================================================
-*/
+/* =========================================
+   DELETE
+========================================= */
 
-app.get(
-    "/api/files/:id/preview",
+app.delete(
+    "/api/files/:id",
+
     (
         request,
         response
     ) => {
 
-        const files =
-            readFiles();
+        /*
+         * The old delete-key system is
+         * intentionally removed.
+         *
+         * Deletion is now handled directly
+         * from the project library.
+         */
 
-        const file =
-            files.find(
+        const database =
+            readDatabase();
+
+
+        const index =
+            database.findIndex(
                 item =>
                     item.id ===
                     request.params.id
             );
 
 
-        if (!file) {
-
-            return response
-                .status(404)
-                .json({
-
-                    success:
-                        false,
-
-                    error:
-                        "File not found."
-
-                });
-
-        }
-
-
-        if (!file.script) {
-
-            return response
-                .status(400)
-                .json({
-
-                    success:
-                        false,
-
-                    error:
-                        "This file cannot be previewed."
-
-                });
-
-        }
-
-
-        const storedPath =
-            path.join(
-                UPLOAD_DIR,
-                file.storedName
-            );
-
-
         if (
-            !fs.existsSync(
-                storedPath
-            )
+            index < 0
         ) {
 
             return response
                 .status(404)
                 .json({
-
-                    success:
-                        false,
-
                     error:
-                        "Stored file not found."
-
+                        "Project not found."
                 });
 
         }
 
 
-        try {
-
-            const stats =
-                fs.statSync(
-                    storedPath
-                );
-
-
-            /*
-            Prevent enormous previews.
-            */
-
-            if (
-                stats.size >
-                2 * 1024 * 1024
-            ) {
-
-                return response
-                    .status(400)
-                    .json({
-
-                        success:
-                            false,
-
-                        error:
-                            "This script is too large to preview."
-
-                    });
-
-            }
-
-
-            const content =
-                fs.readFileSync(
-                    storedPath,
-                    "utf8"
-                );
-
-
-            response.json({
-
-                success:
-                    true,
-
-                file: {
-
-                    name:
-                        file.name,
-
-                    content
-
-                }
-
-            });
-
-        }
-        catch {
-
-            response
-                .status(500)
-                .json({
-
-                    success:
-                        false,
-
-                    error:
-                        "Unable to preview file."
-
-                });
-
-        }
-
-    }
-);
-
-
-/*
-========================================================
-DELETE FILE
-========================================================
-*/
-
-app.delete(
-    "/api/files/:id",
-    (
-        request,
-        response
-    ) => {
-
-        const deleteToken =
-            String(
-                request.body.deleteToken ||
-                ""
-            )
-                .trim();
-
-
-        if (!deleteToken) {
-
-            return response
-                .status(400)
-                .json({
-
-                    success:
-                        false,
-
-                    error:
-                        "Delete key is required."
-
-                });
-
-        }
-
-
-        const files =
-            readFiles();
-
-        const index =
-            files.findIndex(
-                file =>
-                    file.id ===
-                    request.params.id
+        const [
+            project
+        ] =
+            database.splice(
+                index,
+                1
             );
 
 
-        if (
-            index === -1
-        ) {
-
-            return response
-                .status(404)
-                .json({
-
-                    success:
-                        false,
-
-                    error:
-                        "File not found."
-
-                });
-
-        }
-
-
-        const file =
-            files[index];
-
-
-        const suppliedHash =
-            hashDeleteKey(
-                deleteToken
-            );
-
-
-        /*
-        Timing-safe comparison.
-        */
-
-        const expected =
-            Buffer.from(
-                file.deleteKeyHash,
-                "hex"
-            );
-
-        const supplied =
-            Buffer.from(
-                suppliedHash,
-                "hex"
-            );
-
-
-        const valid =
-            expected.length ===
-            supplied.length &&
-            crypto.timingSafeEqual(
-                expected,
-                supplied
-            );
-
-
-        if (!valid) {
-
-            return response
-                .status(403)
-                .json({
-
-                    success:
-                        false,
-
-                    error:
-                        "Invalid delete key."
-
-                });
-
-        }
-
-
-        const storedPath =
+        const filePath =
             path.join(
-                UPLOAD_DIR,
-                file.storedName
+                UPLOADS,
+                project.storedName
             );
 
 
         if (
             fs.existsSync(
-                storedPath
+                filePath
             )
         ) {
 
             fs.unlinkSync(
-                storedPath
+                filePath
             );
 
         }
 
 
-        files.splice(
-            index,
-            1
+        writeDatabase(
+            database
         );
-
-        writeFiles(
-            files
-        );
-
-
-        broadcastUpdate();
 
 
         response.json({
-
-            success:
-                true,
-
-            message:
-                "File deleted successfully."
-
+            ok: true
         });
 
     }
 );
 
 
-/*
-========================================================
-SERVER EVENTS
-========================================================
-*/
-
-app.get(
-    "/api/events",
-    (
-        request,
-        response
-    ) => {
-
-        response.setHeader(
-            "Content-Type",
-            "text/event-stream"
-        );
-
-        response.setHeader(
-            "Cache-Control",
-            "no-cache"
-        );
-
-        response.setHeader(
-            "Connection",
-            "keep-alive"
-        );
-
-
-        response.write(
-            "retry: 5000\n\n"
-        );
-
-
-        eventClients.add(
-            response
-        );
-
-
-        request.on(
-            "close",
-            () => {
-
-                eventClients.delete(
-                    response
-                );
-
-            }
-        );
-
-    }
-);
-
-
-/*
-========================================================
-MULTER ERRORS
-========================================================
-*/
+/* =========================================
+   ERROR HANDLER
+========================================= */
 
 app.use(
     (
@@ -1392,15 +543,10 @@ app.use(
             ) {
 
                 return response
-                    .status(400)
+                    .status(413)
                     .json({
-
-                        success:
-                            false,
-
                         error:
-                            "Maximum file size is 50 MB."
-
+                            "File exceeds 100 MB."
                     });
 
             }
@@ -1416,31 +562,25 @@ app.use(
         response
             .status(500)
             .json({
-
-                success:
-                    false,
-
                 error:
                     "Server error."
-
             });
 
     }
 );
 
 
-/*
-========================================================
-START
-========================================================
-*/
+/* =========================================
+   START
+========================================= */
 
 app.listen(
     PORT,
     () => {
 
         console.log(
-            `Project File Hub running on port ${PORT}`
+            "MIL Project File Hub running on port " +
+            PORT
         );
 
     }
