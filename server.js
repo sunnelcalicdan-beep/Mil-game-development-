@@ -6,13 +6,16 @@ PROJECT FILE HUB
 MIL PROJECT • GAME DEVELOPMENT
 ========================================================
 
-Backend:
-    Node.js
-    Express 5
-    PostgreSQL
-    Multer
+BACKEND
+- Node.js
+- Express 5
+- PostgreSQL
+- Multer
 
-DELETE KEY FORMAT:
+KEY SYSTEM
+========================================================
+
+Delete key format:
 
     username-mil-RANDOMCODE
 
@@ -21,11 +24,11 @@ Example:
     Sunnel-mil-X7K2P9Q4
 
 IMPORTANT:
-- No parentheses.
 - Delete keys are generated server-side.
-- Only the SHA-256 hash is stored in PostgreSQL.
+- Only a SHA-256 hash is stored in PostgreSQL.
 - The original delete key is returned only after upload.
-- Uploaded files are NEVER executed by this server.
+- Uploaded files are never executed.
+- Only TXT files may be treated as custom scripts.
 ========================================================
 */
 
@@ -49,9 +52,15 @@ const PORT =
 const MAX_FILE_SIZE =
     50 * 1024 * 1024;
 
+const MAX_SEARCH_LENGTH = 100;
+
+const MAX_NAME_LENGTH = 100;
+
+const MAX_UPLOADER_LENGTH = 80;
+
 /*
 ========================================================
-ALLOWED FILE EXTENSIONS
+ALLOWED EXTENSIONS
 ========================================================
 */
 
@@ -74,7 +83,7 @@ const ALLOWED_EXTENSIONS = new Set([
 ]);
 
 /*
-Only TXT files can be published as custom scripts.
+Only TXT files can become custom scripts.
 */
 
 const SCRIPT_EXTENSIONS = new Set([
@@ -116,7 +125,7 @@ const pool = new Pool({
 
 /*
 ========================================================
-EXPRESS CONFIGURATION
+EXPRESS
 ========================================================
 */
 
@@ -133,6 +142,163 @@ app.use(
         extended: true,
         limit: "2mb"
     })
+);
+
+/*
+========================================================
+SECURITY HEADERS
+========================================================
+*/
+
+app.use(
+    (req, res, next) => {
+
+        res.setHeader(
+            "X-Content-Type-Options",
+            "nosniff"
+        );
+
+        res.setHeader(
+            "X-Frame-Options",
+            "SAMEORIGIN"
+        );
+
+        res.setHeader(
+            "Referrer-Policy",
+            "strict-origin-when-cross-origin"
+        );
+
+        res.setHeader(
+            "Permissions-Policy",
+            "camera=(), microphone=(), geolocation=()"
+        );
+
+        next();
+    }
+);
+
+/*
+========================================================
+BASIC RATE LIMITING
+========================================================
+*/
+
+const requestTracker = new Map();
+
+const RATE_WINDOW = 60 * 1000;
+
+const GENERAL_LIMIT = 240;
+
+const UPLOAD_LIMIT = 20;
+
+const DELETE_LIMIT = 30;
+
+function getClientIp(req) {
+
+    const forwarded =
+        req.headers["x-forwarded-for"];
+
+    if (typeof forwarded === "string") {
+
+        return forwarded
+            .split(",")[0]
+            .trim();
+    }
+
+    return (
+        req.socket?.remoteAddress ||
+        "unknown"
+    );
+}
+
+function rateLimit(
+    limit,
+    windowMs
+) {
+
+    return (req, res, next) => {
+
+        const key =
+            `${getClientIp(req)}:${req.path}`;
+
+        const now =
+            Date.now();
+
+        let record =
+            requestTracker.get(key);
+
+        if (
+            !record ||
+            now - record.startedAt >= windowMs
+        ) {
+
+            record = {
+
+                startedAt: now,
+
+                count: 0
+
+            };
+        }
+
+        record.count += 1;
+
+        requestTracker.set(
+            key,
+            record
+        );
+
+        if (
+            record.count > limit
+        ) {
+
+            return res.status(
+                429
+            ).json({
+
+                success:
+                    false,
+
+                error:
+                    "Too many requests. Please try again later."
+
+            });
+        }
+
+        next();
+    };
+}
+
+/*
+Clean old rate-limit records.
+*/
+
+setInterval(
+    () => {
+
+        const now =
+            Date.now();
+
+        for (
+            const [
+                key,
+                record
+            ] of requestTracker
+        ) {
+
+            if (
+                now - record.startedAt >
+                RATE_WINDOW * 2
+            ) {
+
+                requestTracker.delete(
+                    key
+                );
+            }
+        }
+
+    },
+    RATE_WINDOW
 );
 
 /*
@@ -174,7 +340,10 @@ const upload = multer({
                 );
             }
 
-            callback(null, true);
+            callback(
+                null,
+                true
+            );
         }
 
 });
@@ -253,10 +422,6 @@ HELPERS
 ========================================================
 */
 
-/*
-Generate UUID.
-*/
-
 function generateId() {
 
     return crypto.randomUUID();
@@ -264,73 +429,51 @@ function generateId() {
 
 /*
 ========================================================
-DELETE KEY GENERATION
+RANDOM DELETE KEY CODE
 ========================================================
 
-Format:
+Ambiguous characters are excluded:
 
-    username-mil-RANDOMCODE
-
-Example:
-
-    Sunnel-mil-X7K2P9Q4
-
-The random portion uses cryptographically secure
-random bytes.
-
-We use uppercase letters and numbers while avoiding
-ambiguous characters such as:
-
-    0
-    O
-    I
-    1
+0
+1
+I
+O
 ========================================================
 */
 
-function generateRandomCode(length = 8) {
+function generateRandomCode(
+    length = 8
+) {
 
     const alphabet =
         "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-    let code = "";
+    const randomBytes =
+        crypto.randomBytes(
+            length
+        );
 
-    while (
-        code.length < length
+    let result = "";
+
+    for (
+        let i = 0;
+        i < length;
+        i++
     ) {
 
-        const randomByte =
-            crypto.randomBytes(1)[0];
-
-        const index =
-            randomByte %
-            alphabet.length;
-
-        code +=
-            alphabet[index];
+        result +=
+            alphabet[
+                randomBytes[i] %
+                alphabet.length
+            ];
     }
 
-    return code;
+    return result;
 }
 
 /*
 ========================================================
-USERNAME FOR DELETE KEY
-========================================================
-
-Only safe characters are allowed in the key.
-
-Spaces and symbols are converted into hyphens.
-
-Example:
-
-    "John Doe"
-        ↓
-    "John-Doe"
-
-    "john_123"
-        ↓
-    "john-123"
+CLEAN USERNAME FOR KEY
 ========================================================
 */
 
@@ -339,7 +482,9 @@ function cleanUsernameForKey(
 ) {
 
     let value =
-        String(username || "")
+        String(
+            username || ""
+        )
             .trim();
 
     value =
@@ -360,26 +505,21 @@ function cleanUsernameForKey(
             ""
         );
 
-    /*
-    Prevent an empty username from creating
-    a malformed delete key.
-    */
-
     if (!value) {
 
-        value = "User";
+        value =
+            "User";
     }
 
-    /*
-    Keep the generated key reasonably sized.
-    */
-
-    return value.slice(0, 40);
+    return value.slice(
+        0,
+        40
+    );
 }
 
 /*
 ========================================================
-CREATE DELETE KEY
+GENERATE DELETE KEY
 ========================================================
 */
 
@@ -393,9 +533,13 @@ function generateDeleteToken(
         );
 
     const randomCode =
-        generateRandomCode(8);
+        generateRandomCode(
+            8
+        );
 
-    return `${safeUsername}-mil-${randomCode}`;
+    return (
+        `${safeUsername}-mil-${randomCode}`
+    );
 }
 
 /*
@@ -404,17 +548,64 @@ HASH DELETE KEY
 ========================================================
 */
 
-function hashToken(token) {
+function hashToken(
+    token
+) {
 
     return crypto
         .createHash("sha256")
-        .update(token)
+        .update(
+            token,
+            "utf8"
+        )
         .digest("hex");
 }
 
 /*
 ========================================================
-CLEAN TEXT
+CONSTANT-TIME HASH COMPARISON
+========================================================
+*/
+
+function tokensMatch(
+    suppliedToken,
+    storedHash
+) {
+
+    const suppliedHash =
+        hashToken(
+            suppliedToken
+        );
+
+    const a =
+        Buffer.from(
+            suppliedHash,
+            "hex"
+        );
+
+    const b =
+        Buffer.from(
+            storedHash,
+            "hex"
+        );
+
+    if (
+        a.length !==
+        b.length
+    ) {
+
+        return false;
+    }
+
+    return crypto.timingSafeEqual(
+        a,
+        b
+    );
+}
+
+/*
+========================================================
+TEXT CLEANING
 ========================================================
 */
 
@@ -433,13 +624,19 @@ function cleanText(
 
     return value
         .trim()
-        .replace(/\s+/g, " ")
-        .slice(0, maxLength);
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .slice(
+            0,
+            maxLength
+        );
 }
 
 /*
 ========================================================
-GET FILE EXTENSION
+EXTENSION
 ========================================================
 */
 
@@ -448,9 +645,42 @@ function getExtension(
 ) {
 
     return path
-        .extname(filename || "")
+        .extname(
+            filename || ""
+        )
         .slice(1)
         .toLowerCase();
+}
+
+/*
+========================================================
+SAFE DISPLAY FILENAME
+========================================================
+*/
+
+function safeDisplayFilename(
+    filename
+) {
+
+    const original =
+        String(
+            filename || "file"
+        );
+
+    const basename =
+        path.basename(
+            original
+        );
+
+    return basename
+        .replace(
+            /[\r\n"]/g,
+            "_"
+        )
+        .slice(
+            0,
+            255
+        );
 }
 
 /*
@@ -459,7 +689,9 @@ PUBLIC FILE OBJECT
 ========================================================
 */
 
-function safePublicFile(row) {
+function safePublicFile(
+    row
+) {
 
     return {
 
@@ -482,7 +714,9 @@ function safePublicFile(row) {
             row.mime_type,
 
         size:
-            Number(row.size),
+            Number(
+                row.size
+            ),
 
         date:
             new Date(
@@ -490,10 +724,14 @@ function safePublicFile(row) {
             ).getTime(),
 
         downloads:
-            Number(row.downloads),
+            Number(
+                row.downloads
+            ),
 
         script:
-            row.is_script
+            Boolean(
+                row.is_script
+            )
 
     };
 }
@@ -545,12 +783,16 @@ function broadcastLibraryUpdate() {
 
 /*
 ========================================================
-REAL-TIME EVENTS
+SSE
 ========================================================
 */
 
 app.get(
     "/api/events",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     (req, res) => {
 
         res.setHeader(
@@ -582,7 +824,9 @@ app.get(
             })}\n\n`
         );
 
-        clients.add(res);
+        clients.add(
+            res
+        );
 
         const heartbeat =
             setInterval(
@@ -622,7 +866,6 @@ app.get(
                 clients.delete(
                     res
                 );
-
             }
         );
     }
@@ -630,12 +873,16 @@ app.get(
 
 /*
 ========================================================
-GET PUBLIC FILES
+GET FILES
 ========================================================
 */
 
 app.get(
     "/api/files",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -643,13 +890,13 @@ app.get(
             const search =
                 cleanText(
                     req.query.search || "",
-                    100
+                    MAX_SEARCH_LENGTH
                 );
 
             const uploader =
                 cleanText(
                     req.query.uploader || "",
-                    100
+                    MAX_UPLOADER_LENGTH
                 );
 
             const sort =
@@ -661,12 +908,6 @@ app.get(
             const values = [];
 
             const conditions = [];
-
-            /*
-            Search filename,
-            display name,
-            uploader and extension.
-            */
 
             if (search) {
 
@@ -687,10 +928,6 @@ app.get(
                 `);
             }
 
-            /*
-            Exact uploader filter.
-            */
-
             if (uploader) {
 
                 values.push(
@@ -705,28 +942,40 @@ app.get(
             let orderBy =
                 "uploaded_at DESC";
 
-            if (
-                sort === "oldest"
-            ) {
+            switch (sort) {
 
-                orderBy =
-                    "uploaded_at ASC";
-            }
+                case "oldest":
 
-            else if (
-                sort === "name"
-            ) {
+                    orderBy =
+                        "uploaded_at ASC";
 
-                orderBy =
-                    "LOWER(display_name) ASC";
-            }
+                    break;
 
-            else if (
-                sort === "largest"
-            ) {
+                case "name":
 
-                orderBy =
-                    "size DESC";
+                    orderBy =
+                        "LOWER(display_name) ASC";
+
+                    break;
+
+                case "largest":
+
+                    orderBy =
+                        "size DESC";
+
+                    break;
+
+                case "downloads":
+
+                    orderBy =
+                        "downloads DESC";
+
+                    break;
+
+                default:
+
+                    orderBy =
+                        "uploaded_at DESC";
             }
 
             const query = `
@@ -785,7 +1034,9 @@ app.get(
                 error
             );
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
                 success:
                     false,
@@ -800,12 +1051,16 @@ app.get(
 
 /*
 ========================================================
-GET UPLOADER LIST
+GET UPLOADERS
 ========================================================
 */
 
 app.get(
     "/api/uploaders",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -842,7 +1097,9 @@ app.get(
                 error
             );
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
                 success:
                     false,
@@ -863,6 +1120,10 @@ STATISTICS
 
 app.get(
     "/api/stats",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -939,7 +1200,9 @@ app.get(
                 error
             );
 
-            res.status(500).json({
+            res.status(
+                500
+            ).json({
 
                 success:
                     false,
@@ -954,20 +1217,20 @@ app.get(
 
 /*
 ========================================================
-UPLOAD FILE
+UPLOAD
 ========================================================
 */
 
 app.post(
     "/api/files",
+    rateLimit(
+        UPLOAD_LIMIT,
+        RATE_WINDOW
+    ),
     upload.single("file"),
     async (req, res) => {
 
         try {
-
-            /*
-            Make sure a file exists.
-            */
 
             if (!req.file) {
 
@@ -984,38 +1247,22 @@ app.post(
                 });
             }
 
-            /*
-            Get uploader name.
-            */
-
             const uploader =
                 cleanText(
                     req.body.uploader,
-                    80
+                    MAX_UPLOADER_LENGTH
                 );
-
-            /*
-            Get display name.
-            */
 
             const displayName =
                 cleanText(
                     req.body.displayName,
-                    100
+                    MAX_NAME_LENGTH
                 );
-
-            /*
-            Get extension.
-            */
 
             const extension =
                 getExtension(
                     req.file.originalname
                 );
-
-            /*
-            Uploader required.
-            */
 
             if (!uploader) {
 
@@ -1032,10 +1279,6 @@ app.post(
                 });
             }
 
-            /*
-            Display name required.
-            */
-
             if (!displayName) {
 
                 return res.status(
@@ -1050,10 +1293,6 @@ app.post(
 
                 });
             }
-
-            /*
-            File extension check.
-            */
 
             if (
                 !ALLOWED_EXTENSIONS.has(
@@ -1074,10 +1313,6 @@ app.post(
                 });
             }
 
-            /*
-            File size check.
-            */
-
             if (
                 req.file.size >
                 MAX_FILE_SIZE
@@ -1096,20 +1331,10 @@ app.post(
                 });
             }
 
-            /*
-            Determine whether this is
-            a custom script.
-            */
-
             const isScript =
                 SCRIPT_EXTENSIONS.has(
                     extension
                 );
-
-            /*
-            If frontend explicitly says
-            this is a script, it must be TXT.
-            */
 
             if (
                 req.body.isScript === "true" &&
@@ -1130,20 +1355,9 @@ app.post(
             }
 
             /*
-            Generate file UUID.
-            */
-
-            const id =
-                generateId();
-
-            /*
             ========================================================
-            GENERATE DELETE KEY
+            KEY SYSTEM
             ========================================================
-
-            Example:
-
-                Sunnel-mil-X7K2P9Q4
             */
 
             const deleteToken =
@@ -1151,18 +1365,18 @@ app.post(
                     uploader
                 );
 
-            /*
-            Hash the key before database storage.
-            */
-
             const deleteTokenHash =
                 hashToken(
                     deleteToken
                 );
 
-            /*
-            Insert file.
-            */
+            const id =
+                generateId();
+
+            const safeOriginalName =
+                safeDisplayFilename(
+                    req.file.originalname
+                );
 
             await pool.query(
                 `
@@ -1200,7 +1414,7 @@ app.post(
 
                     id,
 
-                    req.file.originalname,
+                    safeOriginalName,
 
                     displayName,
 
@@ -1222,24 +1436,12 @@ app.post(
                 ]
             );
 
-            /*
-            Notify connected clients.
-            */
-
             broadcastLibraryUpdate();
 
             /*
-            ========================================================
-            IMPORTANT
-            ========================================================
-
-            The deleteToken is intentionally returned
-            here.
-
-            It should be displayed by the frontend
-            in the "Keep this key safe" popup.
-
-            It is NOT stored in plain text in PostgreSQL.
+            IMPORTANT:
+            deleteToken is returned ONCE.
+            PostgreSQL only receives the hash.
             */
 
             res.status(
@@ -1254,7 +1456,7 @@ app.post(
                     id,
 
                     name:
-                        req.file.originalname,
+                        safeOriginalName,
 
                     displayName,
 
@@ -1276,17 +1478,13 @@ app.post(
 
                 deleteToken,
 
-                /*
-                Helpful frontend metadata.
-                */
-
                 deleteKey: {
 
                     format:
                         "username-mil-RANDOMCODE",
 
                     warning:
-                        "Keep this delete key safe. You need it to delete your uploaded file. It cannot be recovered if lost."
+                        "Keep this key safe. You need it to delete your uploaded file. It cannot be recovered if lost."
 
                 }
 
@@ -1342,6 +1540,10 @@ GET FILE DETAILS
 
 app.get(
     "/api/files/:id",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -1405,7 +1607,7 @@ app.get(
         catch (error) {
 
             console.error(
-                "GET /api/files/:id:",
+                "GET FILE:",
                 error
             );
 
@@ -1426,12 +1628,16 @@ app.get(
 
 /*
 ========================================================
-DOWNLOAD FILE
+DOWNLOAD
 ========================================================
 */
 
 app.get(
     "/api/files/:id/download",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -1467,10 +1673,6 @@ app.get(
 
             const file =
                 result.rows[0];
-
-            /*
-            Increment download counter.
-            */
 
             await pool.query(
                 `
@@ -1519,11 +1721,16 @@ app.get(
                 error
             );
 
-            res.status(
-                500
-            ).send(
-                "Download failed."
-            );
+            if (
+                !res.headersSent
+            ) {
+
+                res.status(
+                    500
+                ).send(
+                    "Download failed."
+                );
+            }
         }
     }
 );
@@ -1536,6 +1743,10 @@ SCRIPT PREVIEW
 
 app.get(
     "/api/files/:id/preview",
+    rateLimit(
+        GENERAL_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -1602,6 +1813,10 @@ app.get(
 
                 });
             }
+
+            /*
+            Only UTF-8 TXT content is returned.
+            */
 
             const content =
                 file.data.toString(
@@ -1686,23 +1901,33 @@ app.get(
 DELETE FILE
 ========================================================
 
-Required key:
+DELETE REQUEST:
 
-    username-mil-RANDOMCODE
+DELETE /api/files/:id
 
-Example:
+JSON BODY:
 
-    Sunnel-mil-X7K2P9Q4
+{
+    "deleteToken":
+        "Sunnel-mil-X7K2P9Q4"
+}
 
-The server hashes the supplied key and compares
-it with the stored hash.
+The key itself is never stored.
 
-The actual delete key is never stored.
+Only:
+
+SHA-256(deleteToken)
+
+is stored.
 ========================================================
 */
 
 app.delete(
     "/api/files/:id",
+    rateLimit(
+        DELETE_LIMIT,
+        RATE_WINDOW
+    ),
     async (req, res) => {
 
         try {
@@ -1712,10 +1937,6 @@ app.delete(
                 "string"
                     ? req.body.deleteToken.trim()
                     : "";
-
-            /*
-            Delete key required.
-            */
 
             if (!token) {
 
@@ -1733,45 +1954,54 @@ app.delete(
             }
 
             /*
-            Hash supplied delete key.
+            Get stored hash.
             */
 
-            const tokenHash =
-                hashToken(
-                    token
-                );
-
-            /*
-            Delete only if both ID and
-            delete-key hash match.
-            */
-
-            const result =
+            const lookup =
                 await pool.query(
                     `
-                    DELETE FROM files
+                    SELECT
+                        delete_token_hash
+
+                    FROM files
 
                     WHERE id = $1
-
-                    AND delete_token_hash = $2
-
-                    RETURNING id
                     `,
                     [
-
-                        req.params.id,
-
-                        tokenHash
-
+                        req.params.id
                     ]
                 );
 
+            if (
+                !lookup.rows.length
+            ) {
+
+                return res.status(
+                    404
+                ).json({
+
+                    success:
+                        false,
+
+                    error:
+                        "File not found."
+
+                });
+            }
+
+            const storedHash =
+                lookup.rows[0]
+                    .delete_token_hash;
+
             /*
-            Invalid key.
+            Constant-time comparison.
             */
 
             if (
-                !result.rows.length
+                !tokensMatch(
+                    token,
+                    storedHash
+                )
             ) {
 
                 return res.status(
@@ -1788,8 +2018,40 @@ app.delete(
             }
 
             /*
-            Successful deletion.
+            Correct key:
+            delete file.
             */
+
+            const result =
+                await pool.query(
+                    `
+                    DELETE FROM files
+
+                    WHERE id = $1
+
+                    RETURNING id
+                    `,
+                    [
+                        req.params.id
+                    ]
+                );
+
+            if (
+                !result.rows.length
+            ) {
+
+                return res.status(
+                    404
+                ).json({
+
+                    success:
+                        false,
+
+                    error:
+                        "File no longer exists."
+
+                });
+            }
 
             broadcastLibraryUpdate();
 
@@ -1852,7 +2114,10 @@ app.get(
                     "online",
 
                 database:
-                    "connected"
+                    "connected",
+
+                timestamp:
+                    new Date().toISOString()
 
             });
 
@@ -1885,7 +2150,7 @@ app.get(
 
 /*
 ========================================================
-FRONTEND STATIC FILES
+FRONTEND
 ========================================================
 */
 
@@ -1918,23 +2183,21 @@ app.get(
             ),
             (error) => {
 
-                if (error) {
+                if (
+                    error &&
+                    !res.headersSent
+                ) {
 
                     console.error(
                         "Frontend error:",
                         error
                     );
 
-                    if (
-                        !res.headersSent
-                    ) {
-
-                        res.status(
-                            404
-                        ).send(
-                            "PROJECT FILE HUB frontend not found. Make sure public/index.html exists."
-                        );
-                    }
+                    res.status(
+                        404
+                    ).send(
+                        "PROJECT FILE HUB frontend not found. Make sure public/index.html exists."
+                    );
                 }
             }
         );
@@ -1943,7 +2206,7 @@ app.get(
 
 /*
 ========================================================
-MULTER / GLOBAL ERROR HANDLER
+GLOBAL ERROR HANDLER
 ========================================================
 */
 
@@ -1954,10 +2217,6 @@ app.use(
             "SERVER ERROR:",
             error
         );
-
-        /*
-        Multer errors.
-        */
 
         if (
             error instanceof
@@ -1996,10 +2255,6 @@ app.use(
             });
         }
 
-        /*
-        Unsupported file extension.
-        */
-
         if (
             error &&
             error.message ===
@@ -2018,10 +2273,6 @@ app.use(
 
             });
         }
-
-        /*
-        If headers were already sent.
-        */
 
         if (
             res.headersSent
@@ -2102,7 +2353,15 @@ async function startServer() {
                 );
 
                 console.log(
-                    "Express 5 wildcard routing: enabled"
+                    "Security: enabled"
+                );
+
+                console.log(
+                    "SSE realtime: enabled"
+                );
+
+                console.log(
+                    "Script execution: disabled"
                 );
 
             }
@@ -2113,7 +2372,15 @@ async function startServer() {
     catch (error) {
 
         console.error(
-            "Database initialization failed:"
+            "=========================================="
+        );
+
+        console.error(
+            "SERVER STARTUP FAILED"
+        );
+
+        console.error(
+            "=========================================="
         );
 
         console.error(
@@ -2132,16 +2399,25 @@ GRACEFUL SHUTDOWN
 ========================================================
 */
 
+let shuttingDown = false;
+
 async function shutdown(
     signal
 ) {
+
+    if (shuttingDown) {
+
+        return;
+    }
+
+    shuttingDown = true;
 
     console.log(
         `${signal} received. Shutting down...`
     );
 
     /*
-    Close SSE clients.
+    Close SSE connections.
     */
 
     for (
@@ -2156,10 +2432,11 @@ async function shutdown(
 
         catch {
 
-            // Ignore already closed clients.
-
+            // Already closed.
         }
     }
+
+    clients.clear();
 
     /*
     Close PostgreSQL.
@@ -2196,6 +2473,34 @@ process.on(
     "SIGINT",
     () =>
         shutdown("SIGINT")
+);
+
+/*
+========================================================
+UNHANDLED ERRORS
+========================================================
+*/
+
+process.on(
+    "unhandledRejection",
+    (error) => {
+
+        console.error(
+            "UNHANDLED REJECTION:",
+            error
+        );
+    }
+);
+
+process.on(
+    "uncaughtException",
+    (error) => {
+
+        console.error(
+            "UNCAUGHT EXCEPTION:",
+            error
+        );
+    }
 );
 
 /*
