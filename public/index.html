@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIL Game Development</title>
+</head>
+<body>
+    <h1>PROJECT FILE HUB</h1>
+    <p>MIL Project • Game Development</p>
+
+    <script>
+        fetch("/api/health")
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+    </script>
+</body>
+</html>
