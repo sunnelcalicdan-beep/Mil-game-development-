@@ -3,181 +3,51 @@
 /*
 ========================================================
 PROJECT FILE HUB
-OPTIMIZED PARTICLE ENGINE
-========================================================
-
-Features:
-- Automatically detects device performance
-- Low-end devices = fewer particles
-- High-end devices = more particles
-- Caps devicePixelRatio
-- Pauses when tab is hidden
-- Pauses when page is not visible
-- Uses requestAnimationFrame
-- No DOM particle elements
-- No per-frame CSS filters
-- No expensive shadows per particle
-- Automatically adapts to FPS
-- Respects prefers-reduced-motion
+ORIGINAL NEON PARTICLE ENGINE
 ========================================================
 */
 
 (() => {
 
     const canvas =
-        document.getElementById("particleCanvas");
+        document.getElementById(
+            "particleCanvas"
+        );
 
     if (!canvas) {
         return;
     }
 
     const ctx =
-        canvas.getContext("2d", {
-            alpha: true,
-            desynchronized: true
-        });
+        canvas.getContext("2d");
 
     if (!ctx) {
         return;
     }
 
 
-    /*
-    ========================================================
-    DEVICE DETECTION
-    ========================================================
-    */
-
-    const connection =
-        navigator.connection ||
-        navigator.mozConnection ||
-        navigator.webkitConnection;
-
-    const reducedMotion =
-        window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches;
-
-    const cores =
-        navigator.hardwareConcurrency || 4;
-
-    const memory =
-        navigator.deviceMemory || 4;
-
-    const mobile =
-        window.matchMedia(
-            "(max-width: 700px)"
-        ).matches;
-
-
-    /*
-    ========================================================
-    PERFORMANCE LEVEL
-    ========================================================
-    */
-
-    let performanceLevel = "medium";
-
-
-    if (reducedMotion) {
-
-        performanceLevel = "minimal";
-
-    }
-    else if (
-        cores <= 2 ||
-        memory <= 2
-    ) {
-
-        performanceLevel = "low";
-
-    }
-    else if (
-        cores >= 8 &&
-        memory >= 8
-    ) {
-
-        performanceLevel = "high";
-
-    }
-
-
-    /*
-    ========================================================
-    PARTICLE COUNTS
-    ========================================================
-    */
-
-    const particleSettings = {
-
-        minimal: {
-            desktop: 12,
-            mobile: 7,
-            speed: 0.12,
-            connectionDistance: 0,
-            glow: false
-        },
-
-        low: {
-            desktop: 22,
-            mobile: 12,
-            speed: 0.20,
-            connectionDistance: 75,
-            glow: false
-        },
-
-        medium: {
-            desktop: 38,
-            mobile: 18,
-            speed: 0.27,
-            connectionDistance: 95,
-            glow: false
-        },
-
-        high: {
-            desktop: 58,
-            mobile: 28,
-            speed: 0.34,
-            connectionDistance: 110,
-            glow: false
-        }
-
-    };
-
-
-    const settings =
-        particleSettings[
-            performanceLevel
-        ];
-
-
-    let targetParticles =
-        mobile
-            ? settings.mobile
-            : settings.desktop;
-
-
-    /*
-    ========================================================
-    CANVAS STATE
-    ========================================================
-    */
-
     let width = 0;
     let height = 0;
-    let dpr = 1;
 
     let particles = [];
 
     let animationFrame = null;
 
-    let running = true;
-
     let lastTime = 0;
 
-    let fpsSamples = [];
 
-    let performanceCheckTimer = 0;
+    /*
+    ========================================================
+    SETTINGS
+    ========================================================
+    */
+
+    const PARTICLE_COUNT =
+        window.innerWidth <= 700
+            ? 35
+            : 75;
+
+    const MAX_DISTANCE = 130;
 
 
     /*
@@ -186,10 +56,7 @@ Features:
     ========================================================
     */
 
-    function random(
-        min,
-        max
-    ) {
+    function random(min, max) {
 
         return Math.random() *
             (max - min) +
@@ -204,7 +71,7 @@ Features:
     ========================================================
     */
 
-    function resizeCanvas() {
+    function resize() {
 
         width =
             window.innerWidth;
@@ -213,30 +80,18 @@ Features:
             window.innerHeight;
 
 
-        /*
-        Never allow a huge DPR.
-
-        1.5 is much cheaper than
-        using a phone's full 3x/4x DPR.
-        */
-
-        dpr =
+        const dpr =
             Math.min(
                 window.devicePixelRatio || 1,
-                1.5
+                2
             );
 
 
         canvas.width =
-            Math.floor(
-                width * dpr
-            );
+            width * dpr;
 
         canvas.height =
-            Math.floor(
-                height * dpr
-            );
-
+            height * dpr;
 
         canvas.style.width =
             width + "px";
@@ -254,37 +109,12 @@ Features:
             0
         );
 
-
-        /*
-        Recalculate particles for
-        very small screens.
-        */
-
-        const area =
-            width * height;
-
-
-        if (
-            area < 300000
-        ) {
-
-            targetParticles =
-                Math.min(
-                    targetParticles,
-                    14
-                );
-
-        }
-
-
-        adjustParticleCount();
-
     }
 
 
     /*
     ========================================================
-    PARTICLE
+    CREATE PARTICLE
     ========================================================
     */
 
@@ -306,32 +136,32 @@ Features:
 
             vx:
                 random(
-                    -settings.speed,
-                    settings.speed
+                    -0.25,
+                    0.25
                 ),
 
             vy:
                 random(
-                    -settings.speed,
-                    settings.speed
+                    -0.25,
+                    0.25
                 ),
 
             size:
                 random(
                     0.7,
-                    1.8
+                    2.1
                 ),
 
             alpha:
                 random(
                     0.25,
-                    0.8
+                    0.85
                 ),
 
-            phase:
+            hue:
                 random(
                     0,
-                    Math.PI * 2
+                    1
                 )
 
         };
@@ -341,30 +171,23 @@ Features:
 
     /*
     ========================================================
-    PARTICLE COUNT
+    INITIALIZE
     ========================================================
     */
 
-    function adjustParticleCount() {
+    function initialize() {
 
-        while (
-            particles.length <
-            targetParticles
+        particles = [];
+
+        for (
+            let i = 0;
+            i < PARTICLE_COUNT;
+            i++
         ) {
 
             particles.push(
                 createParticle()
             );
-
-        }
-
-
-        while (
-            particles.length >
-            targetParticles
-        ) {
-
-            particles.pop();
 
         }
 
@@ -377,109 +200,69 @@ Features:
     ========================================================
     */
 
-    function updateParticles(
-        delta
-    ) {
+    function update(delta) {
 
-        const movement =
-            delta * 0.06;
-
-
-        for (
-            let i = 0;
-            i < particles.length;
-            i++
-        ) {
-
-            const particle =
-                particles[i];
+        const speed =
+            Math.min(
+                delta,
+                30
+            ) * 0.055;
 
 
-            particle.x +=
-                particle.vx *
-                movement;
+        particles.forEach(
+            particle => {
 
-            particle.y +=
-                particle.vy *
-                movement;
+                particle.x +=
+                    particle.vx *
+                    speed;
 
-
-            /*
-            Gentle floating motion.
-
-            This is intentionally tiny so
-            the CPU/GPU doesn't have to work
-            hard.
-            */
-
-            particle.phase +=
-                0.002 * delta;
+                particle.y +=
+                    particle.vy *
+                    speed;
 
 
-            particle.y +=
-                Math.sin(
-                    particle.phase
-                ) *
-                0.025;
+                if (
+                    particle.x < -20
+                ) {
+                    particle.x =
+                        width + 20;
+                }
+
+                if (
+                    particle.x >
+                    width + 20
+                ) {
+                    particle.x = -20;
+                }
 
 
-            /*
-            Wrap around screen.
-            */
+                if (
+                    particle.y < -20
+                ) {
+                    particle.y =
+                        height + 20;
+                }
 
-            if (
-                particle.x < -10
-            ) {
-
-                particle.x =
-                    width + 10;
+                if (
+                    particle.y >
+                    height + 20
+                ) {
+                    particle.y = -20;
+                }
 
             }
-            else if (
-                particle.x >
-                width + 10
-            ) {
-
-                particle.x = -10;
-
-            }
-
-
-            if (
-                particle.y < -10
-            ) {
-
-                particle.y =
-                    height + 10;
-
-            }
-            else if (
-                particle.y >
-                height + 10
-            ) {
-
-                particle.y = -10;
-
-            }
-
-        }
+        );
 
     }
 
 
     /*
     ========================================================
-    DRAW PARTICLES
+    DRAW
     ========================================================
     */
 
-    function drawParticles() {
-
-        /*
-        Clear only the canvas.
-
-        No expensive background repaint.
-        */
+    function draw() {
 
         ctx.clearRect(
             0,
@@ -490,99 +273,95 @@ Features:
 
 
         /*
-        Draw particles.
+        --------------------------------------------
+        PARTICLES
+        --------------------------------------------
         */
 
-        ctx.fillStyle =
-            "rgba(105, 225, 255, 0.55)";
+        particles.forEach(
+            particle => {
+
+                const gradient =
+                    ctx.createRadialGradient(
+                        particle.x,
+                        particle.y,
+                        0,
+                        particle.x,
+                        particle.y,
+                        particle.size * 4
+                    );
 
 
-        for (
-            let i = 0;
-            i < particles.length;
-            i++
-        ) {
+                if (
+                    particle.hue < 0.5
+                ) {
 
-            const p =
-                particles[i];
+                    gradient.addColorStop(
+                        0,
+                        `rgba(34,232,255,${particle.alpha})`
+                    );
+
+                    gradient.addColorStop(
+                        1,
+                        "rgba(34,232,255,0)"
+                    );
+
+                }
+                else {
+
+                    gradient.addColorStop(
+                        0,
+                        `rgba(145,70,255,${particle.alpha})`
+                    );
+
+                    gradient.addColorStop(
+                        1,
+                        "rgba(145,70,255,0)"
+                    );
+
+                }
 
 
-            ctx.globalAlpha =
-                p.alpha;
+                ctx.fillStyle =
+                    gradient;
 
 
-            ctx.beginPath();
+                ctx.beginPath();
 
-            ctx.arc(
-                p.x,
-                p.y,
-                p.size,
-                0,
-                Math.PI * 2
-            );
+                ctx.arc(
+                    particle.x,
+                    particle.y,
+                    particle.size * 4,
+                    0,
+                    Math.PI * 2
+                );
 
-            ctx.fill();
+                ctx.fill();
 
-        }
+            }
+        );
 
 
         /*
-        Connections only on
-        medium/high performance.
-
-        And only a limited number.
+        --------------------------------------------
+        CONNECTIONS
+        --------------------------------------------
         */
-
-        if (
-            settings.connectionDistance <= 0
-        ) {
-
-            ctx.globalAlpha = 1;
-
-            return;
-
-        }
-
-
-        const distanceLimit =
-            settings.connectionDistance;
-
-        const distanceLimitSquared =
-            distanceLimit *
-            distanceLimit;
-
-
-        let connectionCount = 0;
-
 
         for (
             let i = 0;
             i < particles.length;
             i++
         ) {
-
-            /*
-            Prevent excessive line rendering.
-            */
-
-            if (
-                connectionCount > 100
-            ) {
-
-                break;
-
-            }
-
-
-            const a =
-                particles[i];
-
 
             for (
                 let j = i + 1;
                 j < particles.length;
                 j++
             ) {
+
+                const a =
+                    particles[i];
 
                 const b =
                     particles[j];
@@ -594,38 +373,32 @@ Features:
                 const dy =
                     a.y - b.y;
 
-                const distanceSquared =
-                    dx * dx +
-                    dy * dy;
-
-
-                if (
-                    distanceSquared >
-                    distanceLimitSquared
-                ) {
-
-                    continue;
-
-                }
-
 
                 const distance =
                     Math.sqrt(
-                        distanceSquared
+                        dx * dx +
+                        dy * dy
                     );
+
+
+                if (
+                    distance >
+                    MAX_DISTANCE
+                ) {
+                    continue;
+                }
 
 
                 const opacity =
                     (
                         1 -
                         distance /
-                        distanceLimit
-                    ) *
-                    0.13;
+                        MAX_DISTANCE
+                    ) * 0.12;
 
 
                 ctx.strokeStyle =
-                    `rgba(120, 150, 255, ${opacity})`;
+                    `rgba(91,150,255,${opacity})`;
 
                 ctx.lineWidth =
                     0.6;
@@ -645,52 +418,28 @@ Features:
 
                 ctx.stroke();
 
-
-                connectionCount++;
-
             }
 
         }
-
-
-        ctx.globalAlpha = 1;
 
     }
 
 
     /*
     ========================================================
-    FRAME LOOP
+    ANIMATION
     ========================================================
     */
 
-    function animate(
-        timestamp
-    ) {
-
-        if (!running) {
-
-            animationFrame = null;
-
-            return;
-
-        }
-
-
-        /*
-        Prevent giant jumps when the
-        browser resumes from sleep.
-        */
+    function animate(timestamp) {
 
         if (!lastTime) {
-
             lastTime =
                 timestamp;
-
         }
 
 
-        let delta =
+        const delta =
             timestamp -
             lastTime;
 
@@ -699,59 +448,9 @@ Features:
             timestamp;
 
 
-        delta =
-            Math.min(
-                delta,
-                40
-            );
+        update(delta);
 
-
-        /*
-        FPS monitoring.
-        */
-
-        fpsSamples.push(
-            delta
-        );
-
-
-        if (
-            fpsSamples.length >
-            30
-        ) {
-
-            fpsSamples.shift();
-
-        }
-
-
-        updateParticles(
-            delta
-        );
-
-        drawParticles();
-
-
-        performanceCheckTimer +=
-            delta;
-
-
-        /*
-        Check performance roughly
-        every 2 seconds.
-        */
-
-        if (
-            performanceCheckTimer >
-            2000
-        ) {
-
-            optimizeForPerformance();
-
-            performanceCheckTimer =
-                0;
-
-        }
+        draw();
 
 
         animationFrame =
@@ -764,94 +463,41 @@ Features:
 
     /*
     ========================================================
-    AUTO PERFORMANCE OPTIMIZATION
+    RESIZE
     ========================================================
     */
 
-    function optimizeForPerformance() {
-
-        if (
-            fpsSamples.length <
-            15
-        ) {
-
-            return;
-
-        }
+    let resizeTimer = null;
 
 
-        const averageDelta =
-            fpsSamples.reduce(
-                (
-                    total,
-                    value
-                ) =>
-                    total + value,
-                0
-            ) /
-            fpsSamples.length;
+    window.addEventListener(
+        "resize",
+        () => {
 
+            clearTimeout(
+                resizeTimer
+            );
 
-        const fps =
-            1000 /
-            averageDelta;
+            resizeTimer =
+                setTimeout(
+                    () => {
 
+                        resize();
 
-        /*
-        If FPS drops heavily,
-        reduce particles.
-
-        Never increase particles
-        automatically during a session.
-        This prevents oscillation.
-        */
-
-        if (
-            fps < 35 &&
-            targetParticles > 8
-        ) {
-
-            targetParticles =
-                Math.max(
-                    8,
-                    Math.floor(
-                        targetParticles *
-                        0.70
-                    )
+                    },
+                    120
                 );
 
-
-            adjustParticleCount();
-
+        },
+        {
+            passive: true
         }
-        else if (
-            fps < 45 &&
-            targetParticles > 12
-        ) {
-
-            targetParticles =
-                Math.max(
-                    12,
-                    Math.floor(
-                        targetParticles *
-                        0.85
-                    )
-                );
-
-
-            adjustParticleCount();
-
-        }
-
-
-        fpsSamples = [];
-
-    }
+    );
 
 
     /*
     ========================================================
-    VISIBILITY OPTIMIZATION
+    VISIBILITY
     ========================================================
     */
 
@@ -862,8 +508,6 @@ Features:
             if (
                 document.hidden
             ) {
-
-                running = false;
 
                 if (
                     animationFrame
@@ -883,49 +527,20 @@ Features:
             }
 
 
-            running = true;
-
             lastTime = 0;
 
-            fpsSamples = [];
 
-            animationFrame =
-                requestAnimationFrame(
-                    animate
-                );
+            if (
+                !animationFrame
+            ) {
 
-        }
-    );
+                animationFrame =
+                    requestAnimationFrame(
+                        animate
+                    );
 
+            }
 
-    /*
-    ========================================================
-    RESIZE OBSERVER
-    ========================================================
-    */
-
-    let resizeTimer =
-        null;
-
-
-    window.addEventListener(
-        "resize",
-        () => {
-
-            clearTimeout(
-                resizeTimer
-            );
-
-
-            resizeTimer =
-                setTimeout(
-                    resizeCanvas,
-                    150
-                );
-
-        },
-        {
-            passive: true
         }
     );
 
@@ -936,12 +551,13 @@ Features:
     ========================================================
     */
 
-    resizeCanvas();
+    resize();
+
+    initialize();
 
     animationFrame =
         requestAnimationFrame(
             animate
         );
-
 
 })();
