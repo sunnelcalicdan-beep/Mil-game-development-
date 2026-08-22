@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -10,192 +9,287 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Project File Hub
-    </title>
+    <meta
+        name="theme-color"
+        content="#050817"
+    >
+
+    <title>Project File Hub</title>
 
     <link
         rel="stylesheet"
         href="/style.css"
     >
-
 </head>
 
 <body>
 
-<!-- ================================================= -->
-<!-- ORIGINAL LANDING PAGE -->
-<!-- ================================================= -->
+<!-- =====================================================
+     COSMIC BACKGROUND
+===================================================== -->
 
-<section
-    id="landingPage"
-    class="landing-page"
->
+<div class="space">
 
-    <div class="landing-glow glow-one"></div>
-    <div class="landing-glow glow-two"></div>
+    <div class="nebula nebula-one"></div>
+    <div class="nebula nebula-two"></div>
+    <div class="nebula nebula-three"></div>
 
-    <div class="welcome-card">
+    <div class="stars"></div>
+    <div id="particles"></div>
 
-        <div class="welcome-small">
-            MIL PROJECT • GAME DEVELOPMENT
+    <div class="aurora aurora-one"></div>
+    <div class="aurora aurora-two"></div>
+
+</div>
+
+
+<!-- =====================================================
+     TOP NAVIGATION
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-orb">
+            ✦
         </div>
-
-        <h1>
-            WELCOME TO
-            <br>
-            <span>
-                PROJECT FILE HUB
-            </span>
-        </h1>
-
-        <p class="handled">
-            This website is handled by:
-        </p>
-
-        <div class="members">
-
-            <span>
-                Sunnel John Rebano (🧑🏻‍🔧)
-            </span>
-
-            <span>
-                Rhea Kim
-            </span>
-
-            <span>
-                Kimberly
-            </span>
-
-            <span>
-                Charles Tiong
-            </span>
-
-            <span>
-                Reyden Osia
-            </span>
-
-            <span>
-                Mc Lawrence Conzaga
-            </span>
-
-            <span>
-                Kimmy Clavo
-            </span>
-
-            <span>
-                Dianne Gadia
-            </span>
-
-            <span>
-                Carl Caabay
-            </span>
-
-            <span>
-                Mark Camaso
-            </span>
-            
-            <span>
-                Maynard Cabada
-            </span>
-
-            <span>
-                Mark Anthony Canta
-            </span>
-            
-
-        </div>
-
-        <p class="project-description">
-            For MIL Project Game Development.
-        </p>
-
-        <button
-            id="enterProjectButton"
-            class="enter-button"
-        >
-            ENTER PROJECT
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- ================================================= -->
-<!-- FILE HUB -->
-<!-- ================================================= -->
-
-<section
-    id="hubPage"
-    class="hub-page hidden"
->
-
-    <header class="hub-header">
 
         <div>
 
-            <div class="hub-brand">
+            <div class="brand-small">
                 MIL PROJECT • GAME DEVELOPMENT
             </div>
 
-            <h1>
+            <div class="brand-title">
                 PROJECT FILE HUB
-            </h1>
-
-            <p>
-                Project files, scripts and development resources.
-            </p>
+            </div>
 
         </div>
 
-        <div class="header-actions">
+    </div>
 
-            <div
-                id="serverStatus"
-                class="status offline"
-            >
-                Checking server...
+
+    <div
+        id="serverStatus"
+        class="status checking"
+    >
+        <span class="status-dot"></span>
+        Checking server...
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <!-- =================================================
+         HERO
+    ================================================= -->
+
+    <section class="hero">
+
+        <div class="hero-glow"></div>
+
+        <div class="hero-inner">
+
+            <div class="hero-label">
+                MIL PROJECT • GAME DEVELOPMENT
             </div>
 
+
+            <h1>
+
+                <span>
+                    WELCOME TO
+                </span>
+
+                <strong>
+                    PROJECT
+                </strong>
+
+                <strong class="gradient-text">
+                    FILE HUB
+                </strong>
+
+            </h1>
+
+
+            <div class="hero-line">
+
+                <span></span>
+                <i>✦</i>
+                <span></span>
+
+            </div>
+
+
+            <p class="hero-description">
+                A futuristic workspace for sharing,
+                managing and discovering project files.
+            </p>
+
+
+            <!-- TEAM -->
+
+            <div class="handled">
+
+                <div class="handled-title">
+                    THIS WEBSITE IS HANDLED BY
+                </div>
+
+                <div class="team">
+
+                    <span>Sunnel John Rebano (🧑🏻‍🔧)</span>
+                    <span>Rhea Kim</span>
+                    <span>Kimberly</span>
+                    <span>Charles Tiong</span>
+                    <span>Reyden Osia</span>
+                    <span>Mc Lawrence Conzaga</span>
+                    <span>Kimmy Clavo</span>
+                    <span>Dianne Gadia</span>
+                    <span>Carl Caabay</span>
+                    <span>Mark Camaso</span>
+                    <span>Maynard Cabada</span>
+                    <span>Mark Anthony Canta</span>
+
+                </div>
+
+            </div>
+
+
+            <p class="hero-footer">
+                For MIL Project Game Development.
+            </p>
+
+
             <button
-                id="backButton"
-                class="back-button"
+                id="enterProjectButton"
+                class="enter-button"
                 type="button"
             >
-                ← Back
+
+                <span>
+                    ENTER PROJECT
+                </span>
+
+                <b>
+                    →
+                </b>
+
             </button>
 
         </div>
 
-    </header>
+    </section>
 
 
-    <main class="hub-container">
+    <!-- =================================================
+         APPLICATION
+    ================================================= -->
+
+    <section
+        id="projectApp"
+        class="project-app hidden"
+    >
 
 
-        <!-- ========================================= -->
-        <!-- PUBLISH -->
-        <!-- ========================================= -->
+        <!-- =============================================
+             STATS
+        ============================================== -->
 
-        <section class="neon-card publish-card">
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ◈
+                </div>
+
+                <div>
+                    <span>FILES</span>
+                    <strong id="statFiles">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon purple">
+                    &lt;/&gt;
+                </div>
+
+                <div>
+                    <span>SCRIPTS</span>
+                    <strong id="statScripts">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon pink">
+                    ↓
+                </div>
+
+                <div>
+                    <span>DOWNLOADS</span>
+                    <strong id="statDownloads">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon cyan">
+                    ◎
+                </div>
+
+                <div>
+                    <span>STORAGE</span>
+                    <strong id="statStorage">0 B</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =============================================
+             PUBLISH
+        ============================================== -->
+
+        <section class="glass-card publish-card">
 
             <div class="section-heading">
 
                 <div>
 
-                    <div class="section-label">
-                        PUBLISH
+                    <div class="eyebrow">
+                        UPLOAD CENTER
                     </div>
 
                     <h2>
-                        Upload Project File
+                        Publish File
                     </h2>
 
                     <p>
-                        Publish a file or script to the public project library.
+                        Share a project file or custom script
+                        with the development team.
                     </p>
 
+                </div>
+
+                <div class="heading-icon">
+                    ↑
                 </div>
 
             </div>
@@ -203,8 +297,9 @@
 
             <form id="publishForm">
 
+
                 <label for="username">
-                    Username
+                    USERNAME
                 </label>
 
                 <input
@@ -218,12 +313,14 @@
                 >
 
                 <small>
-                    Your username is attached to the published file.
+                    Your username is attached to the publication
+                    and used when generating your secure delete key.
                 </small>
 
 
                 <label for="displayName">
-                    Display Name
+                    DISPLAY NAME
+                    <span>OPTIONAL</span>
                 </label>
 
                 <input
@@ -236,19 +333,42 @@
 
 
                 <label for="fileInput">
-                    Project File
+                    PROJECT FILE
                 </label>
+
+
+                <label
+                    for="fileInput"
+                    class="drop-zone"
+                    id="dropZone"
+                >
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        DRAG & DROP YOUR FILE
+                    </strong>
+
+                    <span>
+                        or click to browse
+                    </span>
+
+                    <small>
+                        Maximum file size: 50 MB
+                    </small>
+
+                </label>
+
 
                 <input
                     id="fileInput"
                     name="file"
                     type="file"
+                    hidden
                     required
                 >
-
-                <small>
-                    Maximum file size: 50 MB
-                </small>
 
 
                 <div
@@ -262,9 +382,17 @@
                 <button
                     id="publishButton"
                     type="submit"
-                    class="neon-button"
+                    class="publish-button"
                 >
-                    PUBLISH FILE
+
+                    <span>
+                        ✦ PUBLISH FILE
+                    </span>
+
+                    <b>
+                        →
+                    </b>
+
                 </button>
 
 
@@ -282,7 +410,7 @@
                     </div>
 
                     <span id="progressText">
-                        Uploading...
+                        Preparing upload...
                     </span>
 
                 </div>
@@ -298,93 +426,37 @@
         </section>
 
 
-        <!-- ========================================= -->
-        <!-- STATS -->
-        <!-- ========================================= -->
+        <!-- =============================================
+             LIBRARY
+        ============================================== -->
 
-        <section class="stats-grid">
+        <section class="glass-card library-card">
 
-            <div class="stat-card">
-
-                <span>
-                    FILES
-                </span>
-
-                <strong id="statFiles">
-                    0
-                </strong>
-
-            </div>
-
-            <div class="stat-card">
-
-                <span>
-                    SCRIPTS
-                </span>
-
-                <strong id="statScripts">
-                    0
-                </strong>
-
-            </div>
-
-            <div class="stat-card">
-
-                <span>
-                    DOWNLOADS
-                </span>
-
-                <strong id="statDownloads">
-                    0
-                </strong>
-
-            </div>
-
-            <div class="stat-card">
-
-                <span>
-                    STORAGE
-                </span>
-
-                <strong id="statStorage">
-                    0 B
-                </strong>
-
-            </div>
-
-        </section>
-
-
-        <!-- ========================================= -->
-        <!-- LIBRARY -->
-        <!-- ========================================= -->
-
-        <section class="neon-card">
-
-            <div class="library-header">
+            <div class="section-heading">
 
                 <div>
 
-                    <div class="section-label">
-                        PROJECT LIBRARY
+                    <div class="eyebrow">
+                        PROJECT STORAGE
                     </div>
 
                     <h2>
-                        Published Files
+                        Public Library
                     </h2>
 
                     <p>
-                        Browse files uploaded by the project team.
+                        Browse and manage published project files.
                     </p>
 
                 </div>
 
+
                 <button
                     id="refreshButton"
-                    class="small-neon-button"
+                    class="refresh-button"
                     type="button"
                 >
-                    ↻ Refresh
+                    ↻
                 </button>
 
             </div>
@@ -392,15 +464,22 @@
 
             <div class="filters">
 
-                <input
-                    id="searchInput"
-                    type="search"
-                    placeholder="Search files..."
-                >
+                <div class="search-wrapper">
 
-                <select
-                    id="uploaderFilter"
-                >
+                    <span>
+                        ⌕
+                    </span>
+
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Search files..."
+                    >
+
+                </div>
+
+
+                <select id="uploaderFilter">
 
                     <option value="">
                         All uploaders
@@ -408,9 +487,8 @@
 
                 </select>
 
-                <select
-                    id="sortSelect"
-                >
+
+                <select id="sortSelect">
 
                     <option value="newest">
                         Newest
@@ -443,21 +521,38 @@
             >
 
                 <div class="empty">
-                    Loading project files...
+                    Loading library...
                 </div>
 
             </div>
 
         </section>
 
-    </main>
 
-</section>
+        <!-- =============================================
+             FOOTER
+        ============================================== -->
+
+        <footer>
+
+            <span>
+                © 2026 MIL PROJECT • GAME DEVELOPMENT
+            </span>
+
+            <span>
+                BUILT WITH ✦ FOR THE TEAM
+            </span>
+
+        </footer>
+
+    </section>
+
+</main>
 
 
-<!-- ================================================= -->
-<!-- DELETE KEY POPUP -->
-<!-- ================================================= -->
+<!-- =====================================================
+     DELETE KEY MODAL
+===================================================== -->
 
 <div
     id="deleteKeyModal"
@@ -472,20 +567,24 @@
 
     <div class="modal-box key-modal">
 
-        <div class="success-icon">
+        <div class="modal-orb">
             ✓
         </div>
 
-        <div class="section-label">
-            PUBLISH COMPLETE
+
+        <div class="eyebrow">
+            PUBLICATION COMPLETE
         </div>
+
 
         <h2>
             FILE PUBLISHED
         </h2>
 
+
         <p>
-            Your file has been added to the Project File Hub.
+            Your project file is now available in the
+            public library.
         </p>
 
 
@@ -496,9 +595,9 @@
             </strong>
 
             <p>
-                This key is required if you want to delete
-                this file later.
-                The server does not provide a recovery option.
+                This key is generated by the server and is
+                required if you want to delete this file later.
+                It cannot be recovered if you lose it.
             </p>
 
         </div>
@@ -535,10 +634,14 @@
 
         <button
             id="savedKeyButton"
+            class="publish-button"
             type="button"
-            class="neon-button"
         >
-            I'VE SAVED MY KEY
+
+            <span>
+                ✓ I'VE SAVED MY KEY
+            </span>
+
         </button>
 
     </div>
@@ -546,9 +649,9 @@
 </div>
 
 
-<!-- ================================================= -->
-<!-- DELETE MODAL -->
-<!-- ================================================= -->
+<!-- =====================================================
+     DELETE MODAL
+===================================================== -->
 
 <div
     id="deleteModal"
@@ -563,24 +666,24 @@
 
     <div class="modal-box">
 
-        <div class="section-label">
+        <div class="eyebrow">
             SECURITY
         </div>
 
         <h2>
-            DELETE FILE
+            Delete File
         </h2>
 
         <p>
-            Enter the delete key that was generated
-            when this file was published.
+            Enter the delete key that was generated when
+            this file was published.
         </p>
 
 
         <input
             id="deleteTokenInput"
             type="text"
-            placeholder="PFH-username-randomcode"
+            placeholder="Enter your delete key"
             autocomplete="off"
         >
 
@@ -598,7 +701,7 @@
                 type="button"
                 class="secondary-button"
             >
-                CANCEL
+                Cancel
             </button>
 
             <button
@@ -606,7 +709,7 @@
                 type="button"
                 class="danger-button"
             >
-                DELETE FILE
+                Delete File
             </button>
 
         </div>
@@ -616,9 +719,9 @@
 </div>
 
 
-<!-- ================================================= -->
-<!-- PREVIEW -->
-<!-- ================================================= -->
+<!-- =====================================================
+     PREVIEW
+===================================================== -->
 
 <div
     id="previewModal"
@@ -637,8 +740,8 @@
 
             <div>
 
-                <div class="section-label">
-                    SCRIPT PREVIEW
+                <div class="eyebrow">
+                    CODE VIEWER
                 </div>
 
                 <h2 id="previewTitle">
@@ -646,6 +749,7 @@
                 </h2>
 
             </div>
+
 
             <button
                 type="button"
@@ -658,18 +762,16 @@
         </div>
 
 
-        <pre
-            id="previewContent"
-        ></pre>
+        <pre id="previewContent">
+Loading...
+        </pre>
 
     </div>
 
 </div>
 
 
-<script
-    src="/app.js"
-></script>
+<script src="/app.js"></script>
 
 </body>
 
