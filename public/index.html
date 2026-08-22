@@ -1,173 +1,1301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#070914">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    >
+<title>MIL Project • Project File Hub</title>
 
-    <meta
-        name="theme-color"
-        content="#030612"
-    >
+<style>
+/* =========================================================
+   MIL PROJECT FILE HUB
+   FULL SINGLE-PAGE FRONTEND
+   Original neon aesthetic + smoother particles
+========================================================= */
 
-    <meta
-        name="description"
-        content="MIL Project • Game Development — Project File Hub"
-    >
+*{
+    box-sizing:border-box;
+}
 
-    <title>MIL Project • Project File Hub</title>
+html{
+    scroll-behavior:smooth;
+}
 
-    <link rel="stylesheet" href="/style.css">
+:root{
+    --bg:#050711;
+    --bg2:#090c1b;
+    --panel:rgba(12,16,34,.78);
+    --panel2:rgba(8,12,27,.9);
+
+    --cyan:#42e8ff;
+    --blue:#5577ff;
+    --purple:#9b5cff;
+    --pink:#ff4fd8;
+    --green:#54f0a5;
+    --red:#ff5577;
+
+    --text:#f5f7ff;
+    --muted:#8d96b3;
+    --line:rgba(117,135,255,.22);
+
+    --radius:22px;
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(72,102,255,.17),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(182,74,255,.13),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(0,225,255,.08),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #04050b,
+            #080b18 45%,
+            #050711
+        );
+
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+
+    background:
+        linear-gradient(
+            rgba(255,255,255,.018) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.018) 1px,
+            transparent 1px
+        );
+
+    background-size:55px 55px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 85%
+        );
+}
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+#particleCanvas{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    pointer-events:none;
+    z-index:0;
+    opacity:.7;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+}
+
+/* =========================================================
+   LANDING PAGE
+========================================================= */
+
+#landing{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px 18px;
+}
+
+.hero{
+    width:min(920px,100%);
+    text-align:center;
+}
+
+.logo-ring{
+    width:96px;
+    height:96px;
+    margin:0 auto 24px;
+
+    display:grid;
+    place-items:center;
+
+    border:1px solid rgba(73,229,255,.55);
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(69,230,255,.17),
+            rgba(103,72,255,.08) 55%,
+            transparent 70%
+        );
+
+    box-shadow:
+        0 0 25px rgba(66,232,255,.22),
+        0 0 70px rgba(105,77,255,.16),
+        inset 0 0 30px rgba(66,232,255,.08);
+
+    animation:
+        floatLogo 4s ease-in-out infinite;
+}
+
+.logo-ring span{
+    font-size:42px;
+    filter:drop-shadow(0 0 15px rgba(66,232,255,.7));
+}
+
+@keyframes floatLogo{
+    0%,100%{
+        transform:translateY(0) scale(1);
+    }
+    50%{
+        transform:translateY(-8px) scale(1.025);
+    }
+}
+
+.eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    padding:8px 14px;
+
+    border:1px solid rgba(100,120,255,.28);
+    border-radius:999px;
+
+    background:rgba(18,23,50,.6);
+
+    color:#9eaaff;
+
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+
+    backdrop-filter:blur(10px);
+}
+
+.eyebrow::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 12px var(--cyan);
+}
+
+.hero h1{
+    margin:22px 0 10px;
+
+    font-size:
+        clamp(
+            42px,
+            8vw,
+            82px
+        );
+
+    line-height:.95;
+    font-weight:950;
+    letter-spacing:-.055em;
+
+    background:
+        linear-gradient(
+            100deg,
+            #fff,
+            #8cefff 35%,
+            #8c8cff 65%,
+            #f08aff
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+
+    filter:
+        drop-shadow(0 0 25px rgba(80,150,255,.15));
+}
+
+.hero-description{
+    max-width:680px;
+    margin:0 auto;
+
+    color:#9aa4c1;
+
+    font-size:17px;
+    line-height:1.7;
+}
+
+.hero-card{
+    position:relative;
+
+    margin:38px auto 0;
+
+    width:min(760px,100%);
+
+    padding:1px;
+
+    border-radius:28px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(66,232,255,.65),
+            rgba(105,77,255,.55),
+            rgba(255,79,216,.45),
+            rgba(66,232,255,.65)
+        );
+
+    background-size:300% 300%;
+
+    animation:
+        borderFlow 8s linear infinite;
+}
+
+@keyframes borderFlow{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.hero-card-inner{
+    border-radius:27px;
+
+    padding:30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12,16,38,.94),
+            rgba(6,9,22,.96)
+        );
+
+    backdrop-filter:blur(18px);
+}
+
+.team-title{
+    color:#7f8bab;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    margin-bottom:18px;
+}
+
+.team-list{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+}
+
+.member{
+    padding:10px 14px;
+
+    border:
+        1px solid rgba(111,129,255,.2);
+
+    border-radius:12px;
+
+    background:
+        rgba(24,29,57,.65);
+
+    color:#dce2ff;
+
+    font-size:13px;
+    font-weight:700;
+
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        background .25s ease;
+}
+
+.member:hover{
+    transform:translateY(-3px);
+
+    border-color:
+        rgba(66,232,255,.55);
+
+    background:
+        rgba(30,42,78,.75);
+}
+
+.enter-button{
+    position:relative;
+
+    width:100%;
+    margin-top:28px;
+
+    padding:17px 22px;
+
+    border:0;
+    border-radius:15px;
+
+    color:white;
+
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:.04em;
+
+    background:
+        linear-gradient(
+            100deg,
+            #427cff,
+            #7655ff,
+            #b44dff
+        );
+
+    box-shadow:
+        0 12px 35px rgba(81,89,255,.25);
+
+    overflow:hidden;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.enter-button::after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 25%,
+            rgba(255,255,255,.25),
+            transparent 75%
+        );
+
+    transform:translateX(-120%);
+    animation:buttonShine 4s ease-in-out infinite;
+}
+
+@keyframes buttonShine{
+    0%,45%{transform:translateX(-120%)}
+    70%,100%{transform:translateX(120%)}
+}
+
+.enter-button:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 18px 45px rgba(81,89,255,.4),
+        0 0 35px rgba(165,83,255,.12);
+}
+
+.enter-button:active{
+    transform:translateY(0);
+}
+
+/* =========================================================
+   HUB
+========================================================= */
+
+#hub{
+    display:none;
+    min-height:100vh;
+    padding-bottom:80px;
+}
+
+.hub-header{
+    position:sticky;
+    top:0;
+    z-index:50;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+
+    padding:17px max(18px,calc((100vw - 1180px)/2));
+
+    border-bottom:
+        1px solid rgba(115,130,255,.18);
+
+    background:
+        rgba(5,8,18,.75);
+
+    backdrop-filter:blur(18px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-icon{
+    width:40px;
+    height:40px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(66,232,255,.2),
+            rgba(147,78,255,.2)
+        );
+
+    border:
+        1px solid rgba(91,214,255,.3);
+}
+
+.brand strong{
+    display:block;
+    font-size:15px;
+}
+
+.brand small{
+    display:block;
+    color:#747e9b;
+    margin-top:2px;
+}
+
+.server-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:8px 12px;
+
+    border-radius:999px;
+
+    background:rgba(21,28,49,.7);
+
+    font-size:12px;
+    font-weight:800;
+}
+
+.server-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#888;
+}
+
+.server-status.online .server-dot{
+    background:var(--green);
+    box-shadow:0 0 12px var(--green);
+}
+
+.server-status.offline .server-dot{
+    background:var(--red);
+    box-shadow:0 0 12px var(--red);
+}
+
+.hub-container{
+    width:min(1180px,calc(100% - 28px));
+    margin:30px auto;
+}
+
+.hub-title{
+    margin-bottom:25px;
+}
+
+.hub-title h2{
+    margin:0;
+    font-size:clamp(28px,5vw,46px);
+    font-weight:950;
+    letter-spacing:-.04em;
+}
+
+.hub-title p{
+    margin:9px 0 0;
+    color:#8993b0;
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.panel{
+    position:relative;
+
+    padding:24px;
+
+    margin-bottom:18px;
+
+    border:1px solid rgba(112,128,255,.2);
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13,18,40,.84),
+            rgba(7,11,25,.88)
+        );
+
+    box-shadow:
+        0 18px 60px rgba(0,0,0,.18);
+
+    backdrop-filter:blur(12px);
+}
+
+.panel-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+
+    margin-bottom:18px;
+}
+
+.panel-title h3{
+    margin:0;
+    font-size:18px;
+}
+
+.panel-title p{
+    margin:5px 0 0;
+    color:#7e88a5;
+    font-size:13px;
+}
+
+/* =========================================================
+   PUBLISH FORM
+========================================================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.form-field.full{
+    grid-column:1/-1;
+}
+
+label{
+    display:block;
+    margin-bottom:7px;
+
+    color:#aab4d2;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.03em;
+}
+
+input,
+select{
+    width:100%;
+
+    padding:13px 14px;
+
+    border:
+        1px solid rgba(107,124,190,.23);
+
+    border-radius:12px;
+
+    outline:none;
+
+    background:
+        rgba(4,7,18,.75);
+
+    color:white;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+input::placeholder{
+    color:#505a76;
+}
+
+input:focus,
+select:focus{
+    border-color:
+        rgba(66,232,255,.6);
+
+    box-shadow:
+        0 0 0 3px rgba(66,232,255,.07),
+        0 0 25px rgba(66,232,255,.06);
+
+    background:
+        rgba(7,11,25,.95);
+}
+
+.file-picker{
+    position:relative;
+}
+
+.file-picker input[type=file]{
+    padding:11px;
+}
+
+.selected-file{
+    margin-top:8px;
+
+    padding:10px 12px;
+
+    border-radius:10px;
+
+    background:rgba(15,21,43,.65);
+
+    color:#7f8baa;
+
+    font-size:12px;
+
+    word-break:break-word;
+}
+
+.publish-button{
+    width:100%;
+
+    margin-top:18px;
+
+    padding:14px;
+
+    border:0;
+    border-radius:12px;
+
+    color:white;
+
+    font-weight:900;
+
+    background:
+        linear-gradient(
+            100deg,
+            #397eff,
+            #7755ff
+        );
+
+    box-shadow:
+        0 10px 30px rgba(77,91,255,.22);
+
+    transition:.2s ease;
+}
+
+.publish-button:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 15px 38px rgba(77,91,255,.35);
+}
+
+.publish-button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.message{
+    min-height:20px;
+    margin-top:10px;
+    font-size:13px;
+}
+
+.message.error{color:#ff8194}
+.message.success{color:#67e6a5}
+
+.progress-wrap{
+    margin-top:15px;
+}
+
+.progress-track{
+    height:7px;
+    overflow:hidden;
+    border-radius:99px;
+    background:#161c32;
+}
+
+.progress-fill{
+    width:0;
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--cyan),
+            var(--purple),
+            var(--pink)
+        );
+
+    transition:width .15s ease;
+}
+
+.progress-text{
+    display:block;
+    margin-top:6px;
+    color:#707b98;
+    font-size:11px;
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.stat{
+    padding:18px;
+
+    border:
+        1px solid rgba(111,127,255,.17);
+
+    border-radius:17px;
+
+    background:
+        rgba(11,16,35,.75);
+}
+
+.stat span{
+    display:block;
+    color:#707b98;
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.stat strong{
+    display:block;
+    margin-top:7px;
+
+    font-size:26px;
+    font-weight:950;
+
+    background:
+        linear-gradient(
+            100deg,
+            #fff,
+            #7beaff,
+            #a184ff
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+/* =========================================================
+   LIBRARY
+========================================================= */
+
+.filters{
+    display:grid;
+    grid-template-columns:1fr 180px 170px auto;
+    gap:9px;
+    margin-bottom:16px;
+}
+
+.refresh{
+    border:0;
+    border-radius:11px;
+    padding:0 15px;
+
+    background:#171e36;
+    color:#dce2ff;
+
+    font-weight:800;
+}
+
+.library{
+    display:grid;
+    gap:11px;
+}
+
+.file-card{
+    padding:17px;
+
+    border:
+        1px solid rgba(105,122,235,.17);
+
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13,18,39,.72),
+            rgba(7,11,25,.8)
+        );
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        background .2s ease;
+}
+
+.file-card:hover{
+    transform:translateY(-2px);
+
+    border-color:
+        rgba(66,232,255,.3);
+
+    background:
+        rgba(14,21,44,.9);
+}
+
+.file-top{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.file-name{
+    font-weight:900;
+    font-size:15px;
+    word-break:break-word;
+}
+
+.file-meta{
+    margin-top:6px;
+    color:#717c99;
+    font-size:11px;
+    line-height:1.7;
+}
+
+.badge{
+    flex:none;
+
+    padding:5px 8px;
+
+    border-radius:999px;
+
+    background:
+        rgba(76,94,178,.16);
+
+    color:#8f9eff;
+
+    font-size:9px;
+    font-weight:900;
+}
+
+.file-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:13px;
+}
+
+.file-actions button{
+    border:0;
+    border-radius:9px;
+    padding:8px 11px;
+
+    background:#171e35;
+    color:#dbe2ff;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.file-actions button:hover{
+    background:#202a49;
+}
+
+.file-actions .delete{
+    background:rgba(255,65,95,.09);
+    color:#ff8094;
+}
+
+.empty{
+    padding:40px;
+    text-align:center;
+    color:#69738f;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:18px;
+
+    z-index:1000;
+}
+
+.modal.hidden{
+    display:none;
+}
+
+.modal-backdrop{
+    position:absolute;
+    inset:0;
+
+    background:rgba(0,0,0,.78);
+
+    backdrop-filter:blur(7px);
+}
+
+.modal-box{
+    position:relative;
+    z-index:1;
+
+    width:min(520px,100%);
+    max-height:90vh;
+    overflow:auto;
+
+    padding:25px;
+
+    border:
+        1px solid rgba(104,127,255,.34);
+
+    border-radius:21px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #10162e,
+            #080b1a
+        );
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.55),
+        0 0 60px rgba(74,94,255,.09);
+}
+
+.modal-box h2{
+    margin:0 0 8px;
+}
+
+.modal-box > p{
+    color:#808ba7;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.success-icon{
+    width:50px;
+    height:50px;
+
+    display:grid;
+    place-items:center;
+
+    margin-bottom:15px;
+
+    border-radius:15px;
+
+    background:
+        rgba(65,235,161,.1);
+
+    color:var(--green);
+
+    border:
+        1px solid rgba(65,235,161,.25);
+
+    font-size:24px;
+}
+
+.warning{
+    margin:18px 0;
+
+    padding:14px;
+
+    border:
+        1px solid rgba(255,196,71,.22);
+
+    border-radius:12px;
+
+    background:
+        rgba(255,181,46,.055);
+
+    color:#c9b77f;
+
+    font-size:12px;
+    line-height:1.6;
+}
+
+.key-row{
+    display:flex;
+    gap:8px;
+}
+
+.key-row input{
+    font-family:monospace;
+    letter-spacing:.04em;
+}
+
+.key-row button{
+    flex:none;
+
+    border:0;
+    border-radius:11px;
+    padding:0 16px;
+
+    background:#202a4a;
+    color:white;
+    font-weight:900;
+}
+
+.modal-button{
+    width:100%;
+    margin-top:15px;
+
+    padding:13px;
+
+    border:0;
+    border-radius:11px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #397eff,
+            #7955ff
+        );
+
+    color:white;
+    font-weight:900;
+}
+
+.modal-actions{
+    display:flex;
+    gap:8px;
+    margin-top:17px;
+}
+
+.modal-actions button{
+    flex:1;
+    padding:12px;
+    border:0;
+    border-radius:10px;
+    font-weight:800;
+}
+
+.cancel{
+    background:#1b223b;
+    color:#d9e0ff;
+}
+
+.confirm-delete{
+    background:#a52e4b;
+    color:white;
+}
+
+.preview{
+    width:min(900px,100%);
+}
+
+.preview pre{
+    max-height:65vh;
+    overflow:auto;
+
+    padding:16px;
+
+    border-radius:11px;
+
+    background:#03050c;
+
+    color:#d7ddf7;
+
+    white-space:pre-wrap;
+    word-break:break-word;
+
+    font-size:12px;
+    line-height:1.65;
+}
+
+.close{
+    position:absolute;
+    top:15px;
+    right:17px;
+
+    border:0;
+    background:transparent;
+
+    color:#9ba6c4;
+
+    font-size:28px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:850px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .filters{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .refresh{
+        min-height:44px;
+    }
+}
+
+@media(max-width:600px){
+
+    .hero-card-inner{
+        padding:21px;
+    }
+
+    .hero h1{
+        font-size:47px;
+    }
+
+    .hero-description{
+        font-size:14px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-field.full{
+        grid-column:auto;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .filters{
+        grid-template-columns:1fr;
+    }
+
+    .refresh{
+        min-height:43px;
+    }
+
+    .hub-header{
+        padding:13px 14px;
+    }
+
+    .server-status{
+        font-size:10px;
+    }
+
+    .brand small{
+        display:none;
+    }
+
+    .panel{
+        padding:17px;
+    }
+
+    .key-row{
+        flex-direction:column;
+    }
+
+    .key-row button{
+        padding:12px;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *,
+    *::before,
+    *::after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+        transition-duration:.001ms !important;
+    }
+}
+</style>
 </head>
 
-<body class="landing-page">
+<body>
 
-    <!-- ==================================================
-         PARTICLE BACKGROUND
-    =================================================== -->
+<canvas id="particleCanvas"></canvas>
 
-    <canvas
-        id="particleCanvas"
-        aria-hidden="true"
-    ></canvas>
+<div id="app">
 
+<!-- =======================================================
+     LANDING
+======================================================= -->
 
-    <!-- ==================================================
-         BACKGROUND ATMOSPHERE
-    =================================================== -->
+<section id="landing">
 
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-    <div class="ambient ambient-three"></div>
+    <div class="hero">
 
-    <div class="background-grid"></div>
+        <div class="logo-ring">
+            <span>⚡</span>
+        </div>
 
+        <div class="eyebrow">
+            MIL PROJECT
+        </div>
 
-    <!-- ==================================================
-         MAIN
-    =================================================== -->
+        <h1>
+            Project File Hub
+        </h1>
 
-    <main class="landing">
+        <p class="hero-description">
+            A private project workspace for publishing,
+            sharing, previewing and managing project files
+            with the MIL development team.
+        </p>
 
-        <section
-            class="welcome-card"
-            aria-labelledby="welcomeTitle"
-        >
+        <div class="hero-card">
 
-            <!-- Animated border -->
-            <div
-                class="card-border"
-                aria-hidden="true"
-            ></div>
+            <div class="hero-card-inner">
 
-
-            <div class="card-content">
-
-                <!-- ==================================================
-                     EYEBROW
-                =================================================== -->
-
-                <div class="eyebrow">
-
-                    <span class="eyebrow-line"></span>
-
-                    <span>
-                        MIL PROJECT
-                    </span>
-
-                    <span class="eyebrow-dot">
-                        •
-                    </span>
-
-                    <span>
-                        GAME DEVELOPMENT
-                    </span>
-
-                    <span class="eyebrow-line"></span>
-
+                <div class="team-title">
+                    Project Team
                 </div>
 
-
-                <!-- ==================================================
-                     TITLE
-                =================================================== -->
-
-                <h1 id="welcomeTitle">
-
-                    <span class="title-small">
-                        WELCOME TO
-                    </span>
-
-                    <span class="title-main">
-                        PROJECT
-                        <span class="title-accent">
-                            FILE HUB
-                        </span>
-                    </span>
-
-                </h1>
-
-
-                <!-- ==================================================
-                     DESCRIPTION
-                =================================================== -->
-
-                <p class="intro-text">
-                    This website is handled by:
-                </p>
-
-
-                <!-- ==================================================
-                     MEMBERS
-                =================================================== -->
-
-                <div
-                    class="members"
-                    aria-label="Project members"
-                >
-
-                    <div class="member member-featured">
-                        <span>Sunnel John Rebano</span>
-                        <span class="member-icon">🧑🏻‍🔧</span>
-                    </div>
+                <div class="team-list">
 
                     <div class="member">
-                        Rhea Kim
-                    </div>
-
-                    <div class="member">
-                        Kimberly
-                    </div>
-
-                    <div class="member">
-                        Charles Tiong
-                    </div>
-
-                    <div class="member">
-                        Reyden Osia
-                    </div>
-
-                    <div class="member">
-                        Mc Lawrence Conzaga
-                    </div>
-
-                    <div class="member">
-                        Kimmy Clavo
-                    </div>
-
-                    <div class="member">
-                        Dianne Gadia
-                    </div>
-
-                    <div class="member">
-                        Carl Caabay
-                    </div>
-
-                    <div class="member">
-                        Mark Camaso
+                        Sunnel John Rebano 🧑🏻‍🔧
                     </div>
 
                     <div class="member">
@@ -180,59 +1308,2703 @@
 
                 </div>
 
-
-                <!-- ==================================================
-                     FOOTER TEXT
-                =================================================== -->
-
-                <p class="project-description">
-                    For MIL Project Game Development.
-                </p>
-
-
-                <!-- ==================================================
-                     ENTER BUTTON
-                =================================================== -->
-
-                <a
-                    href="/hub"
-                    class="enter-project"
-                    aria-label="Enter Project File Hub"
+                <button
+                    id="enterProject"
+                    class="enter-button"
+                    type="button"
                 >
+                    ENTER PROJECT →
+                </button>
 
-                    <span class="button-glow"></span>
+            </div>
 
-                    <span class="button-text">
-                        ENTER PROJECT
-                    </span>
+        </div>
 
-                    <span class="button-arrow">
-                        →
-                    </span>
+    </div>
 
-                </a>
+</section>
 
 
-                <div class="online-status">
+<!-- =======================================================
+     HUB
+======================================================= -->
 
-                    <span class="status-dot"></span>
+<section id="hub">
 
-                    PROJECT HUB ONLINE
+    <header class="hub-header">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                📁
+            </div>
+
+            <div>
+                <strong>
+                    Project File Hub
+                </strong>
+
+                <small>
+                    MIL Project Workspace
+                </small>
+            </div>
+
+        </div>
+
+        <div
+            id="serverStatus"
+            class="server-status offline"
+        >
+            <span class="server-dot"></span>
+            <span id="serverStatusText">
+                Checking server
+            </span>
+        </div>
+
+    </header>
+
+
+    <main class="hub-container">
+
+        <div class="hub-title">
+
+            <h2>
+                Project Workspace
+            </h2>
+
+            <p>
+                Publish, browse and manage project files.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             PUBLISH
+        ================================================= -->
+
+        <section class="panel">
+
+            <div class="panel-title">
+
+                <div>
+                    <h3>
+                        Publish File
+                    </h3>
+
+                    <p>
+                        Your username is required before publishing.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form id="publishForm">
+
+                <div class="form-grid">
+
+                    <div class="form-field">
+
+                        <label for="username">
+                            Username *
+                        </label>
+
+                        <input
+                            id="username"
+                            maxlength="80"
+                            autocomplete="off"
+                            placeholder="Enter your username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="displayName">
+                            Display Name
+                        </label>
+
+                        <input
+                            id="displayName"
+                            maxlength="100"
+                            autocomplete="off"
+                            placeholder="Example: Player Controller"
+                        >
+
+                    </div>
+
+
+                    <div class="form-field full">
+
+                        <label for="fileInput">
+                            Project File *
+                        </label>
+
+                        <div class="file-picker">
+
+                            <input
+                                id="fileInput"
+                                type="file"
+                                required
+                            >
+
+                        </div>
+
+                        <div
+                            id="selectedFile"
+                            class="selected-file"
+                        >
+                            No file selected.
+                        </div>
+
+                    </div>
 
                 </div>
 
+
+                <button
+                    id="publishButton"
+                    class="publish-button"
+                    type="submit"
+                >
+                    🚀 Publish File
+                </button>
+
+
+                <div
+                    id="progressWrap"
+                    class="progress-wrap"
+                    hidden
+                >
+
+                    <div class="progress-track">
+
+                        <div
+                            id="progressFill"
+                            class="progress-fill"
+                        ></div>
+
+                    </div>
+
+                    <span
+                        id="progressText"
+                        class="progress-text"
+                    >
+                        Starting upload...
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="publishMessage"
+                    class="message"
+                ></div>
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================================
+             STATS
+        ================================================= -->
+
+        <div class="stats">
+
+            <div class="stat">
+                <span>Files</span>
+                <strong id="statFiles">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Scripts</span>
+                <strong id="statScripts">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Downloads</span>
+                <strong id="statDownloads">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Storage</span>
+                <strong id="statStorage">0 B</strong>
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             LIBRARY
+        ================================================= -->
+
+        <section class="panel">
+
+            <div class="panel-title">
+
+                <div>
+                    <h3>
+                        Public Library
+                    </h3>
+
+                    <p>
+                        Browse all published project files.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="filters">
+
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="🔎 Search files..."
+                >
+
+
+                <select id="uploaderFilter">
+
+                    <option value="">
+                        All uploaders
+                    </option>
+
+                </select>
+
+
+                <select id="sortSelect">
+
+                    <option value="newest">
+                        Newest
+                    </option>
+
+                    <option value="oldest">
+                        Oldest
+                    </option>
+
+                    <option value="name">
+                        Name
+                    </option>
+
+                    <option value="largest">
+                        Largest
+                    </option>
+
+                    <option value="downloads">
+                        Most Downloaded
+                    </option>
+
+                </select>
+
+
+                <button
+                    id="refreshButton"
+                    class="refresh"
+                    type="button"
+                >
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div
+                id="library"
+                class="library"
+            >
+                <div class="empty">
+                    Loading project library...
+                </div>
             </div>
 
         </section>
 
     </main>
 
+</section>
 
-    <!-- ==================================================
-         PARTICLE ENGINE
-    =================================================== -->
+</div>
 
-    <script src="/particle.js"></script>
+
+<!-- =======================================================
+     DELETE KEY MODAL
+======================================================= -->
+
+<div
+    id="deleteKeyModal"
+    class="modal hidden"
+>
+
+    <div
+        class="modal-backdrop"
+        data-close-key
+    ></div>
+
+
+    <div class="modal-box">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h2>
+            File Published Successfully
+        </h2>
+
+        <p>
+            Your file has been uploaded. The server generated
+            a unique delete key for this file.
+        </p>
+
+
+        <div class="warning">
+
+            <strong>
+                ⚠ Save this key now.
+            </strong>
+
+            <br>
+
+            This key is required to delete your file later.
+            It cannot be recovered from the public library.
+
+        </div>
+
+
+        <label>
+            Your Delete Key
+        </label>
+
+
+        <div class="key-row">
+
+            <input
+                id="generatedDeleteKey"
+                readonly
+                type="text"
+            >
+
+            <button
+                id="copyKeyButton"
+                type="button"
+            >
+                Copy
+            </button>
+
+        </div>
+
+
+        <div
+            id="copyMessage"
+            class="message"
+        ></div>
+
+
+        <button
+            id="savedKeyButton"
+            class="modal-button"
+            type="button"
+        >
+            I've Saved My Key
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     DELETE MODAL
+======================================================= -->
+
+<div
+    id="deleteModal"
+    class="modal hidden"
+>
+
+    <div
+        class="modal-backdrop"
+        data-close-delete
+    ></div>
+
+
+    <div class="modal-box">
+
+        <button
+            class="close"
+            type="button"
+            data-close-delete
+        >
+            ×
+        </button>
+
+        <h2>
+            Delete File
+        </h2>
+
+        <p>
+            Enter the delete key that was generated when
+            this file was published.
+        </p>
+
+
+        <input
+            id="deleteTokenInput"
+            type="password"
+            autocomplete="off"
+            placeholder="Enter delete key"
+        >
+
+
+        <div
+            id="deleteMessage"
+            class="message"
+        ></div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel"
+                id="cancelDeleteButton"
+                type="button"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="confirm-delete"
+                id="confirmDeleteButton"
+                type="button"
+            >
+                Delete File
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     PREVIEW MODAL
+======================================================= -->
+
+<div
+    id="previewModal"
+    class="modal hidden"
+>
+
+    <div
+        class="modal-backdrop"
+        data-close-preview
+    ></div>
+
+
+    <div class="modal-box preview">
+
+        <button
+            class="close"
+            type="button"
+            data-close-preview
+        >
+            ×
+        </button>
+
+        <h2 id="previewTitle">
+            Script Preview
+        </h2>
+
+        <p>
+            Read-only preview.
+        </p>
+
+        <pre id="previewContent">
+Loading...
+        </pre>
+
+    </div>
+
+</div>
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   PROJECT FILE HUB APPLICATION
+========================================================= */
+
+(() => {
+
+    const $ = selector =>
+        document.querySelector(selector);
+
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const landing =
+        $("#landing");
+
+    const hub =
+        $("#hub");
+
+    const enterProject =
+        $("#enterProject");
+
+    const publishForm =
+        $("#publishForm");
+
+    const username =
+        $("#username");
+
+    const displayName =
+        $("#displayName");
+
+    const fileInput =
+        $("#fileInput");
+
+    const selectedFile =
+        $("#selectedFile");
+
+    const publishButton =
+        $("#publishButton");
+
+    const progressWrap =
+        $("#progressWrap");
+
+    const progressFill =
+        $("#progressFill");
+
+    const progressText =
+        $("#progressText");
+
+    const publishMessage =
+        $("#publishMessage");
+
+    const library =
+        $("#library");
+
+    const searchInput =
+        $("#searchInput");
+
+    const uploaderFilter =
+        $("#uploaderFilter");
+
+    const sortSelect =
+        $("#sortSelect");
+
+    const refreshButton =
+        $("#refreshButton");
+
+    const statFiles =
+        $("#statFiles");
+
+    const statScripts =
+        $("#statScripts");
+
+    const statDownloads =
+        $("#statDownloads");
+
+    const statStorage =
+        $("#statStorage");
+
+    const serverStatus =
+        $("#serverStatus");
+
+    const serverStatusText =
+        $("#serverStatusText");
+
+    const deleteKeyModal =
+        $("#deleteKeyModal");
+
+    const generatedDeleteKey =
+        $("#generatedDeleteKey");
+
+    const copyKeyButton =
+        $("#copyKeyButton");
+
+    const copyMessage =
+        $("#copyMessage");
+
+    const savedKeyButton =
+        $("#savedKeyButton");
+
+    const deleteModal =
+        $("#deleteModal");
+
+    const deleteTokenInput =
+        $("#deleteTokenInput");
+
+    const confirmDeleteButton =
+        $("#confirmDeleteButton");
+
+    const cancelDeleteButton =
+        $("#cancelDeleteButton");
+
+    const deleteMessage =
+        $("#deleteMessage");
+
+    const previewModal =
+        $("#previewModal");
+
+    const previewTitle =
+        $("#previewTitle");
+
+    const previewContent =
+        $("#previewContent");
+
+
+    /* =====================================================
+       STATE
+    ===================================================== */
+
+    let selectedDeleteFileId = null;
+
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    function escapeHtml(value){
+
+        return String(value ?? "")
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;")
+            .replace(/"/g,"&quot;")
+            .replace(/'/g,"&#039;");
+
+    }
+
+
+    function formatBytes(bytes){
+
+        if(!Number.isFinite(Number(bytes))){
+            return "0 B";
+        }
+
+        bytes = Number(bytes);
+
+        if(bytes === 0){
+            return "0 B";
+        }
+
+        const units =
+            ["B","KB","MB","GB"];
+
+        const index =
+            Math.min(
+                Math.floor(
+                    Math.log(bytes) /
+                    Math.log(1024)
+                ),
+                units.length - 1
+            );
+
+        return (
+            (bytes /
+            Math.pow(1024,index))
+            .toFixed(index ? 1 : 0)
+            +
+            " " +
+            units[index]
+        );
+
+    }
+
+
+    function formatDate(timestamp){
+
+        if(!timestamp){
+            return "Unknown date";
+        }
+
+        const date =
+            new Date(timestamp);
+
+        if(Number.isNaN(date.getTime())){
+            return "Unknown date";
+        }
+
+        return date.toLocaleString();
+
+    }
+
+
+    function message(element,text,type=""){
+
+        element.textContent = text;
+
+        element.className =
+            "message" +
+            (type ? " " + type : "");
+
+    }
+
+
+    /* =====================================================
+       ENTER PROJECT
+    ===================================================== */
+
+    enterProject.addEventListener(
+        "click",
+        () => {
+
+            landing.style.display = "none";
+            hub.style.display = "block";
+
+            window.scrollTo({
+                top:0,
+                behavior:"smooth"
+            });
+
+            loadEverything();
+
+        }
+    );
+
+
+    /* =====================================================
+       FILE SELECT
+    ===================================================== */
+
+    fileInput.addEventListener(
+        "change",
+        () => {
+
+            const file =
+                fileInput.files[0];
+
+            if(!file){
+
+                selectedFile.textContent =
+                    "No file selected.";
+
+                return;
+
+            }
+
+            selectedFile.textContent =
+                `${file.name} • ${formatBytes(file.size)}`;
+
+        }
+    );
+
+
+    /* =====================================================
+       PUBLISH
+    ===================================================== */
+
+    publishForm.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+            publishFile();
+
+        }
+    );
+
+
+    function publishFile(){
+
+        const user =
+            username.value.trim();
+
+        const display =
+            displayName.value.trim();
+
+        const file =
+            fileInput.files[0];
+
+
+        if(!user){
+
+            message(
+                publishMessage,
+                "Enter your username before publishing.",
+                "error"
+            );
+
+            username.focus();
+
+            return;
+
+        }
+
+
+        if(user.length < 2){
+
+            message(
+                publishMessage,
+                "Username must contain at least 2 characters.",
+                "error"
+            );
+
+            username.focus();
+
+            return;
+
+        }
+
+
+        if(!file){
+
+            message(
+                publishMessage,
+                "Select a file first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const MAX_SIZE =
+            50 * 1024 * 1024;
+
+
+        if(file.size > MAX_SIZE){
+
+            message(
+                publishMessage,
+                "Maximum file size is 50 MB.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "file",
+            file
+        );
+
+        formData.append(
+            "uploader",
+            user
+        );
+
+        formData.append(
+            "username",
+            user
+        );
+
+        formData.append(
+            "displayName",
+            display
+        );
+
+
+        publishButton.disabled = true;
+
+        publishButton.textContent =
+            "Publishing...";
+
+        progressWrap.hidden = false;
+
+        progressFill.style.width =
+            "0%";
+
+        progressText.textContent =
+            "Starting upload...";
+
+        message(
+            publishMessage,
+            ""
+        );
+
+
+        const xhr =
+            new XMLHttpRequest();
+
+
+        xhr.open(
+            "POST",
+            "/api/files"
+        );
+
+
+        xhr.upload.addEventListener(
+            "progress",
+            event => {
+
+                if(!event.lengthComputable){
+                    return;
+                }
+
+                const percent =
+                    Math.round(
+                        event.loaded /
+                        event.total *
+                        100
+                    );
+
+                progressFill.style.width =
+                    percent + "%";
+
+                progressText.textContent =
+                    `Uploading ${percent}%`;
+
+            }
+        );
+
+
+        xhr.onload = async () => {
+
+            publishButton.disabled = false;
+
+            publishButton.textContent =
+                "🚀 Publish File";
+
+
+            let result;
+
+            try{
+
+                result =
+                    JSON.parse(
+                        xhr.responseText
+                    );
+
+            }
+            catch{
+
+                result = {
+                    success:false,
+                    error:"Invalid server response."
+                };
+
+            }
+
+
+            if(
+                xhr.status < 200 ||
+                xhr.status >= 300 ||
+                !result.success
+            ){
+
+                progressWrap.hidden = true;
+
+                message(
+                    publishMessage,
+                    result.error ||
+                    "Publishing failed.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             IMPORTANT:
+
+             The frontend NEVER creates the delete key.
+
+             The backend must generate it securely and return:
+
+             {
+                 success:true,
+                 deleteToken:"..."
+             }
+            */
+
+            if(!result.deleteToken){
+
+                progressWrap.hidden = true;
+
+                message(
+                    publishMessage,
+                    "Upload succeeded, but the server did not return a delete key.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            progressFill.style.width =
+                "100%";
+
+            progressText.textContent =
+                "Published successfully.";
+
+
+            generatedDeleteKey.value =
+                result.deleteToken;
+
+            copyMessage.textContent = "";
+
+            deleteKeyModal.classList.remove(
+                "hidden"
+            );
+
+
+            publishForm.reset();
+
+            selectedFile.textContent =
+                "No file selected.";
+
+
+            await loadEverything();
+
+
+            setTimeout(
+                () => {
+                    progressWrap.hidden = true;
+                },
+                900
+            );
+
+        };
+
+
+        xhr.onerror = () => {
+
+            publishButton.disabled = false;
+
+            publishButton.textContent =
+                "🚀 Publish File";
+
+            progressWrap.hidden = true;
+
+            message(
+                publishMessage,
+                "Unable to connect to the server.",
+                "error"
+            );
+
+        };
+
+
+        xhr.send(
+            formData
+        );
+
+    }
+
+
+    /* =====================================================
+       DELETE KEY MODAL
+    ===================================================== */
+
+    function closeDeleteKeyModal(){
+
+        deleteKeyModal.classList.add(
+            "hidden"
+        );
+
+        generatedDeleteKey.value = "";
+
+    }
+
+
+    document
+        .querySelectorAll("[data-close-key]")
+        .forEach(
+            element => {
+
+                element.addEventListener(
+                    "click",
+                    closeDeleteKeyModal
+                );
+
+            }
+        );
+
+
+    savedKeyButton.addEventListener(
+        "click",
+        () => {
+
+            closeDeleteKeyModal();
+
+            message(
+                publishMessage,
+                "File published. Your delete key was shown above — keep it safe.",
+                "success"
+            );
+
+        }
+    );
+
+
+    copyKeyButton.addEventListener(
+        "click",
+        async () => {
+
+            const key =
+                generatedDeleteKey.value;
+
+            if(!key){
+                return;
+            }
+
+            try{
+
+                await navigator.clipboard.writeText(
+                    key
+                );
+
+                copyMessage.textContent =
+                    "✓ Delete key copied.";
+
+            }
+            catch{
+
+                generatedDeleteKey.select();
+
+                document.execCommand("copy");
+
+                copyMessage.textContent =
+                    "✓ Delete key copied.";
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       LOAD FILES
+    ===================================================== */
+
+    async function loadFiles(){
+
+        const params =
+            new URLSearchParams();
+
+
+        const search =
+            searchInput.value.trim();
+
+        const uploader =
+            uploaderFilter.value;
+
+        const sort =
+            sortSelect.value;
+
+
+        if(search){
+            params.set("search",search);
+        }
+
+        if(uploader){
+            params.set("uploader",uploader);
+        }
+
+        params.set(
+            "sort",
+            sort
+        );
+
+
+        library.innerHTML =
+            `<div class="empty">
+                Loading project library...
+             </div>`;
+
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/files?" +
+                    params.toString()
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if(
+                !response.ok ||
+                !result.success
+            ){
+
+                throw new Error(
+                    result.error ||
+                    "Unable to load files."
+                );
+
+            }
+
+
+            renderFiles(
+                Array.isArray(result.files)
+                    ? result.files
+                    : []
+            );
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            library.innerHTML =
+                `<div class="empty">
+                    Unable to load files.
+                    <br><br>
+                    <small>
+                        Check that your backend API is running.
+                    </small>
+                 </div>`;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RENDER FILES
+    ===================================================== */
+
+    function renderFiles(files){
+
+        if(!files.length){
+
+            library.innerHTML =
+                `<div class="empty">
+                    ✦ No published files yet.
+                 </div>`;
+
+            return;
+
+        }
+
+
+        library.innerHTML =
+            files
+                .map(createFileCard)
+                .join("");
+
+
+        library
+            .querySelectorAll("[data-download]")
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const id =
+                                button.dataset.download;
+
+                            window.location.href =
+                                `/api/files/${encodeURIComponent(id)}/download`;
+
+                        }
+                    );
+
+                }
+            );
+
+
+        library
+            .querySelectorAll("[data-delete]")
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            openDeleteModal(
+                                button.dataset.delete
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        library
+            .querySelectorAll("[data-preview]")
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            previewScript(
+                                button.dataset.preview,
+                                button.dataset.name
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+
+    function createFileCard(file){
+
+        const preview =
+            file.script
+            ? `
+                <button
+                    data-preview="${escapeHtml(file.id)}"
+                    data-name="${escapeHtml(file.displayName || file.name)}"
+                >
+                    👁 Preview
+                </button>
+              `
+            : "";
+
+
+        return `
+            <article class="file-card">
+
+                <div class="file-top">
+
+                    <div>
+
+                        <div class="file-name">
+                            ${escapeHtml(
+                                file.displayName ||
+                                file.name ||
+                                "Untitled file"
+                            )}
+                        </div>
+
+                        <div class="file-meta">
+
+                            ${escapeHtml(
+                                file.name || ""
+                            )}
+
+                            •
+                            ${escapeHtml(
+                                String(
+                                    file.extension ||
+                                    ""
+                                ).toUpperCase()
+                            )}
+
+                            •
+                            ${formatBytes(file.size)}
+
+                            <br>
+
+                            Published by
+                            <strong>
+                                ${escapeHtml(
+                                    file.uploader ||
+                                    "Unknown"
+                                )}
+                            </strong>
+
+                            •
+                            ${formatDate(file.date)}
+
+                            <br>
+
+                            Downloads:
+                            ${Number(file.downloads) || 0}
+
+                        </div>
+
+                    </div>
+
+                    <span class="badge">
+                        ${
+                            file.script
+                                ? "SCRIPT"
+                                : "FILE"
+                        }
+                    </span>
+
+                </div>
+
+
+                <div class="file-actions">
+
+                    ${preview}
+
+                    <button
+                        data-download="${escapeHtml(file.id)}"
+                    >
+                        ↓ Download
+                    </button>
+
+                    <button
+                        class="delete"
+                        data-delete="${escapeHtml(file.id)}"
+                    >
+                        ✕ Delete
+                    </button>
+
+                </div>
+
+            </article>
+        `;
+
+    }
+
+
+    /* =====================================================
+       DELETE
+    ===================================================== */
+
+    function openDeleteModal(id){
+
+        selectedDeleteFileId =
+            id;
+
+        deleteTokenInput.value = "";
+
+        message(
+            deleteMessage,
+            ""
+        );
+
+        deleteModal.classList.remove(
+            "hidden"
+        );
+
+        setTimeout(
+            () => deleteTokenInput.focus(),
+            50
+        );
+
+    }
+
+
+    function closeDeleteModal(){
+
+        deleteModal.classList.add(
+            "hidden"
+        );
+
+        selectedDeleteFileId =
+            null;
+
+    }
+
+
+    cancelDeleteButton.addEventListener(
+        "click",
+        closeDeleteModal
+    );
+
+
+    document
+        .querySelectorAll("[data-close-delete]")
+        .forEach(
+            element => {
+
+                element.addEventListener(
+                    "click",
+                    closeDeleteModal
+                );
+
+            }
+        );
+
+
+    confirmDeleteButton.addEventListener(
+        "click",
+        deleteFile
+    );
+
+
+    async function deleteFile(){
+
+        if(!selectedDeleteFileId){
+            return;
+        }
+
+
+        const token =
+            deleteTokenInput.value.trim();
+
+
+        if(!token){
+
+            message(
+                deleteMessage,
+                "Enter your delete key.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        confirmDeleteButton.disabled = true;
+
+        confirmDeleteButton.textContent =
+            "Deleting...";
+
+
+        try{
+
+            const response =
+                await fetch(
+                    `/api/files/${encodeURIComponent(
+                        selectedDeleteFileId
+                    )}`,
+                    {
+                        method:"DELETE",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:JSON.stringify({
+                            deleteToken:token
+                        })
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if(
+                !response.ok ||
+                !result.success
+            ){
+
+                message(
+                    deleteMessage,
+                    result.error ||
+                    "Delete failed.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            closeDeleteModal();
+
+
+            message(
+                publishMessage,
+                "File deleted successfully.",
+                "success"
+            );
+
+
+            await loadEverything();
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            message(
+                deleteMessage,
+                "Unable to connect to the server.",
+                "error"
+            );
+
+        }
+        finally{
+
+            confirmDeleteButton.disabled =
+                false;
+
+            confirmDeleteButton.textContent =
+                "Delete File";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       PREVIEW
+    ===================================================== */
+
+    async function previewScript(id,name){
+
+        previewTitle.textContent =
+            name || "Script Preview";
+
+        previewContent.textContent =
+            "Loading...";
+
+        previewModal.classList.remove(
+            "hidden"
+        );
+
+
+        try{
+
+            const response =
+                await fetch(
+                    `/api/files/${encodeURIComponent(id)}/preview`
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if(
+                !response.ok ||
+                !result.success
+            ){
+
+                throw new Error(
+                    result.error ||
+                    "Preview failed."
+                );
+
+            }
+
+
+            previewContent.textContent =
+                result.file.content;
+
+        }
+        catch(error){
+
+            previewContent.textContent =
+                error.message;
+
+        }
+
+    }
+
+
+    document
+        .querySelectorAll("[data-close-preview]")
+        .forEach(
+            element => {
+
+                element.addEventListener(
+                    "click",
+                    () => {
+
+                        previewModal.classList.add(
+                            "hidden"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    async function loadStats(){
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/stats"
+                );
+
+            const result =
+                await response.json();
+
+
+            if(!result.success){
+                return;
+            }
+
+
+            statFiles.textContent =
+                result.stats.files ?? 0;
+
+            statScripts.textContent =
+                result.stats.scripts ?? 0;
+
+            statDownloads.textContent =
+                result.stats.downloads ?? 0;
+
+            statStorage.textContent =
+                formatBytes(
+                    result.stats.totalSize ?? 0
+                );
+
+        }
+        catch(error){
+
+            console.error(
+                "Stats:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       UPLOADERS
+    ===================================================== */
+
+    async function loadUploaders(){
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/uploaders"
+                );
+
+            const result =
+                await response.json();
+
+
+            if(!result.success){
+                return;
+            }
+
+
+            const previous =
+                uploaderFilter.value;
+
+
+            uploaderFilter.innerHTML =
+                `<option value="">
+                    All uploaders
+                 </option>`;
+
+
+            (result.uploaders || [])
+                .forEach(
+                    uploader => {
+
+                        const option =
+                            document.createElement(
+                                "option"
+                            );
+
+                        option.value =
+                            uploader;
+
+                        option.textContent =
+                            uploader;
+
+                        uploaderFilter.appendChild(
+                            option
+                        );
+
+                    }
+                );
+
+
+            if(
+                (result.uploaders || [])
+                    .includes(previous)
+            ){
+
+                uploaderFilter.value =
+                    previous;
+
+            }
+
+        }
+        catch(error){
+
+            console.error(
+                "Uploaders:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       HEALTH
+    ===================================================== */
+
+    async function checkHealth(){
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/health"
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if(
+                response.ok &&
+                result.success
+            ){
+
+                serverStatus.className =
+                    "server-status online";
+
+                serverStatusText.textContent =
+                    "Server Online";
+
+            }
+            else{
+
+                throw new Error();
+
+            }
+
+        }
+        catch{
+
+            serverStatus.className =
+                "server-status offline";
+
+            serverStatusText.textContent =
+                "Server Offline";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       EVERYTHING
+    ===================================================== */
+
+    async function loadEverything(){
+
+        await Promise.all([
+            loadFiles(),
+            loadStats(),
+            loadUploaders(),
+            checkHealth()
+        ]);
+
+    }
+
+
+    /* =====================================================
+       FILTERS
+    ===================================================== */
+
+    let searchTimer = null;
+
+
+    searchInput.addEventListener(
+        "input",
+        () => {
+
+            clearTimeout(
+                searchTimer
+            );
+
+            searchTimer =
+                setTimeout(
+                    loadFiles,
+                    250
+                );
+
+        }
+    );
+
+
+    uploaderFilter.addEventListener(
+        "change",
+        loadFiles
+    );
+
+
+    sortSelect.addEventListener(
+        "change",
+        loadFiles
+    );
+
+
+    refreshButton.addEventListener(
+        "click",
+        loadEverything
+    );
+
+
+    /* =====================================================
+       KEYBOARD SHORTCUT
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if(
+                event.key === "Escape"
+            ){
+
+                deleteKeyModal.classList.add(
+                    "hidden"
+                );
+
+                deleteModal.classList.add(
+                    "hidden"
+                );
+
+                previewModal.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       SSE REAL-TIME UPDATES
+    ===================================================== */
+
+    function connectEvents(){
+
+        if(!window.EventSource){
+            return;
+        }
+
+
+        const events =
+            new EventSource(
+                "/api/events"
+            );
+
+
+        events.addEventListener(
+            "library-update",
+            () => {
+
+                loadEverything();
+
+            }
+        );
+
+
+        events.onerror =
+            () => {
+
+                /*
+                 Browser automatically reconnects.
+                */
+
+            };
+
+    }
+
+
+    /* =====================================================
+       START
+    ===================================================== */
+
+    connectEvents();
+
+})();
+</script>
+
+
+<!-- =======================================================
+     OPTIMIZED PARTICLE ENGINE
+======================================================= -->
+
+<script>
+"use strict";
+
+(() => {
+
+    const canvas =
+        document.getElementById(
+            "particleCanvas"
+        );
+
+    if(!canvas){
+        return;
+    }
+
+
+    const ctx =
+        canvas.getContext(
+            "2d",
+            {
+                alpha:true,
+                desynchronized:true
+            }
+        );
+
+    if(!ctx){
+        return;
+    }
+
+
+    const reduced =
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+    const mobile =
+        window.matchMedia(
+            "(max-width:700px)"
+        ).matches;
+
+
+    const cores =
+        navigator.hardwareConcurrency || 4;
+
+
+    const memory =
+        navigator.deviceMemory || 4;
+
+
+    let performanceLevel =
+        "medium";
+
+
+    if(reduced){
+
+        performanceLevel =
+            "minimal";
+
+    }
+    else if(
+        cores <= 2 ||
+        memory <= 2
+    ){
+
+        performanceLevel =
+            "low";
+
+    }
+    else if(
+        cores >= 8 &&
+        memory >= 8
+    ){
+
+        performanceLevel =
+            "high";
+
+    }
+
+
+    const levels = {
+
+        minimal:{
+            count:8,
+            speed:.08,
+            connections:false
+        },
+
+        low:{
+            count:14,
+            speed:.13,
+            connections:false
+        },
+
+        medium:{
+            count:25,
+            speed:.17,
+            connections:true
+        },
+
+        high:{
+            count:38,
+            speed:.22,
+            connections:true
+        }
+
+    };
+
+
+    const settings =
+        levels[performanceLevel];
+
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    let particles = [];
+
+    let animationFrame = null;
+
+    let running = true;
+
+    let lastTime = 0;
+
+    let fpsSamples = [];
+
+    let targetCount =
+        mobile
+            ? Math.max(
+                6,
+                Math.floor(
+                    settings.count * .65
+                )
+            )
+            : settings.count;
+
+
+    function random(min,max){
+
+        return (
+            Math.random() *
+            (max - min)
+        ) + min;
+
+    }
+
+
+    function resize(){
+
+        width =
+            window.innerWidth;
+
+        height =
+            window.innerHeight;
+
+
+        dpr =
+            Math.min(
+                window.devicePixelRatio || 1,
+                1.35
+            );
+
+
+        canvas.width =
+            Math.floor(
+                width * dpr
+            );
+
+        canvas.height =
+            Math.floor(
+                height * dpr
+            );
+
+
+        canvas.style.width =
+            width + "px";
+
+        canvas.style.height =
+            height + "px";
+
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
+
+
+        adjust();
+
+    }
+
+
+    function create(){
+
+        return {
+
+            x:random(0,width),
+            y:random(0,height),
+
+            vx:random(
+                -settings.speed,
+                settings.speed
+            ),
+
+            vy:random(
+                -settings.speed,
+                settings.speed
+            ),
+
+            size:random(.65,1.65),
+
+            alpha:random(.2,.7),
+
+            phase:random(
+                0,
+                Math.PI * 2
+            )
+
+        };
+
+    }
+
+
+    function adjust(){
+
+        while(
+            particles.length <
+            targetCount
+        ){
+
+            particles.push(
+                create()
+            );
+
+        }
+
+
+        while(
+            particles.length >
+            targetCount
+        ){
+
+            particles.pop();
+
+        }
+
+    }
+
+
+    function update(delta){
+
+        const multiplier =
+            delta * .06;
+
+
+        for(
+            let i=0;
+            i<particles.length;
+            i++
+        ){
+
+            const p =
+                particles[i];
+
+
+            p.x +=
+                p.vx *
+                multiplier;
+
+            p.y +=
+                p.vy *
+                multiplier;
+
+
+            p.phase +=
+                delta * .0005;
+
+
+            p.y +=
+                Math.sin(
+                    p.phase
+                ) * .025;
+
+
+            if(p.x < -10){
+                p.x = width + 10;
+            }
+
+            if(p.x > width + 10){
+                p.x = -10;
+            }
+
+            if(p.y < -10){
+                p.y = height + 10;
+            }
+
+            if(p.y > height + 10){
+                p.y = -10;
+            }
+
+        }
+
+    }
+
+
+    function draw(){
+
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        /*
+         Particle dots.
+         */
+
+        ctx.fillStyle =
+            "rgba(75,220,255,.6)";
+
+
+        for(
+            let i=0;
+            i<particles.length;
+            i++
+        ){
+
+            const p =
+                particles[i];
+
+            ctx.globalAlpha =
+                p.alpha;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.size,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+        }
+
+
+        /*
+         Limited connections.
+         */
+
+        if(settings.connections){
+
+            const maxDistance = 105;
+
+            const maxDistanceSq =
+                maxDistance *
+                maxDistance;
+
+            let lines = 0;
+
+
+            ctx.lineWidth = .45;
+
+
+            for(
+                let i=0;
+                i<particles.length &&
+                lines<70;
+                i++
+            ){
+
+                const a =
+                    particles[i];
+
+
+                for(
+                    let j=i+1;
+                    j<particles.length &&
+                    lines<70;
+                    j++
+                ){
+
+                    const b =
+                        particles[j];
+
+
+                    const dx =
+                        a.x - b.x;
+
+                    const dy =
+                        a.y - b.y;
+
+                    const distSq =
+                        dx*dx +
+                        dy*dy;
+
+
+                    if(
+                        distSq >
+                        maxDistanceSq
+                    ){
+                        continue;
+                    }
+
+
+                    const distance =
+                        Math.sqrt(distSq);
+
+
+                    const alpha =
+                        (
+                            1 -
+                            distance /
+                            maxDistance
+                        ) * .12;
+
+
+                    ctx.strokeStyle =
+                        `rgba(112,130,255,${alpha})`;
+
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(
+                        a.x,
+                        a.y
+                    );
+
+                    ctx.lineTo(
+                        b.x,
+                        b.y
+                    );
+
+                    ctx.stroke();
+
+
+                    lines++;
+
+                }
+
+            }
+
+        }
+
+
+        ctx.globalAlpha = 1;
+
+    }
+
+
+    function optimize(){
+
+        if(
+            fpsSamples.length < 15
+        ){
+            return;
+        }
+
+
+        const avg =
+            fpsSamples.reduce(
+                (a,b) => a+b,
+                0
+            ) /
+            fpsSamples.length;
+
+
+        const fps =
+            1000 / avg;
+
+
+        /*
+         Automatically reduce load
+         when the device struggles.
+         */
+
+        if(
+            fps < 38 &&
+            targetCount > 6
+        ){
+
+            targetCount =
+                Math.max(
+                    6,
+                    Math.floor(
+                        targetCount * .72
+                    )
+                );
+
+            adjust();
+
+        }
+        else if(
+            fps < 48 &&
+            targetCount > 10
+        ){
+
+            targetCount =
+                Math.max(
+                    10,
+                    Math.floor(
+                        targetCount * .85
+                    )
+                );
+
+            adjust();
+
+        }
+
+
+        fpsSamples = [];
+
+    }
+
+
+    function animate(timestamp){
+
+        if(!running){
+
+            animationFrame =
+                null;
+
+            return;
+
+        }
+
+
+        if(!lastTime){
+            lastTime =
+                timestamp;
+        }
+
+
+        let delta =
+            timestamp -
+            lastTime;
+
+
+        lastTime =
+            timestamp;
+
+
+        delta =
+            Math.min(
+                delta,
+                40
+            );
+
+
+        fpsSamples.push(
+            delta
+        );
+
+
+        if(
+            fpsSamples.length > 30
+        ){
+
+            fpsSamples.shift();
+
+        }
+
+
+        update(delta);
+
+        draw();
+
+
+        if(
+            fpsSamples.length === 30
+        ){
+
+            optimize();
+
+        }
+
+
+        animationFrame =
+            requestAnimationFrame(
+                animate
+            );
+
+    }
+
+
+    document.addEventListener(
+        "visibilitychange",
+        () => {
+
+            if(document.hidden){
+
+                running = false;
+
+                if(animationFrame){
+
+                    cancelAnimationFrame(
+                        animationFrame
+                    );
+
+                    animationFrame =
+                        null;
+
+                }
+
+                return;
+
+            }
+
+
+            running = true;
+
+            lastTime = 0;
+
+            fpsSamples = [];
+
+            animationFrame =
+                requestAnimationFrame(
+                    animate
+                );
+
+        }
+    );
+
+
+    let resizeTimer = null;
+
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            clearTimeout(
+                resizeTimer
+            );
+
+            resizeTimer =
+                setTimeout(
+                    resize,
+                    150
+                );
+
+        },
+        {
+            passive:true
+        }
+    );
+
+
+    resize();
+
+    animationFrame =
+        requestAnimationFrame(
+            animate
+        );
+
+})();
+</script>
 
 </body>
 </html>
