@@ -23,324 +23,432 @@
 
 <body>
 
-<header class="topbar">
+<!-- ================================================= -->
+<!-- ORIGINAL LANDING PAGE -->
+<!-- ================================================= -->
 
-    <div>
+<section
+    id="landingPage"
+    class="landing-page"
+>
+
+    <div class="landing-glow glow-one"></div>
+    <div class="landing-glow glow-two"></div>
+
+    <div class="welcome-card">
+
+        <div class="welcome-small">
+            MIL PROJECT • GAME DEVELOPMENT
+        </div>
 
         <h1>
-            Project File Hub
+            WELCOME TO
+            <br>
+            <span>
+                PROJECT FILE HUB
+            </span>
         </h1>
 
-        <p>
-            MIL Project • Game Development
+        <p class="handled">
+            This website is handled by:
         </p>
 
-    </div>
+        <div class="members">
 
-    <div
-        id="serverStatus"
-        class="status offline"
-    >
-        Checking server...
-    </div>
+            <span>
+                Sunnel John Rebano
+            </span>
 
-</header>
+            <span>
+                Rhea Kim
+            </span>
 
+            <span>
+                Kimberly
+            </span>
 
-<main class="container">
+            <span>
+                Charles Tiong
+            </span>
 
+            <span>
+                Reyden Osia
+            </span>
 
-    <!-- ========================================= -->
-    <!-- PUBLISH -->
-    <!-- ========================================= -->
+            <span>
+                Mc Lawrence Conzaga
+            </span>
 
-    <section class="card publish-card">
+            <span>
+                Kimmy Clavo
+            </span>
 
-        <div class="section-title">
+            <span>
+                Dianne Gadia
+            </span>
 
-            <div>
+            <span>
+                Carl Caabay
+            </span>
 
-                <h2>
-                    Publish File
-                </h2>
-
-                <p>
-                    Upload your project file or custom script.
-                </p>
-
-            </div>
+            <span>
+                Mark Camaso
+            </span>
 
         </div>
 
+        <p class="project-description">
+            For MIL Project Game Development.
+        </p>
 
-        <form
-            id="publishForm"
+        <button
+            id="enterProjectButton"
+            class="enter-button"
         >
+            ENTER PROJECT
+        </button>
+
+    </div>
+
+</section>
 
 
-            <label>
-                Username
-            </label>
+<!-- ================================================= -->
+<!-- FILE HUB -->
+<!-- ================================================= -->
 
-            <input
-                id="username"
-                name="username"
-                type="text"
-                maxlength="80"
-                placeholder="Enter your username"
-                autocomplete="off"
-                required
-            >
+<section
+    id="hubPage"
+    class="hub-page hidden"
+>
 
-            <small>
-    Required. Your username will be used to generate your unique delete key after publishing and to delete your file/scripts.
-</small>
+    <header class="hub-header">
 
+        <div>
 
-            <label>
-                Display Name
-            </label>
-
-            <input
-                id="displayName"
-                name="displayName"
-                type="text"
-                maxlength="100"
-                placeholder="Example: Player Controller"
-            >
-
-
-            <label>
-                File
-            </label>
-
-            <input
-                id="fileInput"
-                name="file"
-                type="file"
-                required
-            >
-
-            <small>
-                Maximum size: 50 MB
-            </small>
-
-
-            <div
-                id="selectedFile"
-                class="selected-file"
-            >
-                No file selected.
+            <div class="hub-brand">
+                MIL PROJECT • GAME DEVELOPMENT
             </div>
 
+            <h1>
+                PROJECT FILE HUB
+            </h1>
 
-            <button
-                id="publishButton"
-                type="submit"
-                class="primary-button"
-            >
-                Publish
-            </button>
+            <p>
+                Project files, scripts and development resources.
+            </p>
 
+        </div>
+
+        <div class="header-actions">
 
             <div
-                id="uploadProgress"
-                class="progress-container hidden"
+                id="serverStatus"
+                class="status offline"
             >
+                Checking server...
+            </div>
 
-                <div
-                    class="progress-bar"
-                >
+            <button
+                id="backButton"
+                class="back-button"
+                type="button"
+            >
+                ← Back
+            </button>
 
-                    <div
-                        id="progressFill"
-                    ></div>
+        </div>
+
+    </header>
+
+
+    <main class="hub-container">
+
+
+        <!-- ========================================= -->
+        <!-- PUBLISH -->
+        <!-- ========================================= -->
+
+        <section class="neon-card publish-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-label">
+                        PUBLISH
+                    </div>
+
+                    <h2>
+                        Upload Project File
+                    </h2>
+
+                    <p>
+                        Publish a file or script to the public project library.
+                    </p>
 
                 </div>
 
-                <span
-                    id="progressText"
+            </div>
+
+
+            <form id="publishForm">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    maxlength="80"
+                    placeholder="Enter your username"
+                    autocomplete="off"
+                    required
                 >
-                    Uploading...
+
+                <small>
+                    Your username is attached to the published file.
+                </small>
+
+
+                <label for="displayName">
+                    Display Name
+                </label>
+
+                <input
+                    id="displayName"
+                    name="displayName"
+                    type="text"
+                    maxlength="100"
+                    placeholder="Example: Player Controller"
+                >
+
+
+                <label for="fileInput">
+                    Project File
+                </label>
+
+                <input
+                    id="fileInput"
+                    name="file"
+                    type="file"
+                    required
+                >
+
+                <small>
+                    Maximum file size: 50 MB
+                </small>
+
+
+                <div
+                    id="selectedFile"
+                    class="selected-file"
+                >
+                    No file selected.
+                </div>
+
+
+                <button
+                    id="publishButton"
+                    type="submit"
+                    class="neon-button"
+                >
+                    PUBLISH FILE
+                </button>
+
+
+                <div
+                    id="uploadProgress"
+                    class="progress-container hidden"
+                >
+
+                    <div class="progress-bar">
+
+                        <div
+                            id="progressFill"
+                        ></div>
+
+                    </div>
+
+                    <span id="progressText">
+                        Uploading...
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="publishMessage"
+                    class="message"
+                ></div>
+
+            </form>
+
+        </section>
+
+
+        <!-- ========================================= -->
+        <!-- STATS -->
+        <!-- ========================================= -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <span>
+                    FILES
                 </span>
+
+                <strong id="statFiles">
+                    0
+                </strong>
+
+            </div>
+
+            <div class="stat-card">
+
+                <span>
+                    SCRIPTS
+                </span>
+
+                <strong id="statScripts">
+                    0
+                </strong>
+
+            </div>
+
+            <div class="stat-card">
+
+                <span>
+                    DOWNLOADS
+                </span>
+
+                <strong id="statDownloads">
+                    0
+                </strong>
+
+            </div>
+
+            <div class="stat-card">
+
+                <span>
+                    STORAGE
+                </span>
+
+                <strong id="statStorage">
+                    0 B
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================= -->
+        <!-- LIBRARY -->
+        <!-- ========================================= -->
+
+        <section class="neon-card">
+
+            <div class="library-header">
+
+                <div>
+
+                    <div class="section-label">
+                        PROJECT LIBRARY
+                    </div>
+
+                    <h2>
+                        Published Files
+                    </h2>
+
+                    <p>
+                        Browse files uploaded by the project team.
+                    </p>
+
+                </div>
+
+                <button
+                    id="refreshButton"
+                    class="small-neon-button"
+                    type="button"
+                >
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="filters">
+
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search files..."
+                >
+
+                <select
+                    id="uploaderFilter"
+                >
+
+                    <option value="">
+                        All uploaders
+                    </option>
+
+                </select>
+
+                <select
+                    id="sortSelect"
+                >
+
+                    <option value="newest">
+                        Newest
+                    </option>
+
+                    <option value="oldest">
+                        Oldest
+                    </option>
+
+                    <option value="name">
+                        Name
+                    </option>
+
+                    <option value="largest">
+                        Largest
+                    </option>
+
+                    <option value="downloads">
+                        Most Downloaded
+                    </option>
+
+                </select>
 
             </div>
 
 
             <div
-                id="publishMessage"
-                class="message"
-            ></div>
-
-
-        </form>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- STATISTICS -->
-    <!-- ========================================= -->
-
-    <section class="stats-grid">
-
-        <div class="stat-card">
-
-            <span>
-                Files
-            </span>
-
-            <strong
-                id="statFiles"
+                id="library"
+                class="library"
             >
-                0
-            </strong>
 
-        </div>
-
-        <div class="stat-card">
-
-            <span>
-                Scripts
-            </span>
-
-            <strong
-                id="statScripts"
-            >
-                0
-            </strong>
-
-        </div>
-
-        <div class="stat-card">
-
-            <span>
-                Downloads
-            </span>
-
-            <strong
-                id="statDownloads"
-            >
-                0
-            </strong>
-
-        </div>
-
-        <div class="stat-card">
-
-            <span>
-                Storage
-            </span>
-
-            <strong
-                id="statStorage"
-            >
-                0 B
-            </strong>
-
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- LIBRARY -->
-    <!-- ========================================= -->
-
-    <section class="card">
-
-        <div class="library-header">
-
-            <div>
-
-                <h2>
-                    Public Library
-                </h2>
-
-                <p>
-                    Browse published files.
-                </p>
+                <div class="empty">
+                    Loading project files...
+                </div>
 
             </div>
 
-            <button
-                id="refreshButton"
-                class="secondary-button"
-                type="button"
-            >
-                Refresh
-            </button>
+        </section>
 
-        </div>
+    </main>
+
+</section>
 
 
-        <div class="filters">
-
-            <input
-                id="searchInput"
-                type="search"
-                placeholder="Search files..."
-            >
-
-            <select
-                id="uploaderFilter"
-            >
-
-                <option value="">
-                    All uploaders
-                </option>
-
-            </select>
-
-
-            <select
-                id="sortSelect"
-            >
-
-                <option value="newest">
-                    Newest
-                </option>
-
-                <option value="oldest">
-                    Oldest
-                </option>
-
-                <option value="name">
-                    Name
-                </option>
-
-                <option value="largest">
-                    Largest
-                </option>
-
-                <option value="downloads">
-                    Most Downloaded
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div
-            id="library"
-            class="library"
-        >
-
-            <div class="empty">
-                Loading...
-            </div>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<!-- ============================================= -->
+<!-- ================================================= -->
 <!-- DELETE KEY POPUP -->
-<!-- ============================================= -->
+<!-- ================================================= -->
 
 <div
     id="deleteKeyModal"
@@ -353,38 +461,42 @@
     ></div>
 
 
-    <div
-        class="modal-box key-modal"
-    >
+    <div class="modal-box key-modal">
 
         <div class="success-icon">
             ✓
         </div>
 
+        <div class="section-label">
+            PUBLISH COMPLETE
+        </div>
+
         <h2>
-            File Published
+            FILE PUBLISHED
         </h2>
 
         <p>
-            Your file was published successfully.
+            Your file has been added to the Project File Hub.
         </p>
+
 
         <div class="warning-box">
 
             <strong>
-                Save this delete key.
+                ⚠ SAVE YOUR DELETE KEY
             </strong>
 
             <p>
-                You need this key to delete your file later.
-                It cannot be recovered if you lose it.
+                This key is required if you want to delete
+                this file later.
+                The server does not provide a recovery option.
             </p>
 
         </div>
 
 
         <label>
-            Your Delete Key
+            YOUR DELETE KEY
         </label>
 
 
@@ -400,7 +512,7 @@
                 id="copyKeyButton"
                 type="button"
             >
-                Copy
+                COPY
             </button>
 
         </div>
@@ -415,9 +527,9 @@
         <button
             id="savedKeyButton"
             type="button"
-            class="primary-button"
+            class="neon-button"
         >
-            I've Saved My Key
+            I'VE SAVED MY KEY
         </button>
 
     </div>
@@ -425,9 +537,9 @@
 </div>
 
 
-<!-- ============================================= -->
-<!-- DELETE FILE MODAL -->
-<!-- ============================================= -->
+<!-- ================================================= -->
+<!-- DELETE MODAL -->
+<!-- ================================================= -->
 
 <div
     id="deleteModal"
@@ -440,12 +552,14 @@
     ></div>
 
 
-    <div
-        class="modal-box"
-    >
+    <div class="modal-box">
+
+        <div class="section-label">
+            SECURITY
+        </div>
 
         <h2>
-            Delete File
+            DELETE FILE
         </h2>
 
         <p>
@@ -457,7 +571,7 @@
         <input
             id="deleteTokenInput"
             type="text"
-            placeholder="username-mil-RANDOMCODE"
+            placeholder="PFH-username-randomcode"
             autocomplete="off"
         >
 
@@ -475,7 +589,7 @@
                 type="button"
                 class="secondary-button"
             >
-                Cancel
+                CANCEL
             </button>
 
             <button
@@ -483,7 +597,7 @@
                 type="button"
                 class="danger-button"
             >
-                Delete
+                DELETE FILE
             </button>
 
         </div>
@@ -493,9 +607,9 @@
 </div>
 
 
-<!-- ============================================= -->
-<!-- PREVIEW MODAL -->
-<!-- ============================================= -->
+<!-- ================================================= -->
+<!-- PREVIEW -->
+<!-- ================================================= -->
 
 <div
     id="previewModal"
@@ -508,17 +622,21 @@
     ></div>
 
 
-    <div
-        class="modal-box preview-box"
-    >
+    <div class="modal-box preview-box">
 
         <div class="modal-heading">
 
-            <h2
-                id="previewTitle"
-            >
-                Script Preview
-            </h2>
+            <div>
+
+                <div class="section-label">
+                    SCRIPT PREVIEW
+                </div>
+
+                <h2 id="previewTitle">
+                    Script Preview
+                </h2>
+
+            </div>
 
             <button
                 type="button"
