@@ -125,13 +125,10 @@ STATE
 let selectedDeleteFileId =
     null;
 
-let currentDeleteKey =
-    null;
-
 
 /*
 ========================================================
-FILE SIZE
+FORMAT BYTES
 ========================================================
 */
 
@@ -139,11 +136,13 @@ function formatBytes(
     bytes
 ) {
 
-    if (!Number.isFinite(bytes)) {
-        return "0 B";
-    }
+    if (
+        !Number.isFinite(
+            Number(bytes)
+        ) ||
+        Number(bytes) <= 0
+    ) {
 
-    if (bytes === 0) {
         return "0 B";
     }
 
@@ -155,32 +154,31 @@ function formatBytes(
     ];
 
     const index =
-        Math.floor(
-            Math.log(bytes) /
-            Math.log(1024)
-        );
-
-    const safeIndex =
         Math.min(
-            index,
+            Math.floor(
+                Math.log(
+                    Number(bytes)
+                ) /
+                Math.log(1024)
+            ),
             units.length - 1
         );
 
     const value =
-        bytes /
+        Number(bytes) /
         Math.pow(
             1024,
-            safeIndex
+            index
         );
 
     return (
         value.toFixed(
-            safeIndex === 0
+            index === 0
                 ? 0
                 : 1
         ) +
         " " +
-        units[safeIndex]
+        units[index]
     );
 }
 
@@ -195,9 +193,21 @@ function formatDate(
     timestamp
 ) {
 
-    return new Date(
-        timestamp
-    ).toLocaleString();
+    const date =
+        new Date(
+            timestamp
+        );
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "Unknown date";
+    }
+
+    return date.toLocaleString();
 }
 
 
@@ -239,7 +249,7 @@ function escapeHtml(
 
 /*
 ========================================================
-MESSAGE
+MESSAGES
 ========================================================
 */
 
@@ -282,14 +292,13 @@ fileInput.addEventListener(
             `${file.name} • ${formatBytes(
                 file.size
             )}`;
-
     }
 );
 
 
 /*
 ========================================================
-PUBLISH
+PUBLISH FORM
 ========================================================
 */
 
@@ -300,7 +309,6 @@ publishForm.addEventListener(
         event.preventDefault();
 
         publishFile();
-
     }
 );
 
@@ -316,17 +324,14 @@ function publishFile() {
     const username =
         usernameInput.value.trim();
 
-    const displayName =
+    let displayName =
         displayNameInput.value.trim();
 
     const file =
         fileInput.files[0];
 
-
     /*
-    --------------------------------------------
     USERNAME REQUIRED
-    --------------------------------------------
     */
 
     if (!username) {
@@ -341,11 +346,26 @@ function publishFile() {
         return;
     }
 
+    /*
+    USERNAME LENGTH
+    */
+
+    if (
+        username.length > 80
+    ) {
+
+        showPublishMessage(
+            "Username must be 80 characters or less.",
+            "error"
+        );
+
+        usernameInput.focus();
+
+        return;
+    }
 
     /*
-    --------------------------------------------
     FILE REQUIRED
-    --------------------------------------------
     */
 
     if (!file) {
@@ -360,11 +380,8 @@ function publishFile() {
         return;
     }
 
-
     /*
-    --------------------------------------------
-    SIZE
-    --------------------------------------------
+    MAX SIZE
     */
 
     if (
@@ -380,11 +397,27 @@ function publishFile() {
         return;
     }
 
+    /*
+    If display name is empty,
+    use filename automatically.
+    */
+
+    if (!displayName) {
+
+        displayName =
+            file.name
+                .replace(
+                    /\.[^/.]+$/,
+                    ""
+                )
+                .slice(
+                    0,
+                    100
+                );
+    }
 
     /*
-    --------------------------------------------
     FORM DATA
-    --------------------------------------------
     */
 
     const formData =
@@ -405,11 +438,8 @@ function publishFile() {
         displayName
     );
 
-
     /*
-    --------------------------------------------
     LOCK UI
-    --------------------------------------------
     */
 
     publishButton.disabled =
@@ -432,37 +462,34 @@ function publishFile() {
         ""
     );
 
-
     /*
-    --------------------------------------------
-    XMLHttpRequest
-    --------------------------------------------
-
-    XHR is used instead of fetch here so we can
-    display actual upload progress.
+    XHR FOR REAL UPLOAD PROGRESS
     */
 
     const xhr =
         new XMLHttpRequest();
 
-
     xhr.open(
         "POST",
-        "/api/files"
+        "/api/files",
+        true
     );
 
-
     /*
-    --------------------------------------------
     PROGRESS
-    --------------------------------------------
     */
 
     xhr.upload.addEventListener(
         "progress",
         event => {
 
-            if (!event.lengthComputable) {
+            if (
+                !event.lengthComputable
+            ) {
+
+                progressText.textContent =
+                    "Uploading...";
+
                 return;
             }
 
@@ -476,19 +503,15 @@ function publishFile() {
                 );
 
             progressFill.style.width =
-                percent + "%";
+                `${percent}%`;
 
             progressText.textContent =
                 `Uploading ${percent}%`;
-
         }
     );
 
-
     /*
-    --------------------------------------------
-    SUCCESS
-    --------------------------------------------
+    SUCCESS / ERROR RESPONSE
     */
 
     xhr.onload =
@@ -500,27 +523,32 @@ function publishFile() {
             publishButton.textContent =
                 "Publish";
 
-
             let result;
 
             try {
 
                 result =
                     JSON.parse(
-                        xhr.responseText
+                        xhr.responseText ||
+                        "{}"
                     );
 
             }
             catch {
 
                 result = {
-                    success: false,
+
+                    success:
+                        false,
+
                     error:
                         "Invalid server response."
                 };
-
             }
 
+            /*
+            SERVER ERROR
+            */
 
             if (
                 xhr.status < 200 ||
@@ -541,21 +569,19 @@ function publishFile() {
                 return;
             }
 
-
             /*
-            ----------------------------------------
-            CRITICAL
-            ----------------------------------------
-
-            The backend returns the generated
-            deleteToken.
-
-            The frontend DOES NOT generate it.
+            ====================================================
+            THE SERVER GENERATED THE DELETE KEY
+            ====================================================
             */
 
             const deleteToken =
                 result.deleteToken;
 
+            /*
+            This should NEVER be empty if the backend
+            is configured correctly.
+            */
 
             if (!deleteToken) {
 
@@ -564,13 +590,16 @@ function publishFile() {
                 );
 
                 showPublishMessage(
-                    "File uploaded, but the server did not return a delete key.",
+                    "The file was uploaded, but no delete key was returned. Contact the administrator.",
                     "error"
                 );
 
                 return;
             }
 
+            /*
+            COMPLETE PROGRESS
+            */
 
             progressFill.style.width =
                 "100%";
@@ -578,22 +607,18 @@ function publishFile() {
             progressText.textContent =
                 "Published successfully.";
 
-
             /*
-            ----------------------------------------
-            SHOW KEY POPUP
-            ----------------------------------------
+            ====================================================
+            SHOW DELETE KEY POPUP
+            ====================================================
             */
 
             showDeleteKeyModal(
                 deleteToken
             );
 
-
             /*
-            ----------------------------------------
-            RESET FORM
-            ----------------------------------------
+            RESET PUBLISH FORM
             */
 
             publishForm.reset();
@@ -601,15 +626,15 @@ function publishFile() {
             selectedFile.textContent =
                 "No file selected.";
 
-
             /*
-            ----------------------------------------
             REFRESH LIBRARY
-            ----------------------------------------
             */
 
             loadEverything();
 
+            /*
+            Hide progress later.
+            */
 
             setTimeout(
                 () => {
@@ -619,16 +644,12 @@ function publishFile() {
                     );
 
                 },
-                1000
+                1200
             );
-
         };
 
-
     /*
-    --------------------------------------------
     NETWORK ERROR
-    --------------------------------------------
     */
 
     xhr.onerror =
@@ -650,6 +671,35 @@ function publishFile() {
             );
         };
 
+    /*
+    TIMEOUT
+    */
+
+    xhr.ontimeout =
+        () => {
+
+            publishButton.disabled =
+                false;
+
+            publishButton.textContent =
+                "Publish";
+
+            uploadProgress.classList.add(
+                "hidden"
+            );
+
+            showPublishMessage(
+                "The upload timed out.",
+                "error"
+            );
+        };
+
+    xhr.timeout =
+        5 * 60 * 1000;
+
+    /*
+    SEND
+    */
 
     xhr.send(
         formData
@@ -667,9 +717,6 @@ function showDeleteKeyModal(
     deleteToken
 ) {
 
-    currentDeleteKey =
-        deleteToken;
-
     generatedDeleteKey.value =
         deleteToken;
 
@@ -680,12 +727,27 @@ function showDeleteKeyModal(
         "hidden"
     );
 
+    /*
+    Automatically select the key
+    so it is easy to copy manually.
+    */
+
+    setTimeout(
+        () => {
+
+            generatedDeleteKey.focus();
+
+            generatedDeleteKey.select();
+
+        },
+        50
+    );
 }
 
 
 /*
 ========================================================
-CLOSE DELETE KEY POPUP
+CLOSE DELETE KEY MODAL
 ========================================================
 */
 
@@ -696,13 +758,14 @@ function closeDeleteKeyModal() {
     );
 
     /*
-    Don't retain the key in application state
-    after the user closes the popup.
+    Clear the key from the DOM after closing.
     */
 
-    currentDeleteKey =
-        null;
+    generatedDeleteKey.value =
+        "";
 
+    copyMessage.textContent =
+        "";
 }
 
 
@@ -722,7 +785,6 @@ savedKeyButton.addEventListener(
             "File published. Make sure you saved your delete key.",
             "success"
         );
-
     }
 );
 
@@ -754,26 +816,30 @@ copyKeyButton.addEventListener(
                 "Delete key copied.";
 
         }
+
         catch {
+
+            generatedDeleteKey.focus();
 
             generatedDeleteKey.select();
 
-            document.execCommand(
-                "copy"
-            );
+            const copied =
+                document.execCommand(
+                    "copy"
+                );
 
             copyMessage.textContent =
-                "Delete key copied.";
-
+                copied
+                    ? "Delete key copied."
+                    : "Select the key and copy it manually.";
         }
-
     }
 );
 
 
 /*
 ========================================================
-CLOSE MODAL BACKDROPS
+CLOSE KEY MODAL
 ========================================================
 */
 
@@ -786,7 +852,6 @@ document.querySelectorAll(
             "click",
             closeDeleteKeyModal
         );
-
     }
 );
 
@@ -802,7 +867,6 @@ async function loadFiles() {
     const params =
         new URLSearchParams();
 
-
     const search =
         searchInput.value.trim();
 
@@ -812,14 +876,12 @@ async function loadFiles() {
     const sort =
         sortSelect.value;
 
-
     if (search) {
 
         params.set(
             "search",
             search
         );
-
     }
 
     if (uploader) {
@@ -828,7 +890,6 @@ async function loadFiles() {
             "uploader",
             uploader
         );
-
     }
 
     params.set(
@@ -836,23 +897,26 @@ async function loadFiles() {
         sort
     );
 
-
     library.innerHTML =
-        `<div class="empty">Loading files...</div>`;
-
+        `
+        <div class="empty">
+            Loading files...
+        </div>
+        `;
 
     try {
 
         const response =
             await fetch(
-                "/api/files?" +
-                params.toString()
+                `/api/files?${params.toString()}`,
+                {
+                    cache:
+                        "no-store"
+                }
             );
-
 
         const result =
             await response.json();
-
 
         if (
             !response.ok ||
@@ -863,18 +927,18 @@ async function loadFiles() {
                 result.error ||
                 "Unable to load files."
             );
-
         }
-
 
         renderFiles(
             result.files
         );
 
     }
+
     catch (error) {
 
         console.error(
+            "FILES:",
             error
         );
 
@@ -884,9 +948,7 @@ async function loadFiles() {
                 Unable to load files.
             </div>
             `;
-
     }
-
 }
 
 
@@ -901,6 +963,7 @@ function renderFiles(
 ) {
 
     if (
+        !Array.isArray(files) ||
         !files.length
     ) {
 
@@ -914,18 +977,15 @@ function renderFiles(
         return;
     }
 
-
     library.innerHTML =
-        files.map(
-            file =>
-                createFileCard(
-                    file
-                )
-        ).join("");
-
+        files
+            .map(
+                createFileCard
+            )
+            .join("");
 
     /*
-    Download buttons
+    DOWNLOAD
     */
 
     library
@@ -946,16 +1006,13 @@ function renderFiles(
                             `/api/files/${encodeURIComponent(
                                 id
                             )}/download`;
-
                     }
                 );
-
             }
         );
 
-
     /*
-    Delete buttons
+    DELETE
     */
 
     library
@@ -972,16 +1029,13 @@ function renderFiles(
                         openDeleteModal(
                             button.dataset.delete
                         );
-
                     }
                 );
-
             }
         );
 
-
     /*
-    Preview buttons
+    PREVIEW
     */
 
     library
@@ -999,13 +1053,10 @@ function renderFiles(
                             button.dataset.preview,
                             button.dataset.name
                         );
-
                     }
                 );
-
             }
         );
-
 }
 
 
@@ -1023,6 +1074,7 @@ function createFileCard(
         file.script
             ? `
                 <button
+                    type="button"
                     data-preview="${escapeHtml(
                         file.id
                     )}"
@@ -1034,7 +1086,6 @@ function createFileCard(
                 </button>
             `
             : "";
-
 
     return `
         <article class="file-card">
@@ -1058,8 +1109,10 @@ function createFileCard(
                         •
 
                         ${escapeHtml(
-                            file.extension
-                        ).toUpperCase()}
+                            String(
+                                file.extension
+                            ).toUpperCase()
+                        )}
 
                         •
 
@@ -1070,6 +1123,7 @@ function createFileCard(
                         <br>
 
                         Published by
+
                         <strong>
                             ${escapeHtml(
                                 file.uploader
@@ -1085,7 +1139,9 @@ function createFileCard(
                         <br>
 
                         Downloads:
-                        ${file.downloads}
+                        ${Number(
+                            file.downloads || 0
+                        )}
 
                     </div>
 
@@ -1103,12 +1159,12 @@ function createFileCard(
 
             </div>
 
-
             <div class="file-actions">
 
                 ${previewButton}
 
                 <button
+                    type="button"
                     data-download="${escapeHtml(
                         file.id
                     )}"
@@ -1117,6 +1173,7 @@ function createFileCard(
                 </button>
 
                 <button
+                    type="button"
                     class="delete-file"
                     data-delete="${escapeHtml(
                         file.id
@@ -1158,8 +1215,14 @@ function openDeleteModal(
         "hidden"
     );
 
-    deleteTokenInput.focus();
+    setTimeout(
+        () => {
 
+            deleteTokenInput.focus();
+
+        },
+        50
+    );
 }
 
 
@@ -1169,11 +1232,19 @@ function closeDeleteModal() {
         "hidden"
     );
 
+    deleteTokenInput.value =
+        "";
+
     selectedDeleteFileId =
         null;
-
 }
 
+
+/*
+========================================================
+CANCEL DELETE
+========================================================
+*/
 
 cancelDeleteButton.addEventListener(
     "click",
@@ -1190,7 +1261,6 @@ document.querySelectorAll(
             "click",
             closeDeleteModal
         );
-
     }
 );
 
@@ -1207,16 +1277,30 @@ confirmDeleteButton.addEventListener(
 );
 
 
+deleteTokenInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            deleteFile();
+        }
+    }
+);
+
+
 async function deleteFile() {
 
     const token =
         deleteTokenInput.value.trim();
 
-
     if (!selectedDeleteFileId) {
         return;
     }
-
 
     if (!token) {
 
@@ -1226,16 +1310,19 @@ async function deleteFile() {
         deleteMessage.className =
             "message error";
 
+        deleteTokenInput.focus();
+
         return;
     }
-
 
     confirmDeleteButton.disabled =
         true;
 
+    cancelDeleteButton.disabled =
+        true;
+
     confirmDeleteButton.textContent =
         "Deleting...";
-
 
     try {
 
@@ -1245,10 +1332,12 @@ async function deleteFile() {
                     selectedDeleteFileId
                 )}`,
                 {
+
                     method:
                         "DELETE",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
                     },
@@ -1261,10 +1350,8 @@ async function deleteFile() {
                 }
             );
 
-
         const result =
             await response.json();
-
 
         if (
             !response.ok ||
@@ -1281,7 +1368,6 @@ async function deleteFile() {
             return;
         }
 
-
         closeDeleteModal();
 
         showPublishMessage(
@@ -1292,9 +1378,11 @@ async function deleteFile() {
         await loadEverything();
 
     }
+
     catch (error) {
 
         console.error(
+            "DELETE:",
             error
         );
 
@@ -1305,16 +1393,18 @@ async function deleteFile() {
             "message error";
 
     }
+
     finally {
 
         confirmDeleteButton.disabled =
             false;
 
+        cancelDeleteButton.disabled =
+            false;
+
         confirmDeleteButton.textContent =
             "Delete";
-
     }
-
 }
 
 
@@ -1330,7 +1420,8 @@ async function previewScript(
 ) {
 
     previewTitle.textContent =
-        name || "Script Preview";
+        name ||
+        "Script Preview";
 
     previewContent.textContent =
         "Loading...";
@@ -1338,7 +1429,6 @@ async function previewScript(
     previewModal.classList.remove(
         "hidden"
     );
-
 
     try {
 
@@ -1349,10 +1439,8 @@ async function previewScript(
                 )}/preview`
             );
 
-
         const result =
             await response.json();
-
 
         if (
             !response.ok ||
@@ -1363,21 +1451,18 @@ async function previewScript(
                 result.error ||
                 "Preview failed."
             );
-
         }
-
 
         previewContent.textContent =
             result.file.content;
 
     }
+
     catch (error) {
 
         previewContent.textContent =
             error.message;
-
     }
-
 }
 
 
@@ -1400,9 +1485,10 @@ document.querySelectorAll(
                     "hidden"
                 );
 
+                previewContent.textContent =
+                    "";
             }
         );
-
     }
 );
 
@@ -1419,7 +1505,11 @@ async function loadStats() {
 
         const response =
             await fetch(
-                "/api/stats"
+                "/api/stats",
+                {
+                    cache:
+                        "no-store"
+                }
             );
 
         const result =
@@ -1428,6 +1518,7 @@ async function loadStats() {
         if (
             !result.success
         ) {
+
             return;
         }
 
@@ -1446,15 +1537,14 @@ async function loadStats() {
             );
 
     }
+
     catch (error) {
 
         console.error(
-            "Stats:",
+            "STATS:",
             error
         );
-
     }
-
 }
 
 
@@ -1470,7 +1560,11 @@ async function loadUploaders() {
 
         const response =
             await fetch(
-                "/api/uploaders"
+                "/api/uploaders",
+                {
+                    cache:
+                        "no-store"
+                }
             );
 
         const result =
@@ -1479,13 +1573,12 @@ async function loadUploaders() {
         if (
             !result.success
         ) {
+
             return;
         }
 
-
         const current =
             uploaderFilter.value;
-
 
         uploaderFilter.innerHTML =
             `
@@ -1493,7 +1586,6 @@ async function loadUploaders() {
                 All uploaders
             </option>
             `;
-
 
         result.uploaders.forEach(
             uploader => {
@@ -1512,10 +1604,8 @@ async function loadUploaders() {
                 uploaderFilter.appendChild(
                     option
                 );
-
             }
         );
-
 
         if (
             result.uploaders.includes(
@@ -1525,19 +1615,17 @@ async function loadUploaders() {
 
             uploaderFilter.value =
                 current;
-
         }
 
     }
+
     catch (error) {
 
         console.error(
-            "Uploaders:",
+            "UPLOADERS:",
             error
         );
-
     }
-
 }
 
 
@@ -1553,13 +1641,15 @@ async function checkHealth() {
 
         const response =
             await fetch(
-                "/api/health"
+                "/api/health",
+                {
+                    cache:
+                        "no-store"
+                }
             );
-
 
         const result =
             await response.json();
-
 
         if (
             response.ok &&
@@ -1572,14 +1662,13 @@ async function checkHealth() {
             serverStatus.className =
                 "status online";
 
+            return;
         }
-        else {
 
-            throw new Error();
-
-        }
+        throw new Error();
 
     }
+
     catch {
 
         serverStatus.textContent =
@@ -1587,9 +1676,7 @@ async function checkHealth() {
 
         serverStatus.className =
             "status offline";
-
     }
-
 }
 
 
@@ -1607,19 +1694,17 @@ async function loadEverything() {
         loadUploaders(),
         checkHealth()
     ]);
-
 }
 
 
 /*
 ========================================================
-FILTER EVENTS
+FILTERS
 ========================================================
 */
 
 let searchTimer =
     null;
-
 
 searchInput.addEventListener(
     "input",
@@ -1634,7 +1719,6 @@ searchInput.addEventListener(
                 loadFiles,
                 250
             );
-
     }
 );
 
@@ -1659,7 +1743,60 @@ refreshButton.addEventListener(
 
 /*
 ========================================================
-REAL-TIME UPDATES
+ESCAPE KEY
+========================================================
+*/
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key !== "Escape"
+        ) {
+
+            return;
+        }
+
+        if (
+            !deleteKeyModal.classList.contains(
+                "hidden"
+            )
+        ) {
+
+            closeDeleteKeyModal();
+
+            return;
+        }
+
+        if (
+            !deleteModal.classList.contains(
+                "hidden"
+            )
+        ) {
+
+            closeDeleteModal();
+
+            return;
+        }
+
+        if (
+            !previewModal.classList.contains(
+                "hidden"
+            )
+        ) {
+
+            previewModal.classList.add(
+                "hidden"
+            );
+        }
+    }
+);
+
+
+/*
+========================================================
+REAL-TIME EVENTS
 ========================================================
 */
 
@@ -1668,36 +1805,30 @@ function connectEvents() {
     if (
         !window.EventSource
     ) {
+
         return;
     }
-
 
     const events =
         new EventSource(
             "/api/events"
         );
 
-
     events.addEventListener(
         "library-update",
         () => {
 
             loadEverything();
-
         }
     );
-
 
     events.onerror =
         () => {
 
             /*
-            EventSource automatically attempts
-            to reconnect.
+            Browser automatically reconnects.
             */
-
         };
-
 }
 
 
