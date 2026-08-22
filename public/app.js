@@ -1,37 +1,91 @@
 "use strict";
 
-
 /*
 ========================================================
-HELPER
+PROJECT FILE HUB
+UPGRADED FRONTEND
 ========================================================
 */
 
-const $ =
-    selector =>
-        document.querySelector(
-            selector
-        );
+
+/* ======================================================
+   HELPERS
+====================================================== */
+
+const $ = selector =>
+    document.querySelector(selector);
 
 
-/*
-========================================================
-ELEMENTS
-========================================================
-*/
+function escapeHtml(value) {
 
-const landingPage =
-    $("#landingPage");
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-const hubPage =
-    $("#hubPage");
+
+function formatBytes(bytes) {
+
+    if (!Number.isFinite(bytes) || bytes <= 0) {
+        return "0 B";
+    }
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+    ];
+
+    const index = Math.min(
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        ),
+        units.length - 1
+    );
+
+    const value =
+        bytes /
+        Math.pow(1024, index);
+
+    return (
+        value.toFixed(index === 0 ? 0 : 1) +
+        " " +
+        units[index]
+    );
+}
+
+
+function formatDate(timestamp) {
+
+    const date =
+        new Date(timestamp);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "Unknown";
+    }
+
+    return date.toLocaleString();
+}
+
+
+/* ======================================================
+   ELEMENTS
+====================================================== */
+
+const projectApp =
+    $("#projectApp");
 
 const enterProjectButton =
     $("#enterProjectButton");
-
-const backButton =
-    $("#backButton");
-
 
 const publishForm =
     $("#publishForm");
@@ -44,6 +98,9 @@ const displayNameInput =
 
 const fileInput =
     $("#fileInput");
+
+const dropZone =
+    $("#dropZone");
 
 const publishButton =
     $("#publishButton");
@@ -63,7 +120,6 @@ const progressFill =
 const progressText =
     $("#progressText");
 
-
 const deleteKeyModal =
     $("#deleteKeyModal");
 
@@ -78,7 +134,6 @@ const copyMessage =
 
 const savedKeyButton =
     $("#savedKeyButton");
-
 
 const deleteModal =
     $("#deleteModal");
@@ -95,7 +150,6 @@ const cancelDeleteButton =
 const deleteMessage =
     $("#deleteMessage");
 
-
 const previewModal =
     $("#previewModal");
 
@@ -104,7 +158,6 @@ const previewTitle =
 
 const previewContent =
     $("#previewContent");
-
 
 const library =
     $("#library");
@@ -120,7 +173,6 @@ const sortSelect =
 
 const refreshButton =
     $("#refreshButton");
-
 
 const serverStatus =
     $("#serverStatus");
@@ -138,69 +190,208 @@ const statStorage =
     $("#statStorage");
 
 
-/*
-========================================================
-STATE
-========================================================
-*/
+/* ======================================================
+   STATE
+====================================================== */
 
 let selectedDeleteFileId =
     null;
 
+let currentDeleteKey =
+    null;
 
-/*
-========================================================
-ENTER PROJECT
-========================================================
-*/
+let searchTimer =
+    null;
+
+
+/* ======================================================
+   PARTICLES
+====================================================== */
+
+function createParticles() {
+
+    const container =
+        document.querySelector(
+            "#particles"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const count =
+        window.innerWidth < 600
+            ? 35
+            : 75;
+
+    container.innerHTML = "";
+
+    for (
+        let i = 0;
+        i < count;
+        i++
+    ) {
+
+        const particle =
+            document.createElement(
+                "span"
+            );
+
+        particle.className =
+            "particle";
+
+        const size =
+            Math.random() *
+            2.5 +
+            1;
+
+        const x =
+            Math.random() *
+            100;
+
+        const duration =
+            Math.random() *
+            18 +
+            10;
+
+        const delay =
+            Math.random() *
+            -25;
+
+        const horizontal =
+            Math.random() *
+            180 -
+            90;
+
+        const opacity =
+            Math.random() *
+            .7 +
+            .15;
+
+        const colors = [
+            "#00eaff",
+            "#ffffff",
+            "#8f5cff",
+            "#ff3ddd"
+        ];
+
+        const glow =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
+        particle.style.left =
+            x + "%";
+
+        particle.style.setProperty(
+            "--size",
+            size + "px"
+        );
+
+        particle.style.setProperty(
+            "--duration",
+            duration + "s"
+        );
+
+        particle.style.setProperty(
+            "--delay",
+            delay + "s"
+        );
+
+        particle.style.setProperty(
+            "--x",
+            horizontal + "px"
+        );
+
+        particle.style.setProperty(
+            "--opacity",
+            opacity
+        );
+
+        particle.style.setProperty(
+            "--glow",
+            glow
+        );
+
+        container.appendChild(
+            particle
+        );
+    }
+}
+
+
+/* ======================================================
+   ENTER PROJECT
+====================================================== */
 
 enterProjectButton.addEventListener(
     "click",
     () => {
 
-        landingPage.classList.add(
+        projectApp.classList.remove(
             "hidden"
         );
 
-        hubPage.classList.remove(
-            "hidden"
-        );
-
-        window.scrollTo(
-            {
-                top: 0,
-                behavior: "instant"
-            }
-        );
-
-        loadEverything();
+        projectApp.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
 
     }
 );
 
 
-/*
-========================================================
-BACK
-========================================================
-*/
+/* ======================================================
+   FILE INPUT
+====================================================== */
 
-backButton.addEventListener(
-    "click",
-    () => {
+fileInput.addEventListener(
+    "change",
+    updateSelectedFile
+);
 
-        hubPage.classList.add(
-            "hidden"
-        );
 
-        landingPage.classList.remove(
-            "hidden"
-        );
+function updateSelectedFile() {
 
-        window.scrollTo(
-            {
-                top: 0,
-                behavior: "instant"
+    const file =
+        fileInput.files[0];
+
+    if (!file) {
+
+        selectedFile.textContent =
+            "No file selected.";
+
+        return;
+    }
+
+    selectedFile.textContent =
+        `${file.name} • ${formatBytes(file.size)}`;
+}
+
+
+/* ======================================================
+   DRAG & DROP
+====================================================== */
+
+[
+    "dragenter",
+    "dragover"
+].forEach(
+    eventName => {
+
+        dropZone.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                dropZone.classList.add(
+                    "dragging"
+                );
+
             }
         );
 
@@ -208,124 +399,64 @@ backButton.addEventListener(
 );
 
 
-/*
-========================================================
-FORMAT BYTES
-========================================================
-*/
+[
+    "dragleave",
+    "drop"
+].forEach(
+    eventName => {
 
-function formatBytes(
-    bytes
-) {
+        dropZone.addEventListener(
+            eventName,
+            event => {
 
-    if (
-        !Number.isFinite(
-            Number(bytes)
-        ) ||
-        Number(bytes) <= 0
-    ) {
+                event.preventDefault();
 
-        return "0 B";
+                dropZone.classList.remove(
+                    "dragging"
+                );
+
+            }
+        );
 
     }
+);
 
 
-    const units =
-        [
-            "B",
-            "KB",
-            "MB",
-            "GB"
-        ];
+dropZone.addEventListener(
+    "drop",
+    event => {
+
+        const files =
+            event.dataTransfer.files;
+
+        if (!files.length) {
+            return;
+        }
+
+        fileInput.files =
+            files;
+
+        updateSelectedFile();
+
+    }
+);
 
 
-    const index =
-        Math.min(
-            Math.floor(
-                Math.log(bytes) /
-                Math.log(1024)
-            ),
-            units.length - 1
-        );
+/* ======================================================
+   PUBLISH
+====================================================== */
 
+publishForm.addEventListener(
+    "submit",
+    event => {
 
-    return (
-        bytes /
-        Math.pow(
-            1024,
-            index
-        )
-    )
-        .toFixed(
-            index === 0
-                ? 0
-                : 1
-        ) +
-        " " +
-        units[index];
+        event.preventDefault();
 
-}
+        publishFile();
 
+    }
+);
 
-/*
-========================================================
-DATE
-========================================================
-*/
-
-function formatDate(
-    timestamp
-) {
-
-    return new Date(
-        timestamp
-    ).toLocaleString();
-
-}
-
-
-/*
-========================================================
-ESCAPE
-========================================================
-*/
-
-function escapeHtml(
-    value
-) {
-
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/*
-========================================================
-MESSAGE
-========================================================
-*/
 
 function showPublishMessage(
     message,
@@ -338,59 +469,7 @@ function showPublishMessage(
     publishMessage.className =
         "message " +
         type;
-
 }
-
-
-/*
-========================================================
-FILE SELECT
-========================================================
-*/
-
-fileInput.addEventListener(
-    "change",
-    () => {
-
-        const file =
-            fileInput.files[0];
-
-
-        if (!file) {
-
-            selectedFile.textContent =
-                "No file selected.";
-
-            return;
-
-        }
-
-
-        selectedFile.textContent =
-            `${file.name} • ${formatBytes(
-                file.size
-            )}`;
-
-    }
-);
-
-
-/*
-========================================================
-PUBLISH
-========================================================
-*/
-
-publishForm.addEventListener(
-    "submit",
-    event => {
-
-        event.preventDefault();
-
-        publishFile();
-
-    }
-);
 
 
 function publishFile() {
@@ -405,6 +484,10 @@ function publishFile() {
         fileInput.files[0];
 
 
+    /*
+    USERNAME IS REQUIRED
+    */
+
     if (!username) {
 
         showPublishMessage(
@@ -415,9 +498,12 @@ function publishFile() {
         usernameInput.focus();
 
         return;
-
     }
 
+
+    /*
+    FILE IS REQUIRED
+    */
 
     if (!file) {
 
@@ -427,9 +513,12 @@ function publishFile() {
         );
 
         return;
-
     }
 
+
+    /*
+    MAXIMUM FILE SIZE
+    */
 
     if (
         file.size >
@@ -437,18 +526,16 @@ function publishFile() {
     ) {
 
         showPublishMessage(
-            "Maximum file size is 50 MB.",
+            "The maximum file size is 50 MB.",
             "error"
         );
 
         return;
-
     }
 
 
     const formData =
         new FormData();
-
 
     formData.append(
         "file",
@@ -469,8 +556,10 @@ function publishFile() {
     publishButton.disabled =
         true;
 
-    publishButton.textContent =
-        "PUBLISHING...";
+    publishButton.querySelector(
+        "span"
+    ).textContent =
+        "UPLOADING...";
 
 
     uploadProgress.classList.remove(
@@ -481,8 +570,7 @@ function publishFile() {
         "0%";
 
     progressText.textContent =
-        "Starting upload...";
-
+        "Preparing upload...";
 
     showPublishMessage(
         ""
@@ -503,14 +591,9 @@ function publishFile() {
         "progress",
         event => {
 
-            if (
-                !event.lengthComputable
-            ) {
-
+            if (!event.lengthComputable) {
                 return;
-
             }
-
 
             const percent =
                 Math.round(
@@ -518,7 +601,6 @@ function publishFile() {
                     event.total *
                     100
                 );
-
 
             progressFill.style.width =
                 percent + "%";
@@ -536,12 +618,13 @@ function publishFile() {
             publishButton.disabled =
                 false;
 
-            publishButton.textContent =
-                "PUBLISH FILE";
+            publishButton.querySelector(
+                "span"
+            ).textContent =
+                "✦ PUBLISH FILE";
 
 
             let result;
-
 
             try {
 
@@ -554,13 +637,9 @@ function publishFile() {
             catch {
 
                 result = {
-
-                    success:
-                        false,
-
+                    success: false,
                     error:
                         "Invalid server response."
-
                 };
 
             }
@@ -583,34 +662,31 @@ function publishFile() {
                 );
 
                 return;
-
             }
 
 
             /*
-            ============================================
-            CRITICAL:
-            DELETE KEY CAME FROM BACKEND.
-            ============================================
+            IMPORTANT:
+            THE BACKEND GENERATES THIS KEY.
+            THE FRONTEND DOES NOT GENERATE IT.
             */
 
-            const deleteKey =
+            const deleteToken =
                 result.deleteToken;
 
 
-            if (!deleteKey) {
-
-                showPublishMessage(
-                    "The server did not return a delete key.",
-                    "error"
-                );
+            if (!deleteToken) {
 
                 uploadProgress.classList.add(
                     "hidden"
                 );
 
-                return;
+                showPublishMessage(
+                    "File uploaded, but the server did not return a delete key.",
+                    "error"
+                );
 
+                return;
             }
 
 
@@ -618,20 +694,20 @@ function publishFile() {
                 "100%";
 
             progressText.textContent =
-                "Published successfully.";
+                "Publication complete ✦";
 
 
             /*
-            SHOW SERVER-GENERATED KEY
+            SHOW KEY POPUP
             */
 
             showDeleteKeyModal(
-                deleteKey
+                deleteToken
             );
 
 
             /*
-            RESET UPLOAD FORM
+            RESET FORM
             */
 
             publishForm.reset();
@@ -641,7 +717,7 @@ function publishFile() {
 
 
             /*
-            UPDATE LIBRARY
+            REFRESH
             */
 
             loadEverything();
@@ -667,8 +743,10 @@ function publishFile() {
             publishButton.disabled =
                 false;
 
-            publishButton.textContent =
-                "PUBLISH FILE";
+            publishButton.querySelector(
+                "span"
+            ).textContent =
+                "✦ PUBLISH FILE";
 
             uploadProgress.classList.add(
                 "hidden"
@@ -685,22 +763,22 @@ function publishFile() {
     xhr.send(
         formData
     );
-
 }
 
 
-/*
-========================================================
-DELETE KEY MODAL
-========================================================
-*/
+/* ======================================================
+   DELETE KEY MODAL
+====================================================== */
 
 function showDeleteKeyModal(
-    key
+    deleteToken
 ) {
 
+    currentDeleteKey =
+        deleteToken;
+
     generatedDeleteKey.value =
-        key;
+        deleteToken;
 
     copyMessage.textContent =
         "";
@@ -708,15 +786,8 @@ function showDeleteKeyModal(
     deleteKeyModal.classList.remove(
         "hidden"
     );
-
 }
 
-
-/*
-========================================================
-CLOSE KEY MODAL
-========================================================
-*/
 
 function closeDeleteKeyModal() {
 
@@ -724,14 +795,10 @@ function closeDeleteKeyModal() {
         "hidden"
     );
 
+    currentDeleteKey =
+        null;
 }
 
-
-/*
-========================================================
-SAVE KEY
-========================================================
-*/
 
 savedKeyButton.addEventListener(
     "click",
@@ -740,7 +807,7 @@ savedKeyButton.addEventListener(
         closeDeleteKeyModal();
 
         showPublishMessage(
-            "File published. Make sure you saved your delete key.",
+            "File published successfully. Make sure you saved your delete key.",
             "success"
         );
 
@@ -748,11 +815,9 @@ savedKeyButton.addEventListener(
 );
 
 
-/*
-========================================================
-COPY KEY
-========================================================
-*/
+/* ======================================================
+   COPY KEY
+====================================================== */
 
 copyKeyButton.addEventListener(
     "click",
@@ -761,11 +826,9 @@ copyKeyButton.addEventListener(
         const key =
             generatedDeleteKey.value;
 
-
         if (!key) {
             return;
         }
-
 
         try {
 
@@ -774,7 +837,7 @@ copyKeyButton.addEventListener(
             );
 
             copyMessage.textContent =
-                "Delete key copied.";
+                "✓ Delete key copied.";
 
         }
         catch {
@@ -786,19 +849,13 @@ copyKeyButton.addEventListener(
             );
 
             copyMessage.textContent =
-                "Delete key copied.";
+                "✓ Delete key copied.";
 
         }
 
     }
 );
 
-
-/*
-========================================================
-CLOSE KEY BACKDROP
-========================================================
-*/
 
 document.querySelectorAll(
     "[data-close-delete-key]"
@@ -814,11 +871,9 @@ document.querySelectorAll(
 );
 
 
-/*
-========================================================
-LOAD FILES
-========================================================
-*/
+/* ======================================================
+   LOAD FILES
+====================================================== */
 
 async function loadFiles() {
 
@@ -837,22 +892,18 @@ async function loadFiles() {
 
 
     if (search) {
-
         params.set(
             "search",
             search
         );
-
     }
 
 
     if (uploader) {
-
         params.set(
             "uploader",
             uploader
         );
-
     }
 
 
@@ -865,7 +916,7 @@ async function loadFiles() {
     library.innerHTML =
         `
         <div class="empty">
-            Loading project files...
+            Loading library...
         </div>
         `;
 
@@ -897,7 +948,7 @@ async function loadFiles() {
 
 
         renderFiles(
-            result.files
+            result.files || []
         );
 
     }
@@ -910,7 +961,7 @@ async function loadFiles() {
         library.innerHTML =
             `
             <div class="empty">
-                Unable to load project files.
+                Unable to load library.
             </div>
             `;
 
@@ -919,29 +970,24 @@ async function loadFiles() {
 }
 
 
-/*
-========================================================
-RENDER FILES
-========================================================
-*/
+/* ======================================================
+   RENDER FILES
+====================================================== */
 
 function renderFiles(
     files
 ) {
 
-    if (
-        !files.length
-    ) {
+    if (!files.length) {
 
         library.innerHTML =
             `
             <div class="empty">
-                No published files found.
+                ✦ No files found.
             </div>
             `;
 
         return;
-
     }
 
 
@@ -962,10 +1008,11 @@ function renderFiles(
                     "click",
                     () => {
 
+                        const id =
+                            button.dataset.download;
+
                         window.location.href =
-                            `/api/files/${encodeURIComponent(
-                                button.dataset.download
-                            )}/download`;
+                            `/api/files/${encodeURIComponent(id)}/download`;
 
                     }
                 );
@@ -1021,28 +1068,22 @@ function renderFiles(
 }
 
 
-/*
-========================================================
-FILE CARD
-========================================================
-*/
+/* ======================================================
+   FILE CARD
+====================================================== */
 
 function createFileCard(
     file
 ) {
 
-    const previewButton =
+    const preview =
         file.script
             ? `
                 <button
-                    data-preview="${escapeHtml(
-                        file.id
-                    )}"
-                    data-name="${escapeHtml(
-                        file.displayName
-                    )}"
+                    data-preview="${escapeHtml(file.id)}"
+                    data-name="${escapeHtml(file.displayName || file.name)}"
                 >
-                    PREVIEW
+                    &lt;/&gt; Preview
                 </button>
             `
             : "";
@@ -1057,31 +1098,29 @@ function createFileCard(
 
                     <div class="file-name">
                         ${escapeHtml(
-                            file.displayName
+                            file.displayName ||
+                            file.name
                         )}
                     </div>
 
                     <div class="file-meta">
 
-                        ${escapeHtml(
-                            file.name
-                        )}
+                        ${escapeHtml(file.name)}
 
                         •
 
                         ${escapeHtml(
-                            file.extension
+                            file.extension || ""
                         ).toUpperCase()}
 
                         •
 
-                        ${formatBytes(
-                            file.size
-                        )}
+                        ${formatBytes(file.size)}
 
                         <br>
 
                         Published by
+
                         <strong>
                             ${escapeHtml(
                                 file.uploader
@@ -1090,14 +1129,12 @@ function createFileCard(
 
                         •
 
-                        ${formatDate(
-                            file.date
-                        )}
+                        ${formatDate(file.date)}
 
                         <br>
 
                         Downloads:
-                        ${file.downloads}
+                        ${Number(file.downloads || 0)}
 
                     </div>
 
@@ -1119,38 +1156,31 @@ function createFileCard(
 
             <div class="file-actions">
 
-                ${previewButton}
+                ${preview}
 
                 <button
-                    data-download="${escapeHtml(
-                        file.id
-                    )}"
+                    data-download="${escapeHtml(file.id)}"
                 >
-                    DOWNLOAD
+                    ↓ Download
                 </button>
 
                 <button
                     class="delete-file"
-                    data-delete="${escapeHtml(
-                        file.id
-                    )}"
+                    data-delete="${escapeHtml(file.id)}"
                 >
-                    DELETE
+                    Delete
                 </button>
 
             </div>
 
         </article>
     `;
-
 }
 
 
-/*
-========================================================
-DELETE MODAL
-========================================================
-*/
+/* ======================================================
+   DELETE MODAL
+====================================================== */
 
 function openDeleteModal(
     fileId
@@ -1178,7 +1208,6 @@ function openDeleteModal(
         },
         50
     );
-
 }
 
 
@@ -1190,7 +1219,6 @@ function closeDeleteModal() {
 
     selectedDeleteFileId =
         null;
-
 }
 
 
@@ -1214,11 +1242,9 @@ document.querySelectorAll(
 );
 
 
-/*
-========================================================
-CONFIRM DELETE
-========================================================
-*/
+/* ======================================================
+   CONFIRM DELETE
+====================================================== */
 
 confirmDeleteButton.addEventListener(
     "click",
@@ -1263,7 +1289,6 @@ async function deleteFile() {
             "message error";
 
         return;
-
     }
 
 
@@ -1271,7 +1296,7 @@ async function deleteFile() {
         true;
 
     confirmDeleteButton.textContent =
-        "DELETING...";
+        "Deleting...";
 
 
     try {
@@ -1282,25 +1307,19 @@ async function deleteFile() {
                     selectedDeleteFileId
                 )}`,
                 {
-
                     method:
                         "DELETE",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body:
                         JSON.stringify({
-
                             deleteToken:
                                 token
-
                         })
-
                 }
             );
 
@@ -1322,7 +1341,6 @@ async function deleteFile() {
                 "message error";
 
             return;
-
         }
 
 
@@ -1357,18 +1375,16 @@ async function deleteFile() {
             false;
 
         confirmDeleteButton.textContent =
-            "DELETE FILE";
+            "Delete File";
 
     }
 
 }
 
 
-/*
-========================================================
-PREVIEW
-========================================================
-*/
+/* ======================================================
+   SCRIPT PREVIEW
+====================================================== */
 
 async function previewScript(
     id,
@@ -1428,11 +1444,9 @@ async function previewScript(
 }
 
 
-/*
-========================================================
-CLOSE PREVIEW
-========================================================
-*/
+/* ======================================================
+   CLOSE PREVIEW
+====================================================== */
 
 document.querySelectorAll(
     "[data-close-preview]"
@@ -1454,11 +1468,40 @@ document.querySelectorAll(
 );
 
 
-/*
-========================================================
-STATS
-========================================================
-*/
+/* ======================================================
+   ESCAPE MODALS
+====================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key !==
+            "Escape"
+        ) {
+            return;
+        }
+
+        deleteKeyModal.classList.add(
+            "hidden"
+        );
+
+        deleteModal.classList.add(
+            "hidden"
+        );
+
+        previewModal.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* ======================================================
+   STATS
+====================================================== */
 
 async function loadStats() {
 
@@ -1473,12 +1516,8 @@ async function loadStats() {
             await response.json();
 
 
-        if (
-            !result.success
-        ) {
-
+        if (!result.success) {
             return;
-
         }
 
 
@@ -1509,11 +1548,9 @@ async function loadStats() {
 }
 
 
-/*
-========================================================
-UPLOADERS
-========================================================
-*/
+/* ======================================================
+   UPLOADERS
+====================================================== */
 
 async function loadUploaders() {
 
@@ -1528,12 +1565,8 @@ async function loadUploaders() {
             await response.json();
 
 
-        if (
-            !result.success
-        ) {
-
+        if (!result.success) {
             return;
-
         }
 
 
@@ -1549,7 +1582,10 @@ async function loadUploaders() {
             `;
 
 
-        result.uploaders.forEach(
+        (
+            result.uploaders ||
+            []
+        ).forEach(
             uploader => {
 
                 const option =
@@ -1595,11 +1631,9 @@ async function loadUploaders() {
 }
 
 
-/*
-========================================================
-HEALTH
-========================================================
-*/
+/* ======================================================
+   HEALTH
+====================================================== */
 
 async function checkHealth() {
 
@@ -1620,8 +1654,11 @@ async function checkHealth() {
             result.success
         ) {
 
-            serverStatus.textContent =
-                "SERVER ONLINE";
+            serverStatus.innerHTML =
+                `
+                <span class="status-dot"></span>
+                Server Online
+                `;
 
             serverStatus.className =
                 "status online";
@@ -1636,8 +1673,11 @@ async function checkHealth() {
     }
     catch {
 
-        serverStatus.textContent =
-            "SERVER OFFLINE";
+        serverStatus.innerHTML =
+            `
+            <span class="status-dot"></span>
+            Server Offline
+            `;
 
         serverStatus.className =
             "status offline";
@@ -1647,38 +1687,25 @@ async function checkHealth() {
 }
 
 
-/*
-========================================================
-LOAD EVERYTHING
-========================================================
-*/
+/* ======================================================
+   EVERYTHING
+====================================================== */
 
 async function loadEverything() {
 
     await Promise.all([
-
         loadFiles(),
-
         loadStats(),
-
         loadUploaders(),
-
         checkHealth()
-
     ]);
 
 }
 
 
-/*
-========================================================
-FILTERS
-========================================================
-*/
-
-let searchTimer =
-    null;
-
+/* ======================================================
+   FILTERS
+====================================================== */
 
 searchInput.addEventListener(
     "input",
@@ -1716,20 +1743,14 @@ refreshButton.addEventListener(
 );
 
 
-/*
-========================================================
-REALTIME
-========================================================
-*/
+/* ======================================================
+   REAL TIME EVENTS
+====================================================== */
 
 function connectEvents() {
 
-    if (
-        !window.EventSource
-    ) {
-
+    if (!window.EventSource) {
         return;
-
     }
 
 
@@ -1743,20 +1764,31 @@ function connectEvents() {
         "library-update",
         () => {
 
-            if (
-                !hubPage.classList.contains(
-                    "hidden"
-                )
-            ) {
-
-                loadEverything();
-
-            }
+            loadEverything();
 
         }
     );
 
+
+    events.onerror =
+        () => {
+
+            /*
+             EventSource automatically
+             reconnects.
+            */
+
+        };
+
 }
 
+
+/* ======================================================
+   INITIALIZE
+====================================================== */
+
+createParticles();
+
+loadEverything();
 
 connectEvents();
