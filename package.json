@@ -1,17 +1,13 @@
 {
   "name": "project-file-hub",
-  "version": "1.0.0",
-  "description": "Public game-development file hub for the MIL Project",
+  "version": "2.0.0",
+  "description": "MIL Project File Hub",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "engines": {
-    "node": ">=20"
-  },
   "dependencies": {
-    "express": "^5.1.0",
-    "multer": "^2.0.2",
-    "pg": "^8.16.3"
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
   }
 }
