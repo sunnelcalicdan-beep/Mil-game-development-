@@ -2,1834 +2,1272 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#070914">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta name="theme-color" content="#050713">
+<meta name="description" content="MIL Project • Game Development • Project File Hub">
 
 <title>MIL Project • Project File Hub</title>
 
 <style>
 /* =========================================================
-   MIL PROJECT FILE HUB
-   FULL SINGLE-PAGE FRONTEND
-   Original neon aesthetic + smoother particles
-========================================================= */
+   PROJECT FILE HUB
+   ORIGINAL DESIGN — UPGRADED EDITION
+   ========================================================= */
 
-*{
-    box-sizing:border-box;
+:root {
+    --bg-1: #030511;
+    --bg-2: #07152b;
+    --bg-3: #12052a;
+
+    --cyan: #27eaff;
+    --blue: #397cff;
+    --purple: #9c42ff;
+    --pink: #ed35ff;
+
+    --text: #f5f8ff;
+    --muted: #b9c4df;
+
+    --card: rgba(13, 24, 52, 0.76);
+    --card-border: rgba(65, 225, 255, 0.5);
+
+    --radius: 34px;
 }
 
-html{
-    scroll-behavior:smooth;
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-:root{
-    --bg:#050711;
-    --bg2:#090c1b;
-    --panel:rgba(12,16,34,.78);
-    --panel2:rgba(8,12,27,.9);
+html {
+    scroll-behavior: smooth;
+}
 
-    --cyan:#42e8ff;
-    --blue:#5577ff;
-    --purple:#9b5cff;
-    --pink:#ff4fd8;
-    --green:#54f0a5;
-    --red:#ff5577;
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
 
-    --text:#f5f7ff;
-    --muted:#8d96b3;
-    --line:rgba(117,135,255,.22);
-
-    --radius:22px;
+    color: var(--text);
 
     font-family:
         Inter,
-        ui-sans-serif,
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
-}
-
-body{
-    margin:0;
-    min-height:100vh;
-    color:var(--text);
 
     background:
         radial-gradient(
-            circle at 15% 10%,
-            rgba(72,102,255,.17),
-            transparent 30%
+            circle at 15% 20%,
+            rgba(0, 205, 255, 0.13),
+            transparent 32%
         ),
         radial-gradient(
-            circle at 85% 20%,
-            rgba(182,74,255,.13),
-            transparent 28%
+            circle at 85% 25%,
+            rgba(145, 35, 255, 0.15),
+            transparent 35%
         ),
         radial-gradient(
             circle at 50% 100%,
-            rgba(0,225,255,.08),
-            transparent 35%
+            rgba(0, 125, 255, 0.11),
+            transparent 38%
         ),
         linear-gradient(
             135deg,
-            #04050b,
-            #080b18 45%,
-            #050711
+            var(--bg-1),
+            var(--bg-2),
+            var(--bg-3),
+            var(--bg-1)
         );
 
-    overflow-x:hidden;
+    background-size: 200% 200%;
+
+    animation:
+        backgroundFlow 18s ease-in-out infinite;
+
+    -webkit-font-smoothing: antialiased;
 }
 
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:-1;
-
-    background:
-        linear-gradient(
-            rgba(255,255,255,.018) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,.018) 1px,
-            transparent 1px
-        );
-
-    background-size:55px 55px;
-
-    mask-image:
-        linear-gradient(
-            to bottom,
-            black,
-            transparent 85%
-        );
-}
 
 /* =========================================================
-   PARTICLES
-========================================================= */
+   BACKGROUND
+   ========================================================= */
 
-#particleCanvas{
-    position:fixed;
-    inset:0;
-    width:100vw;
-    height:100vh;
-    pointer-events:none;
-    z-index:0;
-    opacity:.7;
+#particleCanvas {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    opacity: 0.72;
 }
 
-/* =========================================================
-   APP
-========================================================= */
 
-#app{
-    position:relative;
-    z-index:1;
-    min-height:100vh;
-}
+/* Atmospheric glow */
 
-/* =========================================================
-   LANDING PAGE
-========================================================= */
+body::before {
+    content: "";
 
-#landing{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:30px 18px;
-}
+    position: fixed;
+    inset: -30%;
 
-.hero{
-    width:min(920px,100%);
-    text-align:center;
-}
+    pointer-events: none;
 
-.logo-ring{
-    width:96px;
-    height:96px;
-    margin:0 auto 24px;
-
-    display:grid;
-    place-items:center;
-
-    border:1px solid rgba(73,229,255,.55);
-    border-radius:50%;
+    z-index: 0;
 
     background:
         radial-gradient(
-            circle,
-            rgba(69,230,255,.17),
-            rgba(103,72,255,.08) 55%,
-            transparent 70%
+            circle at 20% 50%,
+            rgba(0, 220, 255, 0.07),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 80% 45%,
+            rgba(160, 50, 255, 0.08),
+            transparent 30%
         );
-
-    box-shadow:
-        0 0 25px rgba(66,232,255,.22),
-        0 0 70px rgba(105,77,255,.16),
-        inset 0 0 30px rgba(66,232,255,.08);
 
     animation:
-        floatLogo 4s ease-in-out infinite;
+        atmosphere 14s ease-in-out infinite alternate;
 }
 
-.logo-ring span{
-    font-size:42px;
-    filter:drop-shadow(0 0 15px rgba(66,232,255,.7));
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+.app {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
 }
 
-@keyframes floatLogo{
-    0%,100%{
-        transform:translateY(0) scale(1);
-    }
-    50%{
-        transform:translateY(-8px) scale(1.025);
-    }
+
+/* =========================================================
+   MAIN HERO
+   ========================================================= */
+
+.hero {
+    width: min(1100px, 94%);
+
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        70px 0
+        max(30px, env(safe-area-inset-right))
+        70px
+        max(30px, env(safe-area-inset-left));
 }
 
-.eyebrow{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
 
-    padding:8px 14px;
+/* =========================================================
+   ORIGINAL NEON CARD
+   ========================================================= */
 
-    border:1px solid rgba(100,120,255,.28);
-    border-radius:999px;
+.hero-card {
+    position: relative;
 
-    background:rgba(18,23,50,.6);
+    width: 100%;
 
-    color:#9eaaff;
+    padding:
+        clamp(34px, 6vw, 76px)
+        clamp(24px, 6vw, 70px);
 
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:.18em;
-    text-transform:uppercase;
+    text-align: center;
 
-    backdrop-filter:blur(10px);
-}
-
-.eyebrow::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:var(--cyan);
-    box-shadow:0 0 12px var(--cyan);
-}
-
-.hero h1{
-    margin:22px 0 10px;
-
-    font-size:
-        clamp(
-            42px,
-            8vw,
-            82px
-        );
-
-    line-height:.95;
-    font-weight:950;
-    letter-spacing:-.055em;
-
-    background:
-        linear-gradient(
-            100deg,
-            #fff,
-            #8cefff 35%,
-            #8c8cff 65%,
-            #f08aff
-        );
-
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-
-    filter:
-        drop-shadow(0 0 25px rgba(80,150,255,.15));
-}
-
-.hero-description{
-    max-width:680px;
-    margin:0 auto;
-
-    color:#9aa4c1;
-
-    font-size:17px;
-    line-height:1.7;
-}
-
-.hero-card{
-    position:relative;
-
-    margin:38px auto 0;
-
-    width:min(760px,100%);
-
-    padding:1px;
-
-    border-radius:28px;
-
-    background:
-        linear-gradient(
-            120deg,
-            rgba(66,232,255,.65),
-            rgba(105,77,255,.55),
-            rgba(255,79,216,.45),
-            rgba(66,232,255,.65)
-        );
-
-    background-size:300% 300%;
-
-    animation:
-        borderFlow 8s linear infinite;
-}
-
-@keyframes borderFlow{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-
-.hero-card-inner{
-    border-radius:27px;
-
-    padding:30px;
+    border-radius: var(--radius);
 
     background:
         linear-gradient(
             145deg,
-            rgba(12,16,38,.94),
-            rgba(6,9,22,.96)
+            rgba(17, 38, 73, 0.86),
+            rgba(17, 15, 50, 0.78)
         );
 
-    backdrop-filter:blur(18px);
-}
-
-.team-title{
-    color:#7f8bab;
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    margin-bottom:18px;
-}
-
-.team-list{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-}
-
-.member{
-    padding:10px 14px;
-
-    border:
-        1px solid rgba(111,129,255,.2);
-
-    border-radius:12px;
-
-    background:
-        rgba(24,29,57,.65);
-
-    color:#dce2ff;
-
-    font-size:13px;
-    font-weight:700;
-
-    transition:
-        transform .25s ease,
-        border-color .25s ease,
-        background .25s ease;
-}
-
-.member:hover{
-    transform:translateY(-3px);
-
-    border-color:
-        rgba(66,232,255,.55);
-
-    background:
-        rgba(30,42,78,.75);
-}
-
-.enter-button{
-    position:relative;
-
-    width:100%;
-    margin-top:28px;
-
-    padding:17px 22px;
-
-    border:0;
-    border-radius:15px;
-
-    color:white;
-
-    font-weight:900;
-    font-size:15px;
-    letter-spacing:.04em;
-
-    background:
-        linear-gradient(
-            100deg,
-            #427cff,
-            #7655ff,
-            #b44dff
-        );
+    border: 1px solid rgba(72, 219, 255, 0.65);
 
     box-shadow:
-        0 12px 35px rgba(81,89,255,.25);
+        0 0 35px rgba(0, 190, 255, 0.13),
+        0 0 90px rgba(120, 30, 255, 0.09),
+        inset 0 0 45px rgba(48, 115, 255, 0.05);
 
-    overflow:hidden;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 
-    transition:
-        transform .25s ease,
-        box-shadow .25s ease;
+    overflow: hidden;
+
+    animation:
+        cardFloat 7s ease-in-out infinite;
 }
 
-.enter-button::after{
-    content:"";
-    position:absolute;
-    inset:0;
 
-    background:
-        linear-gradient(
-            110deg,
-            transparent 25%,
-            rgba(255,255,255,.25),
-            transparent 75%
-        );
+/* animated neon border */
 
-    transform:translateX(-120%);
-    animation:buttonShine 4s ease-in-out infinite;
-}
+.hero-card::before {
+    content: "";
 
-@keyframes buttonShine{
-    0%,45%{transform:translateX(-120%)}
-    70%,100%{transform:translateX(120%)}
-}
+    position: absolute;
+    inset: -2px;
 
-.enter-button:hover{
-    transform:translateY(-3px);
+    border-radius: inherit;
 
-    box-shadow:
-        0 18px 45px rgba(81,89,255,.4),
-        0 0 35px rgba(165,83,255,.12);
-}
-
-.enter-button:active{
-    transform:translateY(0);
-}
-
-/* =========================================================
-   HUB
-========================================================= */
-
-#hub{
-    display:none;
-    min-height:100vh;
-    padding-bottom:80px;
-}
-
-.hub-header{
-    position:sticky;
-    top:0;
-    z-index:50;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:20px;
-
-    padding:17px max(18px,calc((100vw - 1180px)/2));
-
-    border-bottom:
-        1px solid rgba(115,130,255,.18);
-
-    background:
-        rgba(5,8,18,.75);
-
-    backdrop-filter:blur(18px);
-}
-
-.brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.brand-icon{
-    width:40px;
-    height:40px;
-
-    display:grid;
-    place-items:center;
-
-    border-radius:12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(66,232,255,.2),
-            rgba(147,78,255,.2)
-        );
-
-    border:
-        1px solid rgba(91,214,255,.3);
-}
-
-.brand strong{
-    display:block;
-    font-size:15px;
-}
-
-.brand small{
-    display:block;
-    color:#747e9b;
-    margin-top:2px;
-}
-
-.server-status{
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    padding:8px 12px;
-
-    border-radius:999px;
-
-    background:rgba(21,28,49,.7);
-
-    font-size:12px;
-    font-weight:800;
-}
-
-.server-dot{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:#888;
-}
-
-.server-status.online .server-dot{
-    background:var(--green);
-    box-shadow:0 0 12px var(--green);
-}
-
-.server-status.offline .server-dot{
-    background:var(--red);
-    box-shadow:0 0 12px var(--red);
-}
-
-.hub-container{
-    width:min(1180px,calc(100% - 28px));
-    margin:30px auto;
-}
-
-.hub-title{
-    margin-bottom:25px;
-}
-
-.hub-title h2{
-    margin:0;
-    font-size:clamp(28px,5vw,46px);
-    font-weight:950;
-    letter-spacing:-.04em;
-}
-
-.hub-title p{
-    margin:9px 0 0;
-    color:#8993b0;
-}
-
-/* =========================================================
-   PANELS
-========================================================= */
-
-.panel{
-    position:relative;
-
-    padding:24px;
-
-    margin-bottom:18px;
-
-    border:1px solid rgba(112,128,255,.2);
-    border-radius:20px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(13,18,40,.84),
-            rgba(7,11,25,.88)
-        );
-
-    box-shadow:
-        0 18px 60px rgba(0,0,0,.18);
-
-    backdrop-filter:blur(12px);
-}
-
-.panel-title{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:15px;
-
-    margin-bottom:18px;
-}
-
-.panel-title h3{
-    margin:0;
-    font-size:18px;
-}
-
-.panel-title p{
-    margin:5px 0 0;
-    color:#7e88a5;
-    font-size:13px;
-}
-
-/* =========================================================
-   PUBLISH FORM
-========================================================= */
-
-.form-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-}
-
-.form-field.full{
-    grid-column:1/-1;
-}
-
-label{
-    display:block;
-    margin-bottom:7px;
-
-    color:#aab4d2;
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:.03em;
-}
-
-input,
-select{
-    width:100%;
-
-    padding:13px 14px;
-
-    border:
-        1px solid rgba(107,124,190,.23);
-
-    border-radius:12px;
-
-    outline:none;
-
-    background:
-        rgba(4,7,18,.75);
-
-    color:white;
-
-    transition:
-        border-color .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
-}
-
-input::placeholder{
-    color:#505a76;
-}
-
-input:focus,
-select:focus{
-    border-color:
-        rgba(66,232,255,.6);
-
-    box-shadow:
-        0 0 0 3px rgba(66,232,255,.07),
-        0 0 25px rgba(66,232,255,.06);
-
-    background:
-        rgba(7,11,25,.95);
-}
-
-.file-picker{
-    position:relative;
-}
-
-.file-picker input[type=file]{
-    padding:11px;
-}
-
-.selected-file{
-    margin-top:8px;
-
-    padding:10px 12px;
-
-    border-radius:10px;
-
-    background:rgba(15,21,43,.65);
-
-    color:#7f8baa;
-
-    font-size:12px;
-
-    word-break:break-word;
-}
-
-.publish-button{
-    width:100%;
-
-    margin-top:18px;
-
-    padding:14px;
-
-    border:0;
-    border-radius:12px;
-
-    color:white;
-
-    font-weight:900;
-
-    background:
-        linear-gradient(
-            100deg,
-            #397eff,
-            #7755ff
-        );
-
-    box-shadow:
-        0 10px 30px rgba(77,91,255,.22);
-
-    transition:.2s ease;
-}
-
-.publish-button:hover{
-    transform:translateY(-2px);
-    box-shadow:
-        0 15px 38px rgba(77,91,255,.35);
-}
-
-.publish-button:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    transform:none;
-}
-
-.message{
-    min-height:20px;
-    margin-top:10px;
-    font-size:13px;
-}
-
-.message.error{color:#ff8194}
-.message.success{color:#67e6a5}
-
-.progress-wrap{
-    margin-top:15px;
-}
-
-.progress-track{
-    height:7px;
-    overflow:hidden;
-    border-radius:99px;
-    background:#161c32;
-}
-
-.progress-fill{
-    width:0;
-    height:100%;
+    padding: 2px;
 
     background:
         linear-gradient(
             90deg,
             var(--cyan),
+            var(--blue),
             var(--purple),
-            var(--pink)
+            var(--pink),
+            var(--cyan)
         );
 
-    transition:width .15s ease;
+    background-size: 300% 100%;
+
+    animation:
+        borderFlow 7s linear infinite;
+
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    pointer-events: none;
 }
 
-.progress-text{
-    display:block;
-    margin-top:6px;
-    color:#707b98;
-    font-size:11px;
-}
 
-/* =========================================================
-   STATS
-========================================================= */
+/* inner shine */
 
-.stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
-    margin-bottom:18px;
-}
+.hero-card::after {
+    content: "";
 
-.stat{
-    padding:18px;
+    position: absolute;
 
-    border:
-        1px solid rgba(111,127,255,.17);
+    width: 280px;
+    height: 280px;
 
-    border-radius:17px;
+    top: -160px;
+    right: -120px;
+
+    border-radius: 50%;
 
     background:
-        rgba(11,16,35,.75);
+        radial-gradient(
+            circle,
+            rgba(65, 225, 255, 0.18),
+            transparent 68%
+        );
+
+    pointer-events: none;
+
+    animation:
+        orbMove 9s ease-in-out infinite alternate;
 }
 
-.stat span{
-    display:block;
-    color:#707b98;
-    font-size:11px;
-    font-weight:800;
-    text-transform:uppercase;
-    letter-spacing:.08em;
+
+/* =========================================================
+   TOP LABEL
+   ========================================================= */
+
+.eyebrow {
+    position: relative;
+
+    margin-bottom: 22px;
+
+    color: var(--cyan);
+
+    font-size:
+        clamp(0.68rem, 1.7vw, 0.95rem);
+
+    font-weight: 800;
+
+    letter-spacing:
+        clamp(3px, 0.8vw, 6px);
+
+    text-transform: uppercase;
+
+    text-shadow:
+        0 0 15px rgba(39, 234, 255, 0.55);
 }
 
-.stat strong{
-    display:block;
-    margin-top:7px;
 
-    font-size:26px;
-    font-weight:950;
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.title {
+    position: relative;
+
+    margin: 0 auto;
+
+    max-width: 850px;
+
+    font-size:
+        clamp(2.35rem, 8vw, 6.2rem);
+
+    line-height: 0.96;
+
+    font-weight: 1000;
+
+    letter-spacing:
+        clamp(-3px, -0.4vw, -1px);
+
+    text-transform: uppercase;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 12px rgba(255,255,255,0.22),
+        0 0 35px rgba(40, 190, 255, 0.2);
+}
+
+
+.title .gradient {
+    display: block;
 
     background:
         linear-gradient(
-            100deg,
-            #fff,
-            #7beaff,
-            #a184ff
+            90deg,
+            #55edff,
+            #ffffff,
+            #b66cff,
+            #4e8cff
         );
 
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
+    background-size: 250% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    animation:
+        titleGradient 5s linear infinite;
 }
+
 
 /* =========================================================
-   LIBRARY
-========================================================= */
+   DESCRIPTION
+   ========================================================= */
 
-.filters{
-    display:grid;
-    grid-template-columns:1fr 180px 170px auto;
-    gap:9px;
-    margin-bottom:16px;
+.subtitle {
+    margin-top: 42px;
+
+    font-size:
+        clamp(1.05rem, 2.7vw, 1.55rem);
+
+    color: #e3e9fa;
+
+    font-weight: 500;
 }
 
-.refresh{
-    border:0;
-    border-radius:11px;
-    padding:0 15px;
 
-    background:#171e36;
-    color:#dce2ff;
+/* =========================================================
+   MEMBERS
+   ========================================================= */
 
-    font-weight:800;
+.members {
+    width: 100%;
+
+    margin-top: 28px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 12px;
 }
 
-.library{
-    display:grid;
-    gap:11px;
-}
 
-.file-card{
-    padding:17px;
+.member {
+    position: relative;
 
-    border:
-        1px solid rgba(105,122,235,.17);
+    padding:
+        11px 17px;
 
-    border-radius:15px;
+    border-radius: 999px;
+
+    color: #dce7ff;
+
+    font-size:
+        clamp(0.82rem, 2vw, 1rem);
+
+    font-weight: 700;
 
     background:
         linear-gradient(
-            145deg,
-            rgba(13,18,39,.72),
-            rgba(7,11,25,.8)
+            135deg,
+            rgba(52, 60, 135, 0.4),
+            rgba(65, 28, 115, 0.4)
         );
+
+    border: 1px solid rgba(130, 112, 255, 0.35);
+
+    box-shadow:
+        inset 0 0 18px rgba(72, 112, 255, 0.06),
+        0 0 14px rgba(70, 80, 255, 0.05);
 
     transition:
-        transform .2s ease,
-        border-color .2s ease,
-        background .2s ease;
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        color 0.25s ease;
+
+    animation:
+        memberPulse 5s ease-in-out infinite;
 }
 
-.file-card:hover{
-    transform:translateY(-2px);
+
+.member:nth-child(3n) {
+    animation-delay: -1.2s;
+}
+
+.member:nth-child(3n + 1) {
+    animation-delay: -2.4s;
+}
+
+.member:hover {
+    transform:
+        translateY(-5px)
+        scale(1.04);
+
+    color: #ffffff;
 
     border-color:
-        rgba(66,232,255,.3);
+        rgba(39, 234, 255, 0.85);
 
-    background:
-        rgba(14,21,44,.9);
+    box-shadow:
+        0 0 18px rgba(39, 234, 255, 0.2),
+        0 0 35px rgba(130, 55, 255, 0.14);
 }
 
-.file-top{
-    display:flex;
-    justify-content:space-between;
-    gap:15px;
-}
 
-.file-name{
-    font-weight:900;
-    font-size:15px;
-    word-break:break-word;
-}
+/* special first member */
 
-.file-meta{
-    margin-top:6px;
-    color:#717c99;
-    font-size:11px;
-    line-height:1.7;
-}
+.member.featured {
+    color: #ffffff;
 
-.badge{
-    flex:none;
-
-    padding:5px 8px;
-
-    border-radius:999px;
-
-    background:
-        rgba(76,94,178,.16);
-
-    color:#8f9eff;
-
-    font-size:9px;
-    font-weight:900;
-}
-
-.file-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:7px;
-    margin-top:13px;
-}
-
-.file-actions button{
-    border:0;
-    border-radius:9px;
-    padding:8px 11px;
-
-    background:#171e35;
-    color:#dbe2ff;
-
-    font-size:11px;
-    font-weight:800;
-}
-
-.file-actions button:hover{
-    background:#202a49;
-}
-
-.file-actions .delete{
-    background:rgba(255,65,95,.09);
-    color:#ff8094;
-}
-
-.empty{
-    padding:40px;
-    text-align:center;
-    color:#69738f;
-}
-
-/* =========================================================
-   MODALS
-========================================================= */
-
-.modal{
-    position:fixed;
-    inset:0;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:18px;
-
-    z-index:1000;
-}
-
-.modal.hidden{
-    display:none;
-}
-
-.modal-backdrop{
-    position:absolute;
-    inset:0;
-
-    background:rgba(0,0,0,.78);
-
-    backdrop-filter:blur(7px);
-}
-
-.modal-box{
-    position:relative;
-    z-index:1;
-
-    width:min(520px,100%);
-    max-height:90vh;
-    overflow:auto;
-
-    padding:25px;
-
-    border:
-        1px solid rgba(104,127,255,.34);
-
-    border-radius:21px;
+    border-color:
+        rgba(39, 234, 255, 0.75);
 
     background:
         linear-gradient(
-            145deg,
-            #10162e,
-            #080b1a
+            135deg,
+            rgba(0, 188, 255, 0.16),
+            rgba(100, 50, 255, 0.2)
         );
 
     box-shadow:
-        0 30px 100px rgba(0,0,0,.55),
-        0 0 60px rgba(74,94,255,.09);
+        0 0 18px rgba(39, 234, 255, 0.12);
 }
 
-.modal-box h2{
-    margin:0 0 8px;
+
+/* =========================================================
+   FOOTER TEXT
+   ========================================================= */
+
+.project-description {
+    margin-top: 42px;
+
+    font-size:
+        clamp(1rem, 2.5vw, 1.3rem);
+
+    color: #dce3f4;
+
+    font-weight: 500;
 }
 
-.modal-box > p{
-    color:#808ba7;
-    font-size:13px;
-    line-height:1.6;
-}
 
-.success-icon{
-    width:50px;
-    height:50px;
+/* =========================================================
+   ENTER BUTTON
+   ========================================================= */
 
-    display:grid;
-    place-items:center;
+.enter-button {
+    position: relative;
 
-    margin-bottom:15px;
+    margin-top: 30px;
 
-    border-radius:15px;
+    border: 0;
 
-    background:
-        rgba(65,235,161,.1);
+    padding:
+        16px 28px;
 
-    color:var(--green);
+    border-radius: 15px;
 
-    border:
-        1px solid rgba(65,235,161,.25);
-
-    font-size:24px;
-}
-
-.warning{
-    margin:18px 0;
-
-    padding:14px;
-
-    border:
-        1px solid rgba(255,196,71,.22);
-
-    border-radius:12px;
-
-    background:
-        rgba(255,181,46,.055);
-
-    color:#c9b77f;
-
-    font-size:12px;
-    line-height:1.6;
-}
-
-.key-row{
-    display:flex;
-    gap:8px;
-}
-
-.key-row input{
-    font-family:monospace;
-    letter-spacing:.04em;
-}
-
-.key-row button{
-    flex:none;
-
-    border:0;
-    border-radius:11px;
-    padding:0 16px;
-
-    background:#202a4a;
-    color:white;
-    font-weight:900;
-}
-
-.modal-button{
-    width:100%;
-    margin-top:15px;
-
-    padding:13px;
-
-    border:0;
-    border-radius:11px;
+    color: white;
 
     background:
         linear-gradient(
-            100deg,
-            #397eff,
-            #7955ff
+            110deg,
+            #7b2cff,
+            #386eff,
+            #08cfff,
+            #7b2cff
         );
 
-    color:white;
-    font-weight:900;
+    background-size: 300% 100%;
+
+    font-size:
+        clamp(0.95rem, 2.3vw, 1.15rem);
+
+    font-weight: 900;
+
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 30px rgba(65, 75, 255, 0.25);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+    animation:
+        buttonGradient 4s linear infinite;
 }
 
-.modal-actions{
-    display:flex;
-    gap:8px;
-    margin-top:17px;
+
+.enter-button::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -4px;
+
+    border-radius: inherit;
+
+    border: 1px solid rgba(100, 220, 255, 0.35);
+
+    opacity: 0.8;
+
+    animation:
+        buttonRing 2.5s ease-in-out infinite;
 }
 
-.modal-actions button{
-    flex:1;
-    padding:12px;
-    border:0;
-    border-radius:10px;
-    font-weight:800;
+
+.enter-button:hover {
+    transform:
+        translateY(-4px)
+        scale(1.04);
+
+    box-shadow:
+        0 12px 40px rgba(50, 120, 255, 0.38),
+        0 0 30px rgba(170, 50, 255, 0.2);
 }
 
-.cancel{
-    background:#1b223b;
-    color:#d9e0ff;
+
+.enter-button:active {
+    transform:
+        translateY(0)
+        scale(0.98);
 }
 
-.confirm-delete{
-    background:#a52e4b;
-    color:white;
-}
-
-.preview{
-    width:min(900px,100%);
-}
-
-.preview pre{
-    max-height:65vh;
-    overflow:auto;
-
-    padding:16px;
-
-    border-radius:11px;
-
-    background:#03050c;
-
-    color:#d7ddf7;
-
-    white-space:pre-wrap;
-    word-break:break-word;
-
-    font-size:12px;
-    line-height:1.65;
-}
-
-.close{
-    position:absolute;
-    top:15px;
-    right:17px;
-
-    border:0;
-    background:transparent;
-
-    color:#9ba6c4;
-
-    font-size:28px;
-}
 
 /* =========================================================
-   RESPONSIVE
-========================================================= */
+   HUB SECTION
+   ========================================================= */
 
-@media(max-width:850px){
+#projectHub {
+    width: min(1100px, 94%);
 
-    .stats{
-        grid-template-columns:repeat(2,1fr);
+    padding:
+        30px 0
+        100px;
+
+    scroll-margin-top: 30px;
+}
+
+
+.hub-panel {
+    padding:
+        clamp(25px, 5vw, 55px);
+
+    border-radius: 30px;
+
+    background:
+        rgba(8, 15, 38, 0.78);
+
+    border:
+        1px solid rgba(70, 210, 255, 0.35);
+
+    box-shadow:
+        0 0 50px rgba(50, 80, 255, 0.08);
+
+    backdrop-filter: blur(12px);
+}
+
+
+.hub-heading {
+    font-size:
+        clamp(2rem, 5vw, 3.4rem);
+
+    font-weight: 1000;
+
+    text-transform: uppercase;
+
+    background:
+        linear-gradient(
+            90deg,
+            #55edff,
+            #ffffff,
+            #a75dff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+
+.hub-subtitle {
+    margin-top: 10px;
+
+    color: var(--muted);
+
+    font-size: 1rem;
+}
+
+
+.hub-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
+    gap: 18px;
+
+    margin-top: 35px;
+}
+
+
+.hub-card {
+    padding: 24px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(35, 54, 100, 0.35),
+            rgba(36, 18, 73, 0.3)
+        );
+
+    border:
+        1px solid rgba(117, 112, 255, 0.28);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease;
+
+    cursor: pointer;
+}
+
+
+.hub-card:hover {
+    transform: translateY(-6px);
+
+    border-color:
+        rgba(45, 224, 255, 0.65);
+}
+
+
+.hub-icon {
+    font-size: 2rem;
+
+    margin-bottom: 12px;
+}
+
+
+.hub-card h3 {
+    font-size: 1.15rem;
+
+    font-weight: 850;
+}
+
+
+.hub-card p {
+    margin-top: 7px;
+
+    color: #aebbd7;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 28px;
+
+    padding: 9px 14px;
+
+    border-radius: 999px;
+
+    color: #bfffea;
+
+    background:
+        rgba(35, 255, 165, 0.07);
+
+    border:
+        1px solid rgba(35, 255, 165, 0.25);
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+}
+
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #39ffae;
+
+    box-shadow:
+        0 0 12px #39ffae;
+
+    animation:
+        statusPulse 1.6s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.back-button {
+    margin-top: 25px;
+
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    border:
+        1px solid rgba(110, 150, 255, 0.35);
+
+    background:
+        rgba(60, 70, 140, 0.16);
+
+    color: #dbe5ff;
+
+    cursor: pointer;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    width: 100%;
+
+    padding:
+        35px 20px
+        calc(35px + env(safe-area-inset-bottom));
+
+    text-align: center;
+
+    color: #7f8ba8;
+
+    font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes backgroundFlow {
+    0% {
+        background-position: 0% 30%;
     }
 
-    .filters{
-        grid-template-columns:1fr 1fr;
+    50% {
+        background-position: 100% 70%;
     }
 
-    .refresh{
-        min-height:44px;
+    100% {
+        background-position: 0% 30%;
     }
 }
 
-@media(max-width:600px){
 
-    .hero-card-inner{
-        padding:21px;
+@keyframes atmosphere {
+    from {
+        transform: translate3d(-2%, -1%, 0) scale(1);
     }
 
-    .hero h1{
-        font-size:47px;
-    }
-
-    .hero-description{
-        font-size:14px;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-    }
-
-    .form-field.full{
-        grid-column:auto;
-    }
-
-    .stats{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .filters{
-        grid-template-columns:1fr;
-    }
-
-    .refresh{
-        min-height:43px;
-    }
-
-    .hub-header{
-        padding:13px 14px;
-    }
-
-    .server-status{
-        font-size:10px;
-    }
-
-    .brand small{
-        display:none;
-    }
-
-    .panel{
-        padding:17px;
-    }
-
-    .key-row{
-        flex-direction:column;
-    }
-
-    .key-row button{
-        padding:12px;
+    to {
+        transform: translate3d(2%, 2%, 0) scale(1.05);
     }
 }
+
+
+@keyframes cardFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+
+@keyframes borderFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+
+@keyframes titleGradient {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 250% center;
+    }
+}
+
+
+@keyframes buttonGradient {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 300% center;
+    }
+}
+
+
+@keyframes buttonRing {
+    0%,
+    100% {
+        opacity: 0.25;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.75;
+        transform: scale(1.025);
+    }
+}
+
+
+@keyframes memberPulse {
+    0%,
+    100% {
+        box-shadow:
+            inset 0 0 18px rgba(72, 112, 255, 0.06),
+            0 0 14px rgba(70, 80, 255, 0.05);
+    }
+
+    50% {
+        box-shadow:
+            inset 0 0 18px rgba(72, 112, 255, 0.1),
+            0 0 20px rgba(70, 80, 255, 0.1);
+    }
+}
+
+
+@keyframes orbMove {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(-100px, 120px);
+    }
+}
+
+
+@keyframes statusPulse {
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(0.85);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .hero {
+        width: 94%;
+
+        padding-top: 45px;
+        padding-bottom: 45px;
+    }
+
+    .hero-card {
+        padding:
+            40px 18px;
+    }
+
+    .eyebrow {
+        letter-spacing: 3px;
+    }
+
+    .title {
+        font-size:
+            clamp(2.15rem, 12vw, 4rem);
+
+        line-height: 0.98;
+    }
+
+    .subtitle {
+        margin-top: 30px;
+    }
+
+    .members {
+        gap: 9px;
+    }
+
+    .member {
+        padding:
+            10px 13px;
+
+        font-size: 0.82rem;
+    }
+
+    .project-description {
+        margin-top: 30px;
+    }
+
+    .enter-button {
+        width: min(100%, 280px);
+    }
+
+    .hub-panel {
+        padding: 25px 18px;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+    .hero-card {
+        padding:
+            34px 13px;
+    }
+
+    .title {
+        font-size: 2.05rem;
+    }
+
+    .member {
+        font-size: 0.76rem;
+
+        padding:
+            9px 11px;
+    }
+}
+
 
 /* =========================================================
    REDUCED MOTION
-========================================================= */
+   ========================================================= */
 
-@media(prefers-reduced-motion:reduce){
+@media (prefers-reduced-motion: reduce) {
 
     *,
     *::before,
-    *::after{
-        animation-duration:.001ms !important;
-        animation-iteration-count:1 !important;
-        scroll-behavior:auto !important;
-        transition-duration:.001ms !important;
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+
+    #particleCanvas {
+        opacity: 0.25;
     }
 }
 </style>
 </head>
 
+
 <body>
+
+<!-- ======================================================
+     PARTICLES
+     ====================================================== -->
 
 <canvas id="particleCanvas"></canvas>
 
-<div id="app">
 
-<!-- =======================================================
-     LANDING
-======================================================= -->
+<div class="app">
 
-<section id="landing">
+    <!-- ==================================================
+         ORIGINAL WELCOME SECTION
+         ================================================== -->
 
-    <div class="hero">
+    <main class="hero" id="home">
 
-        <div class="logo-ring">
-            <span>⚡</span>
-        </div>
+        <section class="hero-card">
 
-        <div class="eyebrow">
-            MIL PROJECT
-        </div>
-
-        <h1>
-            Project File Hub
-        </h1>
-
-        <p class="hero-description">
-            A private project workspace for publishing,
-            sharing, previewing and managing project files
-            with the MIL development team.
-        </p>
-
-        <div class="hero-card">
-
-            <div class="hero-card-inner">
-
-                <div class="team-title">
-                    Project Team
-                </div>
-
-                <div class="team-list">
-
-                    <div class="member">
-                        Sunnel John Rebano 🧑🏻‍🔧
-                    </div>
-
-                    <div class="member">
-                        Maynard Cabada
-                    </div>
-
-                    <div class="member">
-                        Mark Anthony Canta
-                    </div>
-
-                </div>
-
-                <button
-                    id="enterProject"
-                    class="enter-button"
-                    type="button"
-                >
-                    ENTER PROJECT →
-                </button>
-
+            <div class="eyebrow">
+                MIL PROJECT • GAME DEVELOPMENT
             </div>
 
-        </div>
 
-    </div>
-
-</section>
-
-
-<!-- =======================================================
-     HUB
-======================================================= -->
-
-<section id="hub">
-
-    <header class="hub-header">
-
-        <div class="brand">
-
-            <div class="brand-icon">
-                📁
-            </div>
-
-            <div>
-                <strong>
-                    Project File Hub
-                </strong>
-
-                <small>
-                    MIL Project Workspace
-                </small>
-            </div>
-
-        </div>
-
-        <div
-            id="serverStatus"
-            class="server-status offline"
-        >
-            <span class="server-dot"></span>
-            <span id="serverStatusText">
-                Checking server
-            </span>
-        </div>
-
-    </header>
+            <h1 class="title">
+                WELCOME TO
+                <span class="gradient">
+                    PROJECT FILE HUB
+                </span>
+            </h1>
 
 
-    <main class="hub-container">
-
-        <div class="hub-title">
-
-            <h2>
-                Project Workspace
-            </h2>
-
-            <p>
-                Publish, browse and manage project files.
+            <p class="subtitle">
+                This website is handled by:
             </p>
 
-        </div>
 
+            <!-- ==========================================
+                 ALL 12 NAMES
+                 ========================================== -->
 
-        <!-- =================================================
-             PUBLISH
-        ================================================= -->
+            <div class="members">
 
-        <section class="panel">
+                <span class="member featured">
+                    Sunnel John Rebano 🧑🏻‍🔧
+                </span>
 
-            <div class="panel-title">
+                <span class="member">
+                    Rhea Kim
+                </span>
 
-                <div>
-                    <h3>
-                        Publish File
-                    </h3>
+                <span class="member">
+                    Kimberly
+                </span>
 
-                    <p>
-                        Your username is required before publishing.
-                    </p>
-                </div>
+                <span class="member">
+                    Charles Tiong
+                </span>
 
-            </div>
+                <span class="member">
+                    Reyden Osia
+                </span>
 
+                <span class="member">
+                    Mc Lawrence Conzaga
+                </span>
 
-            <form id="publishForm">
+                <span class="member">
+                    Kimmy Clavo
+                </span>
 
-                <div class="form-grid">
+                <span class="member">
+                    Dianne Gadia
+                </span>
 
-                    <div class="form-field">
+                <span class="member">
+                    Carl Caabay
+                </span>
 
-                        <label for="username">
-                            Username *
-                        </label>
+                <span class="member">
+                    Mark Camaso
+                </span>
 
-                        <input
-                            id="username"
-                            maxlength="80"
-                            autocomplete="off"
-                            placeholder="Enter your username"
-                            required
-                        >
+                <span class="member">
+                    Maynard Cabada
+                </span>
 
-                    </div>
-
-
-                    <div class="form-field">
-
-                        <label for="displayName">
-                            Display Name
-                        </label>
-
-                        <input
-                            id="displayName"
-                            maxlength="100"
-                            autocomplete="off"
-                            placeholder="Example: Player Controller"
-                        >
-
-                    </div>
-
-
-                    <div class="form-field full">
-
-                        <label for="fileInput">
-                            Project File *
-                        </label>
-
-                        <div class="file-picker">
-
-                            <input
-                                id="fileInput"
-                                type="file"
-                                required
-                            >
-
-                        </div>
-
-                        <div
-                            id="selectedFile"
-                            class="selected-file"
-                        >
-                            No file selected.
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    id="publishButton"
-                    class="publish-button"
-                    type="submit"
-                >
-                    🚀 Publish File
-                </button>
-
-
-                <div
-                    id="progressWrap"
-                    class="progress-wrap"
-                    hidden
-                >
-
-                    <div class="progress-track">
-
-                        <div
-                            id="progressFill"
-                            class="progress-fill"
-                        ></div>
-
-                    </div>
-
-                    <span
-                        id="progressText"
-                        class="progress-text"
-                    >
-                        Starting upload...
-                    </span>
-
-                </div>
-
-
-                <div
-                    id="publishMessage"
-                    class="message"
-                ></div>
-
-            </form>
-
-        </section>
-
-
-        <!-- =================================================
-             STATS
-        ================================================= -->
-
-        <div class="stats">
-
-            <div class="stat">
-                <span>Files</span>
-                <strong id="statFiles">0</strong>
-            </div>
-
-            <div class="stat">
-                <span>Scripts</span>
-                <strong id="statScripts">0</strong>
-            </div>
-
-            <div class="stat">
-                <span>Downloads</span>
-                <strong id="statDownloads">0</strong>
-            </div>
-
-            <div class="stat">
-                <span>Storage</span>
-                <strong id="statStorage">0 B</strong>
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             LIBRARY
-        ================================================= -->
-
-        <section class="panel">
-
-            <div class="panel-title">
-
-                <div>
-                    <h3>
-                        Public Library
-                    </h3>
-
-                    <p>
-                        Browse all published project files.
-                    </p>
-                </div>
+                <span class="member">
+                    Mark Anthony Canta
+                </span>
 
             </div>
 
 
-            <div class="filters">
-
-                <input
-                    id="searchInput"
-                    type="search"
-                    placeholder="🔎 Search files..."
-                >
+            <p class="project-description">
+                For MIL Project Game Development.
+            </p>
 
 
-                <select id="uploaderFilter">
+            <button
+                class="enter-button"
+                id="enterProject"
+                type="button">
 
-                    <option value="">
-                        All uploaders
-                    </option>
-
-                </select>
-
-
-                <select id="sortSelect">
-
-                    <option value="newest">
-                        Newest
-                    </option>
-
-                    <option value="oldest">
-                        Oldest
-                    </option>
-
-                    <option value="name">
-                        Name
-                    </option>
-
-                    <option value="largest">
-                        Largest
-                    </option>
-
-                    <option value="downloads">
-                        Most Downloaded
-                    </option>
-
-                </select>
+                ENTER PROJECT →
+            </button>
 
 
-                <button
-                    id="refreshButton"
-                    class="refresh"
-                    type="button"
-                >
-                    ↻ Refresh
-                </button>
-
-            </div>
-
-
-            <div
-                id="library"
-                class="library"
-            >
-                <div class="empty">
-                    Loading project library...
-                </div>
+            <div class="status">
+                <span class="status-dot"></span>
+                PROJECT HUB ONLINE
             </div>
 
         </section>
 
     </main>
 
-</section>
 
-</div>
+    <!-- ==================================================
+         BUILT-IN PROJECT HUB
+         NO /hub ROUTE REQUIRED
+         ================================================== -->
 
+    <section id="projectHub">
 
-<!-- =======================================================
-     DELETE KEY MODAL
-======================================================= -->
+        <div class="hub-panel">
 
-<div
-    id="deleteKeyModal"
-    class="modal hidden"
->
+            <h2 class="hub-heading">
+                PROJECT HUB
+            </h2>
 
-    <div
-        class="modal-backdrop"
-        data-close-key
-    ></div>
-
-
-    <div class="modal-box">
-
-        <div class="success-icon">
-            ✓
-        </div>
-
-        <h2>
-            File Published Successfully
-        </h2>
-
-        <p>
-            Your file has been uploaded. The server generated
-            a unique delete key for this file.
-        </p>
+            <p class="hub-subtitle">
+                Welcome to the MIL Game Development workspace.
+            </p>
 
 
-        <div class="warning">
+            <div class="hub-grid">
 
-            <strong>
-                ⚠ Save this key now.
-            </strong>
+                <article class="hub-card">
+                    <div class="hub-icon">🎮</div>
 
-            <br>
+                    <h3>
+                        Game Development
+                    </h3>
 
-            This key is required to delete your file later.
-            It cannot be recovered from the public library.
-
-        </div>
-
-
-        <label>
-            Your Delete Key
-        </label>
+                    <p>
+                        Organize and manage your game
+                        development project resources.
+                    </p>
+                </article>
 
 
-        <div class="key-row">
+                <article class="hub-card">
+                    <div class="hub-icon">📁</div>
 
-            <input
-                id="generatedDeleteKey"
-                readonly
-                type="text"
-            >
+                    <h3>
+                        Project Files
+                    </h3>
+
+                    <p>
+                        Your project workspace for files,
+                        documents, assets and resources.
+                    </p>
+                </article>
+
+
+                <article class="hub-card">
+                    <div class="hub-icon">🧑🏻‍💻</div>
+
+                    <h3>
+                        Development Team
+                    </h3>
+
+                    <p>
+                        The complete MIL Project team
+                        is displayed on the welcome page.
+                    </p>
+                </article>
+
+
+                <article class="hub-card">
+                    <div class="hub-icon">🚀</div>
+
+                    <h3>
+                        Project Launch
+                    </h3>
+
+                    <p>
+                        Your Project File Hub frontend
+                        is ready for your backend integration.
+                    </p>
+                </article>
+
+            </div>
+
 
             <button
-                id="copyKeyButton"
-                type="button"
-            >
-                Copy
+                class="back-button"
+                id="backHome"
+                type="button">
+
+                ← Back to Welcome
             </button>
 
         </div>
 
-
-        <div
-            id="copyMessage"
-            class="message"
-        ></div>
+    </section>
 
 
-        <button
-            id="savedKeyButton"
-            class="modal-button"
-            type="button"
-        >
-            I've Saved My Key
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- =======================================================
-     DELETE MODAL
-======================================================= -->
-
-<div
-    id="deleteModal"
-    class="modal hidden"
->
-
-    <div
-        class="modal-backdrop"
-        data-close-delete
-    ></div>
-
-
-    <div class="modal-box">
-
-        <button
-            class="close"
-            type="button"
-            data-close-delete
-        >
-            ×
-        </button>
-
-        <h2>
-            Delete File
-        </h2>
-
-        <p>
-            Enter the delete key that was generated when
-            this file was published.
-        </p>
-
-
-        <input
-            id="deleteTokenInput"
-            type="password"
-            autocomplete="off"
-            placeholder="Enter delete key"
-        >
-
-
-        <div
-            id="deleteMessage"
-            class="message"
-        ></div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="cancel"
-                id="cancelDeleteButton"
-                type="button"
-            >
-                Cancel
-            </button>
-
-            <button
-                class="confirm-delete"
-                id="confirmDeleteButton"
-                type="button"
-            >
-                Delete File
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =======================================================
-     PREVIEW MODAL
-======================================================= -->
-
-<div
-    id="previewModal"
-    class="modal hidden"
->
-
-    <div
-        class="modal-backdrop"
-        data-close-preview
-    ></div>
-
-
-    <div class="modal-box preview">
-
-        <button
-            class="close"
-            type="button"
-            data-close-preview
-        >
-            ×
-        </button>
-
-        <h2 id="previewTitle">
-            Script Preview
-        </h2>
-
-        <p>
-            Read-only preview.
-        </p>
-
-        <pre id="previewContent">
-Loading...
-        </pre>
-
-    </div>
+    <footer>
+        MIL Project • Game Development
+        <br>
+        Project File Hub
+    </footer>
 
 </div>
 
@@ -1838,1619 +1276,118 @@ Loading...
 "use strict";
 
 /* =========================================================
-   PROJECT FILE HUB APPLICATION
-========================================================= */
-
-(() => {
-
-    const $ = selector =>
-        document.querySelector(selector);
-
-
-    /* =====================================================
-       ELEMENTS
-    ===================================================== */
-
-    const landing =
-        $("#landing");
-
-    const hub =
-        $("#hub");
-
-    const enterProject =
-        $("#enterProject");
-
-    const publishForm =
-        $("#publishForm");
-
-    const username =
-        $("#username");
-
-    const displayName =
-        $("#displayName");
-
-    const fileInput =
-        $("#fileInput");
-
-    const selectedFile =
-        $("#selectedFile");
-
-    const publishButton =
-        $("#publishButton");
-
-    const progressWrap =
-        $("#progressWrap");
-
-    const progressFill =
-        $("#progressFill");
-
-    const progressText =
-        $("#progressText");
-
-    const publishMessage =
-        $("#publishMessage");
-
-    const library =
-        $("#library");
-
-    const searchInput =
-        $("#searchInput");
-
-    const uploaderFilter =
-        $("#uploaderFilter");
-
-    const sortSelect =
-        $("#sortSelect");
-
-    const refreshButton =
-        $("#refreshButton");
-
-    const statFiles =
-        $("#statFiles");
-
-    const statScripts =
-        $("#statScripts");
-
-    const statDownloads =
-        $("#statDownloads");
-
-    const statStorage =
-        $("#statStorage");
-
-    const serverStatus =
-        $("#serverStatus");
-
-    const serverStatusText =
-        $("#serverStatusText");
-
-    const deleteKeyModal =
-        $("#deleteKeyModal");
-
-    const generatedDeleteKey =
-        $("#generatedDeleteKey");
-
-    const copyKeyButton =
-        $("#copyKeyButton");
-
-    const copyMessage =
-        $("#copyMessage");
-
-    const savedKeyButton =
-        $("#savedKeyButton");
-
-    const deleteModal =
-        $("#deleteModal");
-
-    const deleteTokenInput =
-        $("#deleteTokenInput");
-
-    const confirmDeleteButton =
-        $("#confirmDeleteButton");
-
-    const cancelDeleteButton =
-        $("#cancelDeleteButton");
-
-    const deleteMessage =
-        $("#deleteMessage");
-
-    const previewModal =
-        $("#previewModal");
-
-    const previewTitle =
-        $("#previewTitle");
-
-    const previewContent =
-        $("#previewContent");
-
-
-    /* =====================================================
-       STATE
-    ===================================================== */
-
-    let selectedDeleteFileId = null;
-
-
-    /* =====================================================
-       HELPERS
-    ===================================================== */
-
-    function escapeHtml(value){
-
-        return String(value ?? "")
-            .replace(/&/g,"&amp;")
-            .replace(/</g,"&lt;")
-            .replace(/>/g,"&gt;")
-            .replace(/"/g,"&quot;")
-            .replace(/'/g,"&#039;");
-
-    }
-
-
-    function formatBytes(bytes){
-
-        if(!Number.isFinite(Number(bytes))){
-            return "0 B";
-        }
-
-        bytes = Number(bytes);
-
-        if(bytes === 0){
-            return "0 B";
-        }
-
-        const units =
-            ["B","KB","MB","GB"];
-
-        const index =
-            Math.min(
-                Math.floor(
-                    Math.log(bytes) /
-                    Math.log(1024)
-                ),
-                units.length - 1
-            );
-
-        return (
-            (bytes /
-            Math.pow(1024,index))
-            .toFixed(index ? 1 : 0)
-            +
-            " " +
-            units[index]
-        );
-
-    }
-
-
-    function formatDate(timestamp){
-
-        if(!timestamp){
-            return "Unknown date";
-        }
-
-        const date =
-            new Date(timestamp);
-
-        if(Number.isNaN(date.getTime())){
-            return "Unknown date";
-        }
-
-        return date.toLocaleString();
-
-    }
-
-
-    function message(element,text,type=""){
-
-        element.textContent = text;
-
-        element.className =
-            "message" +
-            (type ? " " + type : "");
-
-    }
-
-
-    /* =====================================================
-       ENTER PROJECT
-    ===================================================== */
-
-    enterProject.addEventListener(
-        "click",
-        () => {
-
-            landing.style.display = "none";
-            hub.style.display = "block";
-
-            window.scrollTo({
-                top:0,
-                behavior:"smooth"
-            });
-
-            loadEverything();
-
-        }
-    );
-
-
-    /* =====================================================
-       FILE SELECT
-    ===================================================== */
-
-    fileInput.addEventListener(
-        "change",
-        () => {
-
-            const file =
-                fileInput.files[0];
-
-            if(!file){
-
-                selectedFile.textContent =
-                    "No file selected.";
-
-                return;
-
-            }
-
-            selectedFile.textContent =
-                `${file.name} • ${formatBytes(file.size)}`;
-
-        }
-    );
-
-
-    /* =====================================================
-       PUBLISH
-    ===================================================== */
-
-    publishForm.addEventListener(
-        "submit",
-        event => {
-
-            event.preventDefault();
-
-            publishFile();
-
-        }
-    );
-
-
-    function publishFile(){
-
-        const user =
-            username.value.trim();
-
-        const display =
-            displayName.value.trim();
-
-        const file =
-            fileInput.files[0];
-
-
-        if(!user){
-
-            message(
-                publishMessage,
-                "Enter your username before publishing.",
-                "error"
-            );
-
-            username.focus();
-
-            return;
-
-        }
-
-
-        if(user.length < 2){
-
-            message(
-                publishMessage,
-                "Username must contain at least 2 characters.",
-                "error"
-            );
-
-            username.focus();
-
-            return;
-
-        }
-
-
-        if(!file){
-
-            message(
-                publishMessage,
-                "Select a file first.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const MAX_SIZE =
-            50 * 1024 * 1024;
-
-
-        if(file.size > MAX_SIZE){
-
-            message(
-                publishMessage,
-                "Maximum file size is 50 MB.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const formData =
-            new FormData();
-
-        formData.append(
-            "file",
-            file
-        );
-
-        formData.append(
-            "uploader",
-            user
-        );
-
-        formData.append(
-            "username",
-            user
-        );
-
-        formData.append(
-            "displayName",
-            display
-        );
-
-
-        publishButton.disabled = true;
-
-        publishButton.textContent =
-            "Publishing...";
-
-        progressWrap.hidden = false;
-
-        progressFill.style.width =
-            "0%";
-
-        progressText.textContent =
-            "Starting upload...";
-
-        message(
-            publishMessage,
-            ""
-        );
-
-
-        const xhr =
-            new XMLHttpRequest();
-
-
-        xhr.open(
-            "POST",
-            "/api/files"
-        );
-
-
-        xhr.upload.addEventListener(
-            "progress",
-            event => {
-
-                if(!event.lengthComputable){
-                    return;
-                }
-
-                const percent =
-                    Math.round(
-                        event.loaded /
-                        event.total *
-                        100
-                    );
-
-                progressFill.style.width =
-                    percent + "%";
-
-                progressText.textContent =
-                    `Uploading ${percent}%`;
-
-            }
-        );
-
-
-        xhr.onload = async () => {
-
-            publishButton.disabled = false;
-
-            publishButton.textContent =
-                "🚀 Publish File";
-
-
-            let result;
-
-            try{
-
-                result =
-                    JSON.parse(
-                        xhr.responseText
-                    );
-
-            }
-            catch{
-
-                result = {
-                    success:false,
-                    error:"Invalid server response."
-                };
-
-            }
-
-
-            if(
-                xhr.status < 200 ||
-                xhr.status >= 300 ||
-                !result.success
-            ){
-
-                progressWrap.hidden = true;
-
-                message(
-                    publishMessage,
-                    result.error ||
-                    "Publishing failed.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            /*
-             IMPORTANT:
-
-             The frontend NEVER creates the delete key.
-
-             The backend must generate it securely and return:
-
-             {
-                 success:true,
-                 deleteToken:"..."
-             }
-            */
-
-            if(!result.deleteToken){
-
-                progressWrap.hidden = true;
-
-                message(
-                    publishMessage,
-                    "Upload succeeded, but the server did not return a delete key.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            progressFill.style.width =
-                "100%";
-
-            progressText.textContent =
-                "Published successfully.";
-
-
-            generatedDeleteKey.value =
-                result.deleteToken;
-
-            copyMessage.textContent = "";
-
-            deleteKeyModal.classList.remove(
-                "hidden"
-            );
-
-
-            publishForm.reset();
-
-            selectedFile.textContent =
-                "No file selected.";
-
-
-            await loadEverything();
-
-
-            setTimeout(
-                () => {
-                    progressWrap.hidden = true;
-                },
-                900
-            );
-
-        };
-
-
-        xhr.onerror = () => {
-
-            publishButton.disabled = false;
-
-            publishButton.textContent =
-                "🚀 Publish File";
-
-            progressWrap.hidden = true;
-
-            message(
-                publishMessage,
-                "Unable to connect to the server.",
-                "error"
-            );
-
-        };
-
-
-        xhr.send(
-            formData
-        );
-
-    }
-
-
-    /* =====================================================
-       DELETE KEY MODAL
-    ===================================================== */
-
-    function closeDeleteKeyModal(){
-
-        deleteKeyModal.classList.add(
-            "hidden"
-        );
-
-        generatedDeleteKey.value = "";
-
-    }
-
-
-    document
-        .querySelectorAll("[data-close-key]")
-        .forEach(
-            element => {
-
-                element.addEventListener(
-                    "click",
-                    closeDeleteKeyModal
-                );
-
-            }
-        );
-
-
-    savedKeyButton.addEventListener(
-        "click",
-        () => {
-
-            closeDeleteKeyModal();
-
-            message(
-                publishMessage,
-                "File published. Your delete key was shown above — keep it safe.",
-                "success"
-            );
-
-        }
-    );
-
-
-    copyKeyButton.addEventListener(
-        "click",
-        async () => {
-
-            const key =
-                generatedDeleteKey.value;
-
-            if(!key){
-                return;
-            }
-
-            try{
-
-                await navigator.clipboard.writeText(
-                    key
-                );
-
-                copyMessage.textContent =
-                    "✓ Delete key copied.";
-
-            }
-            catch{
-
-                generatedDeleteKey.select();
-
-                document.execCommand("copy");
-
-                copyMessage.textContent =
-                    "✓ Delete key copied.";
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       LOAD FILES
-    ===================================================== */
-
-    async function loadFiles(){
-
-        const params =
-            new URLSearchParams();
-
-
-        const search =
-            searchInput.value.trim();
-
-        const uploader =
-            uploaderFilter.value;
-
-        const sort =
-            sortSelect.value;
-
-
-        if(search){
-            params.set("search",search);
-        }
-
-        if(uploader){
-            params.set("uploader",uploader);
-        }
-
-        params.set(
-            "sort",
-            sort
-        );
-
-
-        library.innerHTML =
-            `<div class="empty">
-                Loading project library...
-             </div>`;
-
-
-        try{
-
-            const response =
-                await fetch(
-                    "/api/files?" +
-                    params.toString()
-                );
-
-
-            const result =
-                await response.json();
-
-
-            if(
-                !response.ok ||
-                !result.success
-            ){
-
-                throw new Error(
-                    result.error ||
-                    "Unable to load files."
-                );
-
-            }
-
-
-            renderFiles(
-                Array.isArray(result.files)
-                    ? result.files
-                    : []
-            );
-
-        }
-        catch(error){
-
-            console.error(error);
-
-            library.innerHTML =
-                `<div class="empty">
-                    Unable to load files.
-                    <br><br>
-                    <small>
-                        Check that your backend API is running.
-                    </small>
-                 </div>`;
-
-        }
-
-    }
-
-
-    /* =====================================================
-       RENDER FILES
-    ===================================================== */
-
-    function renderFiles(files){
-
-        if(!files.length){
-
-            library.innerHTML =
-                `<div class="empty">
-                    ✦ No published files yet.
-                 </div>`;
-
-            return;
-
-        }
-
-
-        library.innerHTML =
-            files
-                .map(createFileCard)
-                .join("");
-
-
-        library
-            .querySelectorAll("[data-download]")
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            const id =
-                                button.dataset.download;
-
-                            window.location.href =
-                                `/api/files/${encodeURIComponent(id)}/download`;
-
-                        }
-                    );
-
-                }
-            );
-
-
-        library
-            .querySelectorAll("[data-delete]")
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            openDeleteModal(
-                                button.dataset.delete
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        library
-            .querySelectorAll("[data-preview]")
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            previewScript(
-                                button.dataset.preview,
-                                button.dataset.name
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-    }
-
-
-    function createFileCard(file){
-
-        const preview =
-            file.script
-            ? `
-                <button
-                    data-preview="${escapeHtml(file.id)}"
-                    data-name="${escapeHtml(file.displayName || file.name)}"
-                >
-                    👁 Preview
-                </button>
-              `
-            : "";
-
-
-        return `
-            <article class="file-card">
-
-                <div class="file-top">
-
-                    <div>
-
-                        <div class="file-name">
-                            ${escapeHtml(
-                                file.displayName ||
-                                file.name ||
-                                "Untitled file"
-                            )}
-                        </div>
-
-                        <div class="file-meta">
-
-                            ${escapeHtml(
-                                file.name || ""
-                            )}
-
-                            •
-                            ${escapeHtml(
-                                String(
-                                    file.extension ||
-                                    ""
-                                ).toUpperCase()
-                            )}
-
-                            •
-                            ${formatBytes(file.size)}
-
-                            <br>
-
-                            Published by
-                            <strong>
-                                ${escapeHtml(
-                                    file.uploader ||
-                                    "Unknown"
-                                )}
-                            </strong>
-
-                            •
-                            ${formatDate(file.date)}
-
-                            <br>
-
-                            Downloads:
-                            ${Number(file.downloads) || 0}
-
-                        </div>
-
-                    </div>
-
-                    <span class="badge">
-                        ${
-                            file.script
-                                ? "SCRIPT"
-                                : "FILE"
-                        }
-                    </span>
-
-                </div>
-
-
-                <div class="file-actions">
-
-                    ${preview}
-
-                    <button
-                        data-download="${escapeHtml(file.id)}"
-                    >
-                        ↓ Download
-                    </button>
-
-                    <button
-                        class="delete"
-                        data-delete="${escapeHtml(file.id)}"
-                    >
-                        ✕ Delete
-                    </button>
-
-                </div>
-
-            </article>
-        `;
-
-    }
-
-
-    /* =====================================================
-       DELETE
-    ===================================================== */
-
-    function openDeleteModal(id){
-
-        selectedDeleteFileId =
-            id;
-
-        deleteTokenInput.value = "";
-
-        message(
-            deleteMessage,
-            ""
-        );
-
-        deleteModal.classList.remove(
-            "hidden"
-        );
-
-        setTimeout(
-            () => deleteTokenInput.focus(),
-            50
-        );
-
-    }
-
-
-    function closeDeleteModal(){
-
-        deleteModal.classList.add(
-            "hidden"
-        );
-
-        selectedDeleteFileId =
-            null;
-
-    }
-
-
-    cancelDeleteButton.addEventListener(
-        "click",
-        closeDeleteModal
-    );
-
-
-    document
-        .querySelectorAll("[data-close-delete]")
-        .forEach(
-            element => {
-
-                element.addEventListener(
-                    "click",
-                    closeDeleteModal
-                );
-
-            }
-        );
-
-
-    confirmDeleteButton.addEventListener(
-        "click",
-        deleteFile
-    );
-
-
-    async function deleteFile(){
-
-        if(!selectedDeleteFileId){
-            return;
-        }
-
-
-        const token =
-            deleteTokenInput.value.trim();
-
-
-        if(!token){
-
-            message(
-                deleteMessage,
-                "Enter your delete key.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        confirmDeleteButton.disabled = true;
-
-        confirmDeleteButton.textContent =
-            "Deleting...";
-
-
-        try{
-
-            const response =
-                await fetch(
-                    `/api/files/${encodeURIComponent(
-                        selectedDeleteFileId
-                    )}`,
-                    {
-                        method:"DELETE",
-
-                        headers:{
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:JSON.stringify({
-                            deleteToken:token
-                        })
-                    }
-                );
-
-
-            const result =
-                await response.json();
-
-
-            if(
-                !response.ok ||
-                !result.success
-            ){
-
-                message(
-                    deleteMessage,
-                    result.error ||
-                    "Delete failed.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            closeDeleteModal();
-
-
-            message(
-                publishMessage,
-                "File deleted successfully.",
-                "success"
-            );
-
-
-            await loadEverything();
-
-        }
-        catch(error){
-
-            console.error(error);
-
-            message(
-                deleteMessage,
-                "Unable to connect to the server.",
-                "error"
-            );
-
-        }
-        finally{
-
-            confirmDeleteButton.disabled =
-                false;
-
-            confirmDeleteButton.textContent =
-                "Delete File";
-
-        }
-
-    }
-
-
-    /* =====================================================
-       PREVIEW
-    ===================================================== */
-
-    async function previewScript(id,name){
-
-        previewTitle.textContent =
-            name || "Script Preview";
-
-        previewContent.textContent =
-            "Loading...";
-
-        previewModal.classList.remove(
-            "hidden"
-        );
-
-
-        try{
-
-            const response =
-                await fetch(
-                    `/api/files/${encodeURIComponent(id)}/preview`
-                );
-
-
-            const result =
-                await response.json();
-
-
-            if(
-                !response.ok ||
-                !result.success
-            ){
-
-                throw new Error(
-                    result.error ||
-                    "Preview failed."
-                );
-
-            }
-
-
-            previewContent.textContent =
-                result.file.content;
-
-        }
-        catch(error){
-
-            previewContent.textContent =
-                error.message;
-
-        }
-
-    }
-
-
-    document
-        .querySelectorAll("[data-close-preview]")
-        .forEach(
-            element => {
-
-                element.addEventListener(
-                    "click",
-                    () => {
-
-                        previewModal.classList.add(
-                            "hidden"
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    /* =====================================================
-       STATS
-    ===================================================== */
-
-    async function loadStats(){
-
-        try{
-
-            const response =
-                await fetch(
-                    "/api/stats"
-                );
-
-            const result =
-                await response.json();
-
-
-            if(!result.success){
-                return;
-            }
-
-
-            statFiles.textContent =
-                result.stats.files ?? 0;
-
-            statScripts.textContent =
-                result.stats.scripts ?? 0;
-
-            statDownloads.textContent =
-                result.stats.downloads ?? 0;
-
-            statStorage.textContent =
-                formatBytes(
-                    result.stats.totalSize ?? 0
-                );
-
-        }
-        catch(error){
-
-            console.error(
-                "Stats:",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       UPLOADERS
-    ===================================================== */
-
-    async function loadUploaders(){
-
-        try{
-
-            const response =
-                await fetch(
-                    "/api/uploaders"
-                );
-
-            const result =
-                await response.json();
-
-
-            if(!result.success){
-                return;
-            }
-
-
-            const previous =
-                uploaderFilter.value;
-
-
-            uploaderFilter.innerHTML =
-                `<option value="">
-                    All uploaders
-                 </option>`;
-
-
-            (result.uploaders || [])
-                .forEach(
-                    uploader => {
-
-                        const option =
-                            document.createElement(
-                                "option"
-                            );
-
-                        option.value =
-                            uploader;
-
-                        option.textContent =
-                            uploader;
-
-                        uploaderFilter.appendChild(
-                            option
-                        );
-
-                    }
-                );
-
-
-            if(
-                (result.uploaders || [])
-                    .includes(previous)
-            ){
-
-                uploaderFilter.value =
-                    previous;
-
-            }
-
-        }
-        catch(error){
-
-            console.error(
-                "Uploaders:",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       HEALTH
-    ===================================================== */
-
-    async function checkHealth(){
-
-        try{
-
-            const response =
-                await fetch(
-                    "/api/health"
-                );
-
-
-            const result =
-                await response.json();
-
-
-            if(
-                response.ok &&
-                result.success
-            ){
-
-                serverStatus.className =
-                    "server-status online";
-
-                serverStatusText.textContent =
-                    "Server Online";
-
-            }
-            else{
-
-                throw new Error();
-
-            }
-
-        }
-        catch{
-
-            serverStatus.className =
-                "server-status offline";
-
-            serverStatusText.textContent =
-                "Server Offline";
-
-        }
-
-    }
-
-
-    /* =====================================================
-       EVERYTHING
-    ===================================================== */
-
-    async function loadEverything(){
-
-        await Promise.all([
-            loadFiles(),
-            loadStats(),
-            loadUploaders(),
-            checkHealth()
-        ]);
-
-    }
-
-
-    /* =====================================================
-       FILTERS
-    ===================================================== */
-
-    let searchTimer = null;
-
-
-    searchInput.addEventListener(
-        "input",
-        () => {
-
-            clearTimeout(
-                searchTimer
-            );
-
-            searchTimer =
-                setTimeout(
-                    loadFiles,
-                    250
-                );
-
-        }
-    );
-
-
-    uploaderFilter.addEventListener(
-        "change",
-        loadFiles
-    );
-
-
-    sortSelect.addEventListener(
-        "change",
-        loadFiles
-    );
-
-
-    refreshButton.addEventListener(
-        "click",
-        loadEverything
-    );
-
-
-    /* =====================================================
-       KEYBOARD SHORTCUT
-    ===================================================== */
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if(
-                event.key === "Escape"
-            ){
-
-                deleteKeyModal.classList.add(
-                    "hidden"
-                );
-
-                deleteModal.classList.add(
-                    "hidden"
-                );
-
-                previewModal.classList.add(
-                    "hidden"
-                );
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       SSE REAL-TIME UPDATES
-    ===================================================== */
-
-    function connectEvents(){
-
-        if(!window.EventSource){
-            return;
-        }
-
-
-        const events =
-            new EventSource(
-                "/api/events"
-            );
-
-
-        events.addEventListener(
-            "library-update",
-            () => {
-
-                loadEverything();
-
-            }
-        );
-
-
-        events.onerror =
-            () => {
-
-                /*
-                 Browser automatically reconnects.
-                */
-
-            };
-
-    }
-
-
-    /* =====================================================
-       START
-    ===================================================== */
-
-    connectEvents();
-
-})();
-</script>
-
-
-<!-- =======================================================
-     OPTIMIZED PARTICLE ENGINE
-======================================================= -->
-
-<script>
-"use strict";
+   PROJECT FILE HUB
+   LIGHTWEIGHT ADAPTIVE PARTICLES
+
+   - Canvas based
+   - No DOM particles
+   - Automatically lowers particle count
+   - Pauses when hidden
+   - Caps DPR
+   - Mobile friendly
+   - Reduced-motion support
+   ========================================================= */
 
 (() => {
 
     const canvas =
-        document.getElementById(
-            "particleCanvas"
-        );
+        document.getElementById("particleCanvas");
 
-    if(!canvas){
-        return;
-    }
-
+    if (!canvas) return;
 
     const ctx =
-        canvas.getContext(
-            "2d",
-            {
-                alpha:true,
-                desynchronized:true
-            }
-        );
+        canvas.getContext("2d", {
+            alpha: true,
+            desynchronized: true
+        });
 
-    if(!ctx){
-        return;
-    }
+    if (!ctx) return;
 
 
-    const reduced =
+    /* ---------------------------------------------
+       DEVICE
+       --------------------------------------------- */
+
+    const reducedMotion =
         window.matchMedia(
             "(prefers-reduced-motion: reduce)"
         ).matches;
 
-
     const mobile =
         window.matchMedia(
-            "(max-width:700px)"
+            "(max-width: 700px)"
         ).matches;
-
 
     const cores =
         navigator.hardwareConcurrency || 4;
-
 
     const memory =
         navigator.deviceMemory || 4;
 
 
-    let performanceLevel =
-        "medium";
+    /* ---------------------------------------------
+       PERFORMANCE LEVEL
+       --------------------------------------------- */
 
+    let level = "medium";
 
-    if(reduced){
+    if (reducedMotion) {
 
-        performanceLevel =
-            "minimal";
+        level = "minimal";
 
-    }
-    else if(
+    } else if (
         cores <= 2 ||
         memory <= 2
-    ){
+    ) {
 
-        performanceLevel =
-            "low";
+        level = "low";
 
-    }
-    else if(
+    } else if (
         cores >= 8 &&
         memory >= 8
-    ){
+    ) {
 
-        performanceLevel =
-            "high";
+        level = "high";
 
     }
 
 
-    const levels = {
+    const settings = {
 
-        minimal:{
-            count:8,
-            speed:.08,
-            connections:false
+        minimal: {
+            mobile: 5,
+            desktop: 9,
+            speed: 0.10,
+            distance: 0
         },
 
-        low:{
-            count:14,
-            speed:.13,
-            connections:false
+        low: {
+            mobile: 8,
+            desktop: 15,
+            speed: 0.15,
+            distance: 70
         },
 
-        medium:{
-            count:25,
-            speed:.17,
-            connections:true
+        medium: {
+            mobile: 13,
+            desktop: 25,
+            speed: 0.20,
+            distance: 88
         },
 
-        high:{
-            count:38,
-            speed:.22,
-            connections:true
+        high: {
+            mobile: 18,
+            desktop: 38,
+            speed: 0.25,
+            distance: 100
         }
 
-    };
+    }[level];
 
 
-    const settings =
-        levels[performanceLevel];
-
+    /* ---------------------------------------------
+       STATE
+       --------------------------------------------- */
 
     let width = 0;
     let height = 0;
@@ -3464,30 +1401,27 @@ Loading...
 
     let lastTime = 0;
 
-    let fpsSamples = [];
-
     let targetCount =
         mobile
-            ? Math.max(
-                6,
-                Math.floor(
-                    settings.count * .65
-                )
-            )
-            : settings.count;
+            ? settings.mobile
+            : settings.desktop;
 
 
-    function random(min,max){
+    /* ---------------------------------------------
+       RANDOM
+       --------------------------------------------- */
 
-        return (
-            Math.random() *
-            (max - min)
-        ) + min;
-
-    }
+    const random = (min, max) =>
+        Math.random() *
+        (max - min) +
+        min;
 
 
-    function resize(){
+    /* ---------------------------------------------
+       RESIZE
+       --------------------------------------------- */
+
+    function resize() {
 
         width =
             window.innerWidth;
@@ -3496,10 +1430,15 @@ Loading...
             window.innerHeight;
 
 
+        /*
+         * Never use the phone's full 3x/4x DPR.
+         * 1.5 is a good visual/performance balance.
+         */
+
         dpr =
             Math.min(
                 window.devicePixelRatio || 1,
-                1.35
+                1.5
             );
 
 
@@ -3512,7 +1451,6 @@ Loading...
             Math.floor(
                 height * dpr
             );
-
 
         canvas.style.width =
             width + "px";
@@ -3531,60 +1469,99 @@ Loading...
         );
 
 
-        adjust();
+        /*
+         * Smaller screens automatically
+         * get fewer particles.
+         */
+
+        if (
+            width * height < 300000
+        ) {
+
+            targetCount =
+                Math.min(
+                    targetCount,
+                    10
+                );
+
+        }
+
+
+        adjustParticles();
 
     }
 
 
-    function create(){
+    /* ---------------------------------------------
+       CREATE
+       --------------------------------------------- */
+
+    function createParticle() {
+
+        const colors = [
+            "39,234,255",
+            "80,130,255",
+            "170,70,255"
+        ];
 
         return {
 
-            x:random(0,width),
-            y:random(0,height),
+            x: random(0, width),
 
-            vx:random(
-                -settings.speed,
-                settings.speed
-            ),
+            y: random(0, height),
 
-            vy:random(
-                -settings.speed,
-                settings.speed
-            ),
+            vx:
+                random(
+                    -settings.speed,
+                    settings.speed
+                ),
 
-            size:random(.65,1.65),
+            vy:
+                random(
+                    -settings.speed,
+                    settings.speed
+                ),
 
-            alpha:random(.2,.7),
+            size:
+                random(0.8, 2),
 
-            phase:random(
-                0,
-                Math.PI * 2
-            )
+            alpha:
+                random(0.25, 0.7),
+
+            color:
+                colors[
+                    Math.floor(
+                        Math.random() *
+                        colors.length
+                    )
+                ]
 
         };
 
     }
 
 
-    function adjust(){
+    /* ---------------------------------------------
+       COUNT
+       --------------------------------------------- */
 
-        while(
+    function adjustParticles() {
+
+        while (
             particles.length <
             targetCount
-        ){
+        ) {
 
             particles.push(
-                create()
+                createParticle()
             );
 
         }
 
-
-        while(
+        while (
             particles.length >
             targetCount
-        ){
+        ) {
 
             particles.pop();
 
@@ -3593,63 +1570,54 @@ Loading...
     }
 
 
-    function update(delta){
+    /* ---------------------------------------------
+       UPDATE
+       --------------------------------------------- */
 
-        const multiplier =
-            delta * .06;
+    function update(delta) {
+
+        const factor =
+            Math.min(
+                delta,
+                32
+            ) / 16;
 
 
-        for(
-            let i=0;
-            i<particles.length;
-            i++
-        ){
-
-            const p =
-                particles[i];
-
+        for (
+            const p of particles
+        ) {
 
             p.x +=
                 p.vx *
-                multiplier;
+                factor;
 
             p.y +=
                 p.vy *
-                multiplier;
+                factor;
 
 
-            p.phase +=
-                delta * .0005;
-
-
-            p.y +=
-                Math.sin(
-                    p.phase
-                ) * .025;
-
-
-            if(p.x < -10){
+            if (p.x < -10)
                 p.x = width + 10;
-            }
 
-            if(p.x > width + 10){
+            if (p.x > width + 10)
                 p.x = -10;
-            }
 
-            if(p.y < -10){
+            if (p.y < -10)
                 p.y = height + 10;
-            }
 
-            if(p.y > height + 10){
+            if (p.y > height + 10)
                 p.y = -10;
-            }
 
         }
 
     }
 
 
-    function draw(){
+    /* ---------------------------------------------
+       DRAW
+       --------------------------------------------- */
+
+    function draw() {
 
         ctx.clearRect(
             0,
@@ -3660,24 +1628,18 @@ Loading...
 
 
         /*
-         Particle dots.
+         * Particles
          */
 
-        ctx.fillStyle =
-            "rgba(75,220,255,.6)";
-
-
-        for(
-            let i=0;
-            i<particles.length;
-            i++
-        ){
-
-            const p =
-                particles[i];
+        for (
+            const p of particles
+        ) {
 
             ctx.globalAlpha =
                 p.alpha;
+
+            ctx.fillStyle =
+                `rgb(${p.color})`;
 
             ctx.beginPath();
 
@@ -3695,98 +1657,113 @@ Loading...
 
 
         /*
-         Limited connections.
+         * Network lines
          */
 
-        if(settings.connections){
+        if (
+            settings.distance <= 0
+        ) {
 
-            const maxDistance = 105;
+            ctx.globalAlpha = 1;
 
-            const maxDistanceSq =
-                maxDistance *
-                maxDistance;
+            return;
 
-            let lines = 0;
-
-
-            ctx.lineWidth = .45;
+        }
 
 
-            for(
-                let i=0;
-                i<particles.length &&
-                lines<70;
-                i++
-            ){
+        const maxDistance =
+            settings.distance;
 
-                const a =
-                    particles[i];
+        const maxDistanceSq =
+            maxDistance *
+            maxDistance;
 
 
-                for(
-                    let j=i+1;
-                    j<particles.length &&
-                    lines<70;
-                    j++
-                ){
+        let lines = 0;
 
-                    const b =
-                        particles[j];
+        for (
+            let i = 0;
+            i < particles.length;
+            i++
+        ) {
 
-
-                    const dx =
-                        a.x - b.x;
-
-                    const dy =
-                        a.y - b.y;
-
-                    const distSq =
-                        dx*dx +
-                        dy*dy;
+            if (lines >= 65)
+                break;
 
 
-                    if(
-                        distSq >
-                        maxDistanceSq
-                    ){
-                        continue;
-                    }
+            const a =
+                particles[i];
 
 
-                    const distance =
-                        Math.sqrt(distSq);
+            for (
+                let j = i + 1;
+                j < particles.length;
+                j++
+            ) {
+
+                if (lines >= 65)
+                    break;
 
 
-                    const alpha =
-                        (
-                            1 -
-                            distance /
-                            maxDistance
-                        ) * .12;
+                const b =
+                    particles[j];
 
 
-                    ctx.strokeStyle =
-                        `rgba(112,130,255,${alpha})`;
+                const dx =
+                    a.x - b.x;
+
+                const dy =
+                    a.y - b.y;
+
+                const distanceSq =
+                    dx * dx +
+                    dy * dy;
 
 
-                    ctx.beginPath();
+                if (
+                    distanceSq >
+                    maxDistanceSq
+                ) continue;
 
-                    ctx.moveTo(
-                        a.x,
-                        a.y
+
+                const distance =
+                    Math.sqrt(
+                        distanceSq
                     );
 
-                    ctx.lineTo(
-                        b.x,
-                        b.y
-                    );
 
-                    ctx.stroke();
+                const alpha =
+                    (
+                        1 -
+                        distance /
+                        maxDistance
+                    ) * 0.12;
 
 
-                    lines++;
+                ctx.globalAlpha =
+                    alpha;
 
-                }
+                ctx.strokeStyle =
+                    "rgb(90,140,255)";
+
+                ctx.lineWidth =
+                    0.55;
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    a.x,
+                    a.y
+                );
+
+                ctx.lineTo(
+                    b.x,
+                    b.y
+                );
+
+                ctx.stroke();
+
+                lines++;
 
             }
 
@@ -3798,131 +1775,39 @@ Loading...
     }
 
 
-    function optimize(){
+    /* ---------------------------------------------
+       ANIMATION
+       --------------------------------------------- */
 
-        if(
-            fpsSamples.length < 15
-        ){
-            return;
-        }
+    function animate(timestamp) {
 
+        if (!running) {
 
-        const avg =
-            fpsSamples.reduce(
-                (a,b) => a+b,
-                0
-            ) /
-            fpsSamples.length;
-
-
-        const fps =
-            1000 / avg;
-
-
-        /*
-         Automatically reduce load
-         when the device struggles.
-         */
-
-        if(
-            fps < 38 &&
-            targetCount > 6
-        ){
-
-            targetCount =
-                Math.max(
-                    6,
-                    Math.floor(
-                        targetCount * .72
-                    )
-                );
-
-            adjust();
-
-        }
-        else if(
-            fps < 48 &&
-            targetCount > 10
-        ){
-
-            targetCount =
-                Math.max(
-                    10,
-                    Math.floor(
-                        targetCount * .85
-                    )
-                );
-
-            adjust();
-
-        }
-
-
-        fpsSamples = [];
-
-    }
-
-
-    function animate(timestamp){
-
-        if(!running){
-
-            animationFrame =
-                null;
+            animationFrame = null;
 
             return;
 
         }
 
 
-        if(!lastTime){
-            lastTime =
-                timestamp;
-        }
+        if (!lastTime)
+            lastTime = timestamp;
 
 
-        let delta =
-            timestamp -
-            lastTime;
+        const delta =
+            Math.min(
+                timestamp - lastTime,
+                40
+            );
 
 
         lastTime =
             timestamp;
 
 
-        delta =
-            Math.min(
-                delta,
-                40
-            );
-
-
-        fpsSamples.push(
-            delta
-        );
-
-
-        if(
-            fpsSamples.length > 30
-        ){
-
-            fpsSamples.shift();
-
-        }
-
-
         update(delta);
 
         draw();
-
-
-        if(
-            fpsSamples.length === 30
-        ){
-
-            optimize();
-
-        }
 
 
         animationFrame =
@@ -3933,47 +1818,50 @@ Loading...
     }
 
 
+    /* ---------------------------------------------
+       VISIBILITY
+       --------------------------------------------- */
+
     document.addEventListener(
         "visibilitychange",
         () => {
 
-            if(document.hidden){
+            if (document.hidden) {
 
                 running = false;
 
-                if(animationFrame){
+                if (animationFrame) {
 
                     cancelAnimationFrame(
                         animationFrame
                     );
 
-                    animationFrame =
-                        null;
+                    animationFrame = null;
 
                 }
 
-                return;
+            } else {
+
+                running = true;
+
+                lastTime = 0;
+
+                animationFrame =
+                    requestAnimationFrame(
+                        animate
+                    );
 
             }
-
-
-            running = true;
-
-            lastTime = 0;
-
-            fpsSamples = [];
-
-            animationFrame =
-                requestAnimationFrame(
-                    animate
-                );
 
         }
     );
 
 
-    let resizeTimer = null;
+    /* ---------------------------------------------
+       RESIZE
+       --------------------------------------------- */
 
+    let resizeTimer = null;
 
     window.addEventListener(
         "resize",
@@ -3986,15 +1874,19 @@ Loading...
             resizeTimer =
                 setTimeout(
                     resize,
-                    150
+                    120
                 );
 
         },
         {
-            passive:true
+            passive: true
         }
     );
 
+
+    /* ---------------------------------------------
+       START
+       --------------------------------------------- */
 
     resize();
 
@@ -4002,6 +1894,63 @@ Loading...
         requestAnimationFrame(
             animate
         );
+
+})();
+
+
+/* =========================================================
+   PROJECT HUB NAVIGATION
+   ========================================================= */
+
+(() => {
+
+    const enterButton =
+        document.getElementById(
+            "enterProject"
+        );
+
+    const backButton =
+        document.getElementById(
+            "backHome"
+        );
+
+    const hub =
+        document.getElementById(
+            "projectHub"
+        );
+
+
+    if (
+        !enterButton ||
+        !backButton ||
+        !hub
+    ) return;
+
+
+    enterButton.addEventListener(
+        "click",
+        () => {
+
+            hub.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+    );
+
+
+    backButton.addEventListener(
+        "click",
+        () => {
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
 
 })();
 </script>
