@@ -1,311 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <meta
         name="theme-color"
-        content="#050714"
+        content="#030612"
     >
 
     <meta
         name="description"
-        content="MIL Project Game Development — Project File Hub"
+        content="MIL Project • Game Development — Project File Hub"
     >
 
-    <title>
-        Project File Hub
-    </title>
+    <title>MIL Project • Project File Hub</title>
 
-    <link
-        rel="stylesheet"
-        href="/style.css"
-    >
-
+    <link rel="stylesheet" href="/style.css">
 </head>
 
+<body class="landing-page">
 
-<body>
+    <!-- ==================================================
+         PARTICLE BACKGROUND
+    =================================================== -->
 
+    <canvas
+        id="particleCanvas"
+        aria-hidden="true"
+    ></canvas>
 
-<!-- =====================================================
-     PARTICLE BACKGROUND
-===================================================== -->
 
-<canvas
-    id="particleCanvas"
-    aria-hidden="true"
-></canvas>
+    <!-- ==================================================
+         BACKGROUND ATMOSPHERE
+    =================================================== -->
 
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
 
-<!-- =====================================================
-     AMBIENT BACKGROUND
-===================================================== -->
+    <div class="background-grid"></div>
 
-<div
-    class="ambient ambient-one"
-    aria-hidden="true"
-></div>
 
-<div
-    class="ambient ambient-two"
-    aria-hidden="true"
-></div>
+    <!-- ==================================================
+         MAIN
+    =================================================== -->
 
-<div
-    class="ambient ambient-three"
-    aria-hidden="true"
-></div>
+    <main class="landing">
 
+        <section
+            class="welcome-card"
+            aria-labelledby="welcomeTitle"
+        >
 
-<!-- =====================================================
-     MAIN
-===================================================== -->
+            <!-- Animated border -->
+            <div
+                class="card-border"
+                aria-hidden="true"
+            ></div>
 
-<main class="welcome-page">
 
+            <div class="card-content">
 
-    <!-- =================================================
-         ORIGINAL NEON CARD
-    ================================================== -->
+                <!-- ==================================================
+                     EYEBROW
+                =================================================== -->
 
-    <section class="welcome-card">
+                <div class="eyebrow">
 
+                    <span class="eyebrow-line"></span>
 
-        <!-- animated border layer -->
+                    <span>
+                        MIL PROJECT
+                    </span>
 
-        <div
-            class="card-border"
-            aria-hidden="true"
-        ></div>
+                    <span class="eyebrow-dot">
+                        •
+                    </span>
 
+                    <span>
+                        GAME DEVELOPMENT
+                    </span>
 
-        <div class="card-content">
+                    <span class="eyebrow-line"></span>
 
+                </div>
 
-            <!-- =========================================
-                 PROJECT LABEL
-            ========================================== -->
 
-            <div class="project-label">
+                <!-- ==================================================
+                     TITLE
+                =================================================== -->
 
-                <span class="label-line"></span>
+                <h1 id="welcomeTitle">
 
-                <span>
-                    MIL PROJECT • GAME DEVELOPMENT
-                </span>
+                    <span class="title-small">
+                        WELCOME TO
+                    </span>
 
-                <span class="label-line"></span>
+                    <span class="title-main">
+                        PROJECT
+                        <span class="title-accent">
+                            FILE HUB
+                        </span>
+                    </span>
 
-            </div>
+                </h1>
 
 
-            <!-- =========================================
-                 TITLE
-            ========================================== -->
+                <!-- ==================================================
+                     DESCRIPTION
+                =================================================== -->
 
-            <h1 class="welcome-title">
+                <p class="intro-text">
+                    This website is handled by:
+                </p>
 
-                <span>
-                    WELCOME TO
-                </span>
 
-                <strong>
-                    PROJECT FILE HUB
-                </strong>
+                <!-- ==================================================
+                     MEMBERS
+                =================================================== -->
 
-            </h1>
+                <div
+                    class="members"
+                    aria-label="Project members"
+                >
 
+                    <div class="member member-featured">
+                        <span>Sunnel John Rebano</span>
+                        <span class="member-icon">🧑🏻‍🔧</span>
+                    </div>
 
-            <!-- =========================================
-                 DESCRIPTION
-            ========================================== -->
+                    <div class="member">
+                        Rhea Kim
+                    </div>
 
-            <p class="handled-title">
-                This website is handled by:
-            </p>
+                    <div class="member">
+                        Kimberly
+                    </div>
 
+                    <div class="member">
+                        Charles Tiong
+                    </div>
 
-            <!-- =========================================
-                 TEAM
-            ========================================== -->
+                    <div class="member">
+                        Reyden Osia
+                    </div>
 
-            <div class="team-list">
+                    <div class="member">
+                        Mc Lawrence Conzaga
+                    </div>
 
+                    <div class="member">
+                        Kimmy Clavo
+                    </div>
 
-                <span class="team-member featured">
-                    Sunnel John Rebano
-                    <span class="member-icon">🧑🏻‍🔧</span>
-                </span>
+                    <div class="member">
+                        Dianne Gadia
+                    </div>
 
+                    <div class="member">
+                        Carl Caabay
+                    </div>
 
-                <span class="team-member">
-                    Rhea Kim
-                </span>
+                    <div class="member">
+                        Mark Camaso
+                    </div>
 
+                    <div class="member">
+                        Maynard Cabada
+                    </div>
 
-                <span class="team-member">
-                    Kimberly
-                </span>
+                    <div class="member">
+                        Mark Anthony Canta
+                    </div>
 
+                </div>
 
-                <span class="team-member">
-                    Charles Tiong
-                </span>
 
+                <!-- ==================================================
+                     FOOTER TEXT
+                =================================================== -->
 
-                <span class="team-member">
-                    Reyden Osia
-                </span>
+                <p class="project-description">
+                    For MIL Project Game Development.
+                </p>
 
 
-                <span class="team-member">
-                    Mc Lawrence Conzaga
-                </span>
+                <!-- ==================================================
+                     ENTER BUTTON
+                =================================================== -->
 
+                <a
+                    href="/hub"
+                    class="enter-project"
+                    aria-label="Enter Project File Hub"
+                >
 
-                <span class="team-member">
-                    Kimmy Clavo
-                </span>
+                    <span class="button-glow"></span>
 
+                    <span class="button-text">
+                        ENTER PROJECT
+                    </span>
 
-                <span class="team-member">
-                    Dianne Gadia
-                </span>
+                    <span class="button-arrow">
+                        →
+                    </span>
 
+                </a>
 
-                <span class="team-member">
-                    Carl Caabay
-                </span>
 
+                <div class="online-status">
 
-                <span class="team-member">
-                    Mark Camaso
-                </span>
+                    <span class="status-dot"></span>
 
-
-                <span class="team-member">
-                    Maynard Cabada
-                </span>
-
-
-                <span class="team-member">
-                    Mark Anthony Canta
-                </span>
-
-
-            </div>
-
-
-            <!-- =========================================
-                 FOOTER TEXT
-            ========================================== -->
-
-            <p class="project-description">
-                For MIL Project Game Development.
-            </p>
-
-
-            <!-- =========================================
-                 ENTER BUTTON
-            ========================================== -->
-
-            <button
-                id="enterProject"
-                class="enter-button"
-                type="button"
-            >
-
-                <span>
-                    ENTER PROJECT
-                </span>
-
-                <span class="arrow">
-                    →
-                </span>
-
-            </button>
-
-
-            <!-- =========================================
-                 ONLINE STATUS
-            ========================================== -->
-
-            <div class="online-status">
-
-                <span class="online-dot"></span>
-
-                <span>
                     PROJECT HUB ONLINE
-                </span>
+
+                </div>
 
             </div>
 
+        </section>
 
-        </div>
-
-    </section>
-
-
-</main>
+    </main>
 
 
-<!-- =====================================================
-     ENTER PROJECT SCRIPT
-===================================================== -->
+    <!-- ==================================================
+         PARTICLE ENGINE
+    =================================================== -->
 
-<script>
-
-"use strict";
-
-
-const enterProject =
-    document.getElementById(
-        "enterProject"
-    );
-
-
-if (enterProject) {
-
-    enterProject.addEventListener(
-        "click",
-        () => {
-
-            /*
-            ------------------------------------------------
-            This opens your actual project hub.
-            ------------------------------------------------
-            */
-
-            window.location.href =
-                "/hub";
-
-        }
-    );
-
-}
-
-
-</script>
-
-
-<!-- =====================================================
-     PARTICLE ENGINE
-===================================================== -->
-
-<script
-    src="/particles.js"
-    defer
-></script>
-
+    <script src="/particle.js"></script>
 
 </body>
-
 </html>
