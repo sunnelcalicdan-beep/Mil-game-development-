@@ -3,24 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="description" content="PROJECT FILE HUB — MIL Project Game Development public file-sharing workspace.">
+<meta name="description" content="PROJECT FILE HUB — MIL Project Game Development">
 <title>PROJECT FILE HUB • MIL PROJECT</title>
 
 <style>
 :root{
   --bg:#050611;
   --bg2:#090b1d;
-  --panel:rgba(13,16,40,.76);
-  --panel2:rgba(19,23,55,.9);
+  --panel:rgba(13,16,40,.74);
+  --panel2:rgba(19,23,55,.92);
   --line:rgba(146,121,255,.25);
   --text:#f5f7ff;
   --muted:#aeb5d1;
   --purple:#9b6cff;
   --blue:#4f8cff;
   --cyan:#54e9ff;
+  --pink:#ff62d9;
   --danger:#ff6685;
+  --warning:#ffb259;
   --ok:#66f5b1;
-  --warning:#ffbd68;
   --shadow:0 24px 80px rgba(0,0,0,.42);
   --radius:24px;
 }
@@ -50,13 +51,18 @@ body{
   background:
     radial-gradient(
       circle at 12% 15%,
-      rgba(93,59,255,.17),
+      rgba(93,59,255,.18),
       transparent 30%
     ),
     radial-gradient(
       circle at 85% 30%,
       rgba(0,210,255,.13),
       transparent 28%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(255,70,205,.08),
+      transparent 30%
     ),
     linear-gradient(
       135deg,
@@ -66,12 +72,12 @@ body{
     );
 }
 
-body:before{
+body::before{
   content:"";
   position:fixed;
   inset:-30%;
   pointer-events:none;
-  z-index:-4;
+  z-index:-3;
 
   background:
     radial-gradient(
@@ -85,10 +91,10 @@ body:before{
       transparent 18%
     );
 
-  animation:drift 18s ease-in-out infinite alternate;
+  animation:backgroundDrift 18s ease-in-out infinite alternate;
 }
 
-@keyframes drift{
+@keyframes backgroundDrift{
   to{
     transform:translate(4%,3%) scale(1.08);
   }
@@ -109,11 +115,6 @@ button{
   cursor:pointer;
 }
 
-button:disabled{
-  cursor:not-allowed;
-  opacity:.55;
-}
-
 ::selection{
   background:rgba(139,91,255,.45);
 }
@@ -121,8 +122,8 @@ button:disabled{
 #particleCanvas{
   position:fixed;
   inset:0;
-  width:100vw;
-  height:100vh;
+  width:100%;
+  height:100%;
   pointer-events:none;
   z-index:-2;
   opacity:.72;
@@ -133,11 +134,9 @@ button:disabled{
   inset:0;
   pointer-events:none;
   z-index:-1;
-  opacity:.035;
-
-  background-image:url(
-    "data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"
-  );
+  opacity:.025;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .container{
@@ -152,14 +151,11 @@ button:disabled{
 
   background:rgba(4,6,18,.72);
   backdrop-filter:blur(18px);
-
-  border-bottom:
-    1px solid rgba(164,139,255,.14);
+  border-bottom:1px solid rgba(164,139,255,.14);
 }
 
 .nav{
-  height:76px;
-
+  min-height:76px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -170,7 +166,6 @@ button:disabled{
   display:flex;
   align-items:center;
   gap:11px;
-
   font-weight:900;
   letter-spacing:.08em;
 }
@@ -178,9 +173,7 @@ button:disabled{
 .brand-mark{
   width:38px;
   height:38px;
-
   border-radius:12px;
-
   position:relative;
 
   background:
@@ -189,28 +182,27 @@ button:disabled{
       var(--cyan),
       var(--purple),
       #3b62ff,
+      var(--pink),
       var(--cyan)
     );
 
   box-shadow:
     0 0 28px rgba(110,105,255,.32);
 
-  animation:brandSpin 8s linear infinite;
+  animation:brandHue 5s linear infinite;
 }
 
-@keyframes brandSpin{
+@keyframes brandHue{
   to{
     filter:hue-rotate(360deg);
   }
 }
 
-.brand-mark:after{
+.brand-mark::after{
   content:"";
   position:absolute;
   inset:7px;
-
   border-radius:8px;
-
   background:#080a18;
 }
 
@@ -221,12 +213,9 @@ button:disabled{
 
 .navlinks a{
   padding:10px 13px;
-
   color:var(--muted);
   font-size:.92rem;
-
   border-radius:12px;
-
   transition:.25s;
 }
 
@@ -238,21 +227,18 @@ button:disabled{
 .btn{
   border:1px solid transparent;
   border-radius:13px;
-
   padding:12px 17px;
-
   font-weight:800;
   color:#fff;
-
-  transition:
-    transform .25s,
-    box-shadow .25s,
-    background .25s;
-
+  transition:.25s;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   gap:8px;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
 }
 
 .btn-primary{
@@ -260,18 +246,22 @@ button:disabled{
     linear-gradient(
       110deg,
       #7045f5,
-      #3d78ff
+      #3d78ff,
+      #a94eff
     );
+  background-size:200% 200%;
+  box-shadow:0 10px 32px rgba(82,76,255,.25);
+  animation:buttonGradient 5s ease infinite;
+}
 
-  box-shadow:
-    0 10px 32px rgba(82,76,255,.25);
+@keyframes buttonGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 
 .btn-primary:hover{
-  transform:translateY(-2px);
-
-  box-shadow:
-    0 15px 42px rgba(82,76,255,.38);
+  box-shadow:0 15px 42px rgba(82,76,255,.38);
 }
 
 .btn-ghost{
@@ -290,9 +280,9 @@ button:disabled{
 }
 
 .btn-warning{
-  background:rgba(255,189,104,.1);
-  border-color:rgba(255,189,104,.3);
-  color:#ffd28e;
+  background:rgba(255,178,89,.1);
+  border-color:rgba(255,178,89,.3);
+  color:#ffc979;
 }
 
 .btn-small{
@@ -307,7 +297,6 @@ button:disabled{
 
   display:grid;
   grid-template-columns:1.05fr .95fr;
-
   align-items:center;
   gap:35px;
 }
@@ -318,10 +307,8 @@ button:disabled{
   gap:8px;
 
   color:#cfc9ff;
-
   font-size:.78rem;
   font-weight:800;
-
   letter-spacing:.16em;
   text-transform:uppercase;
 
@@ -336,14 +323,9 @@ button:disabled{
 .dot{
   width:7px;
   height:7px;
-
   border-radius:50%;
-
   background:var(--cyan);
-
-  box-shadow:
-    0 0 14px var(--cyan);
-
+  box-shadow:0 0 14px var(--cyan);
   animation:pulse 1.8s infinite;
 }
 
@@ -357,11 +339,8 @@ button:disabled{
 h1{
   font-size:clamp(3.3rem,8vw,7rem);
   line-height:.88;
-
   letter-spacing:-.065em;
-
   margin:24px 0 25px;
-
   max-width:800px;
 }
 
@@ -372,14 +351,14 @@ h1{
       #fff,
       var(--cyan),
       #aa77ff,
+      var(--pink),
       #fff
     );
 
-  background-size:250% auto;
+  background-size:300% auto;
 
   -webkit-background-clip:text;
   background-clip:text;
-
   color:transparent;
 
   animation:shine 6s linear infinite;
@@ -387,7 +366,7 @@ h1{
 
 @keyframes shine{
   to{
-    background-position:250% center;
+    background-position:300% center;
   }
 }
 
@@ -407,9 +386,7 @@ h1{
 
 .orb-stage{
   height:420px;
-
   position:relative;
-
   display:grid;
   place-items:center;
 }
@@ -417,7 +394,6 @@ h1{
 .orb{
   width:180px;
   height:180px;
-
   border-radius:50%;
 
   background:
@@ -446,17 +422,10 @@ h1{
 
 .ring{
   position:absolute;
-
   border:1px solid rgba(112,225,255,.5);
-
   border-radius:50%;
-
-  transform:
-    rotateX(65deg)
-    rotateZ(20deg);
-
-  animation:
-    spin 12s linear infinite;
+  transform:rotateX(65deg) rotateZ(20deg);
+  animation:spin 12s linear infinite;
 }
 
 .ring.r1{
@@ -467,36 +436,23 @@ h1{
 .ring.r2{
   width:360px;
   height:360px;
-
   border-color:rgba(162,102,255,.4);
-
   animation-duration:18s;
   animation-direction:reverse;
 }
 
 @keyframes spin{
   to{
-    transform:
-      rotateX(65deg)
-      rotateZ(380deg);
+    transform:rotateX(65deg) rotateZ(380deg);
   }
 }
 
 .code-float{
   position:absolute;
-
   color:#b79dff;
-
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    Consolas,
-    monospace;
-
+  font-family:ui-monospace,monospace;
   font-size:1.15rem;
-
-  animation:
-    float 5s ease-in-out infinite;
+  animation:float 5s ease-in-out infinite;
 }
 
 .c1{
@@ -525,10 +481,7 @@ h1{
 
 @keyframes float{
   50%{
-    transform:
-      translateY(-18px)
-      rotate(4deg);
-
+    transform:translateY(-18px) rotate(4deg);
     opacity:.55;
   }
 }
@@ -542,17 +495,14 @@ section{
   align-items:end;
   justify-content:space-between;
   gap:20px;
-
   margin-bottom:22px;
 }
 
 .kicker{
   color:#8f9ac5;
-
   font-size:.75rem;
   letter-spacing:.16em;
   text-transform:uppercase;
-
   font-weight:800;
 }
 
@@ -576,9 +526,7 @@ h2{
 
 .stat{
   padding:24px;
-
-  border:
-    1px solid var(--line);
+  border:1px solid var(--line);
 
   background:
     linear-gradient(
@@ -588,7 +536,6 @@ h2{
     );
 
   border-radius:20px;
-
   box-shadow:var(--shadow);
 }
 
@@ -619,30 +566,19 @@ h2{
 input,
 select{
   width:100%;
-
-  border:
-    1px solid rgba(145,132,220,.24);
-
-  background:
-    rgba(5,7,21,.75);
-
+  border:1px solid rgba(145,132,220,.24);
+  background:rgba(5,7,21,.75);
   color:#fff;
-
   border-radius:13px;
-
   padding:13px 14px;
-
   outline:none;
-
   transition:.2s;
 }
 
 input:focus,
 select:focus{
   border-color:#8067ff;
-
-  box-shadow:
-    0 0 0 3px rgba(128,103,255,.12);
+  box-shadow:0 0 0 3px rgba(128,103,255,.12);
 }
 
 .library-tools .control{
@@ -661,8 +597,7 @@ select:focus{
 
   padding:21px;
 
-  border:
-    1px solid rgba(145,132,220,.2);
+  border:1px solid rgba(145,132,220,.2);
 
   background:
     linear-gradient(
@@ -673,52 +608,32 @@ select:focus{
 
   border-radius:20px;
 
-  box-shadow:
-    0 18px 55px rgba(0,0,0,.25);
+  box-shadow:0 18px 55px rgba(0,0,0,.25);
 
   transition:.3s;
 }
 
-.card:before{
+.card::before{
   content:"";
-
   position:absolute;
-  inset:-80%;
+  width:180px;
+  height:180px;
+  top:-100px;
+  right:-90px;
 
-  background:
-    conic-gradient(
-      transparent,
-      rgba(84,233,255,.08),
-      transparent,
-      rgba(155,108,255,.1),
-      transparent
-    );
-
-  animation:
-    cardGlow 8s linear infinite;
+  background:radial-gradient(
+    circle,
+    rgba(92,102,255,.2),
+    transparent 70%
+  );
 
   pointer-events:none;
 }
 
-@keyframes cardGlow{
-  to{
-    transform:rotate(360deg);
-  }
-}
-
 .card:hover{
   transform:translateY(-4px);
-
-  border-color:
-    rgba(124,103,255,.46);
-
-  box-shadow:
-    0 25px 70px rgba(46,38,120,.25);
-}
-
-.card > *{
-  position:relative;
-  z-index:1;
+  border-color:rgba(124,103,255,.46);
+  box-shadow:0 25px 70px rgba(46,38,120,.25);
 }
 
 .card-top{
@@ -730,17 +645,13 @@ select:focus{
 .file-icon{
   width:48px;
   height:48px;
-
   border-radius:14px;
 
   display:grid;
   place-items:center;
 
-  background:
-    rgba(109,84,255,.12);
-
-  border:
-    1px solid rgba(130,111,255,.2);
+  background:rgba(109,84,255,.12);
+  border:1px solid rgba(130,111,255,.2);
 
   font-size:1.25rem;
 }
@@ -749,13 +660,10 @@ select:focus{
   font-size:.7rem;
   color:#b8c0de;
 
-  border:
-    1px solid rgba(153,158,200,.18);
+  border:1px solid rgba(153,158,200,.18);
 
   padding:6px 8px;
-
   border-radius:999px;
-
   height:max-content;
 }
 
@@ -765,15 +673,9 @@ select:focus{
 }
 
 .filename{
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    Consolas,
-    monospace;
-
+  font-family:ui-monospace,monospace;
   color:#aeb7d5;
   font-size:.82rem;
-
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
@@ -781,7 +683,6 @@ select:focus{
 
 .by{
   margin:13px 0;
-
   color:#aeb5d1;
   font-size:.86rem;
 }
@@ -791,12 +692,12 @@ select:focus{
     linear-gradient(
       90deg,
       var(--cyan),
-      #bd85ff
+      #bd85ff,
+      var(--pink)
     );
 
   -webkit-background-clip:text;
   background-clip:text;
-
   color:transparent;
 }
 
@@ -807,7 +708,6 @@ select:focus{
 
   color:#7f89ac;
   font-size:.75rem;
-
   margin:15px 0;
 }
 
@@ -819,18 +719,12 @@ select:focus{
 
 .empty{
   grid-column:1/-1;
-
   text-align:center;
-
   padding:65px 20px;
 
-  border:
-    1px dashed rgba(142,130,220,.3);
-
+  border:1px dashed rgba(142,130,220,.3);
   border-radius:22px;
-
-  background:
-    rgba(12,14,34,.45);
+  background:rgba(12,14,34,.45);
 }
 
 .empty .big{
@@ -847,9 +741,7 @@ select:focus{
 .panel{
   padding:26px;
 
-  border:
-    1px solid var(--line);
-
+  border:1px solid var(--line);
   background:var(--panel);
 
   border-radius:var(--radius);
@@ -870,15 +762,12 @@ select:focus{
 .num{
   min-width:38px;
   height:38px;
-
   border-radius:11px;
 
   display:grid;
   place-items:center;
 
-  background:
-    rgba(116,78,255,.15);
-
+  background:rgba(116,78,255,.15);
   color:#c6b7ff;
 
   font-weight:900;
@@ -897,27 +786,18 @@ select:focus{
 
 pre{
   margin:18px 0 0;
-
   padding:20px;
 
   overflow:auto;
   max-height:320px;
 
-  border:
-    1px solid rgba(125,142,195,.16);
-
+  border:1px solid rgba(125,142,195,.16);
   border-radius:15px;
 
   background:#050712;
-
   color:#c8d3ef;
 
-  font:
-    13px/1.7
-    ui-monospace,
-    SFMono-Regular,
-    Consolas,
-    monospace;
+  font:13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;
 }
 
 .team{
@@ -929,17 +809,12 @@ pre{
 
 .member{
   padding:9px 12px;
-
   border-radius:999px;
 
-  background:
-    rgba(255,255,255,.045);
-
-  border:
-    1px solid rgba(145,132,220,.17);
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(145,132,220,.17);
 
   color:#c9cee0;
-
   font-size:.82rem;
 
   transition:.25s;
@@ -947,21 +822,14 @@ pre{
 
 .member:hover{
   transform:translateY(-2px);
-
-  border-color:
-    rgba(84,233,255,.4);
-
+  border-color:rgba(84,233,255,.4);
   color:#fff;
 }
 
 footer{
   padding:55px 0 35px;
-
-  border-top:
-    1px solid rgba(143,126,222,.14);
-
+  border-top:1px solid rgba(143,126,222,.14);
   margin-top:30px;
-
   color:#8992b0;
 }
 
@@ -978,19 +846,18 @@ footer{
   flex-wrap:wrap;
 }
 
+/* MODALS */
+
 .modal-backdrop{
   position:fixed;
   inset:0;
 
-  background:
-    rgba(2,3,12,.78);
-
+  background:rgba(2,3,12,.78);
   backdrop-filter:blur(12px);
 
   z-index:100;
 
   display:none;
-
   align-items:center;
   justify-content:center;
 
@@ -999,23 +866,19 @@ footer{
 
 .modal-backdrop.open{
   display:flex;
-
-  animation:
-    fade .2s ease;
+  animation:fade .2s ease;
 }
 
 .modal{
   width:min(700px,100%);
   max-height:calc(100vh - 36px);
-
   overflow:auto;
 
   position:relative;
 
   border-radius:25px;
 
-  border:
-    1px solid rgba(151,122,255,.35);
+  border:1px solid rgba(151,122,255,.35);
 
   background:
     linear-gradient(
@@ -1029,18 +892,12 @@ footer{
 
   padding:26px;
 
-  animation:
-    scale .25s ease;
+  animation:scale .25s ease;
 }
 
 @keyframes fade{
-  from{
-    opacity:0;
-  }
-
-  to{
-    opacity:1;
-  }
+  from{opacity:0}
+  to{opacity:1}
 }
 
 @keyframes scale{
@@ -1055,9 +912,8 @@ footer{
   }
 }
 
-.modal:before{
+.modal::before{
   content:"";
-
   position:absolute;
   inset:-1px;
 
@@ -1071,6 +927,7 @@ footer{
       transparent,
       #7e5dff,
       #44e5ff,
+      var(--pink),
       transparent
     );
 
@@ -1079,15 +936,12 @@ footer{
     linear-gradient(#000 0 0);
 
   -webkit-mask-composite:xor;
-
   mask-composite:exclude;
 
   opacity:.65;
-
   pointer-events:none;
 
-  animation:
-    borderflow 5s linear infinite;
+  animation:borderflow 5s linear infinite;
 }
 
 @keyframes borderflow{
@@ -1108,35 +962,27 @@ footer{
   border:0;
   background:rgba(255,255,255,.06);
   color:#fff;
-
   border-radius:10px;
-
   width:38px;
   height:38px;
 }
 
 .dropzone{
-  border:
-    1px dashed rgba(120,113,255,.5);
-
+  border:1px dashed rgba(120,113,255,.5);
   border-radius:18px;
 
   padding:32px;
 
   text-align:center;
 
-  background:
-    rgba(97,72,255,.055);
+  background:rgba(97,72,255,.055);
 
   transition:.25s;
 }
 
 .dropzone.drag{
-  background:
-    rgba(76,209,255,.08);
-
+  background:rgba(76,209,255,.08);
   border-color:var(--cyan);
-
   transform:scale(1.01);
 }
 
@@ -1163,28 +1009,21 @@ footer{
 
 .field label{
   display:block;
-
   font-size:.78rem;
-
   color:#aeb6d4;
-
   margin-bottom:7px;
 }
 
 .preview{
   display:none;
-
   margin-top:18px;
 
   padding:15px;
 
-  border:
-    1px solid rgba(145,132,220,.18);
-
+  border:1px solid rgba(145,132,220,.18);
   border-radius:15px;
 
-  background:
-    rgba(0,0,0,.18);
+  background:rgba(0,0,0,.18);
 }
 
 .preview.show{
@@ -1228,34 +1067,23 @@ footer{
 
   border-radius:15px;
 
-  background:
-    rgba(0,0,0,.2);
+  background:rgba(0,0,0,.2);
 
-  border:
-    1px solid rgba(146,121,255,.18);
+  border:1px solid rgba(146,121,255,.18);
 }
 
 .code-viewer{
   background:#04050d;
-
-  border:
-    1px solid rgba(126,141,187,.17);
-
+  border:1px solid rgba(126,141,187,.17);
   border-radius:15px;
-
   overflow:hidden;
-
   margin-top:16px;
 }
 
 .code-bar{
   padding:9px 13px;
-
-  border-bottom:
-    1px solid rgba(126,141,187,.13);
-
+  border-bottom:1px solid rgba(126,141,187,.13);
   color:#8490b5;
-
   font-size:.75rem;
 }
 
@@ -1266,36 +1094,11 @@ footer{
   max-height:50vh;
 }
 
-.spinner{
-  width:17px;
-  height:17px;
-
-  border:
-    2px solid rgba(255,255,255,.25);
-
-  border-top-color:#fff;
-
-  border-radius:50%;
-
-  animation:
-    spin2 .7s linear infinite;
-
-  display:inline-block;
-}
-
-@keyframes spin2{
-  to{
-    transform:rotate(360deg);
-  }
-}
-
 .toast-wrap{
   position:fixed;
-
   right:18px;
   bottom:18px;
-
-  z-index:200;
+  z-index:500;
 
   display:grid;
   gap:10px;
@@ -1308,38 +1111,30 @@ footer{
 
   border-radius:14px;
 
-  border:
-    1px solid rgba(147,132,255,.25);
+  border:1px solid rgba(147,132,255,.25);
 
-  background:
-    rgba(12,15,34,.94);
+  background:rgba(12,15,34,.94);
 
   backdrop-filter:blur(15px);
 
-  box-shadow:
-    0 15px 50px rgba(0,0,0,.45);
+  box-shadow:0 15px 50px rgba(0,0,0,.45);
 
-  animation:
-    toastIn .3s ease;
+  animation:toastIn .3s ease;
 
   color:#e8ebf7;
-
   font-size:.86rem;
 }
 
 .toast.ok{
-  border-color:
-    rgba(102,245,177,.3);
+  border-color:rgba(102,245,177,.3);
 }
 
 .toast.warn{
-  border-color:
-    rgba(255,178,89,.3);
+  border-color:rgba(255,178,89,.3);
 }
 
 .toast.err{
-  border-color:
-    rgba(255,102,133,.35);
+  border-color:rgba(255,102,133,.35);
 }
 
 @keyframes toastIn{
@@ -1354,76 +1149,14 @@ footer{
   }
 }
 
-/* =========================================================
-   INTRO
-========================================================= */
+/* KEY POPUP */
 
-.intro{
-  z-index:300;
-}
-
-.intro .modal{
-  width:min(780px,100%);
-  text-align:center;
-  padding:48px 34px;
-}
-
-.intro h2{
-  font-size:
-    clamp(2.3rem,7vw,4.8rem);
-
-  line-height:.92;
-
-  margin:12px 0;
-}
-
-.intro p{
-  color:#c0c7df;
-  line-height:1.8;
-
-  max-width:630px;
-
-  margin:18px auto;
-}
-
-.intro-team{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-
-  gap:7px;
-
-  margin:22px auto 28px;
-
-  max-width:700px;
-}
-
-.intro-team span{
-  font-size:.75rem;
-
-  color:#cdd2e4;
-
-  padding:7px 10px;
-
-  border-radius:999px;
-
-  background:
-    rgba(255,255,255,.04);
-
-  border:
-    1px solid rgba(255,255,255,.06);
-}
-
-/* =========================================================
-   DELETE KEY WARNING
-========================================================= */
-
-.warning-modal{
+.key-modal{
   width:min(620px,100%);
   text-align:center;
 }
 
-.warning-icon{
+.key-warning-icon{
   width:90px;
   height:90px;
 
@@ -1439,121 +1172,199 @@ footer{
   background:
     radial-gradient(
       circle,
-      rgba(255,190,90,.28),
-      rgba(255,70,110,.06) 65%,
+      rgba(255,178,89,.3),
+      rgba(255,80,120,.08),
       transparent 70%
     );
 
-  border:
-    1px solid rgba(255,189,104,.45);
+  border:1px solid rgba(255,178,89,.45);
 
   box-shadow:
-    0 0 35px rgba(255,150,80,.2);
+    0 0 30px rgba(255,178,89,.25),
+    0 0 90px rgba(255,70,120,.12);
 
   animation:
-    warningPulse 1.2s ease-in-out infinite alternate;
+    warningPulse 1.2s ease-in-out infinite;
 }
 
 @keyframes warningPulse{
-  from{
-    transform:scale(.94);
-    box-shadow:
-      0 0 20px rgba(255,150,80,.15);
+  0%,100%{
+    transform:scale(1);
   }
 
-  to{
-    transform:scale(1.06);
+  50%{
+    transform:scale(1.08);
     box-shadow:
-      0 0 45px rgba(255,150,80,.4);
+      0 0 45px rgba(255,178,89,.42),
+      0 0 110px rgba(255,70,120,.2);
   }
 }
 
 .warning-title{
-  color:#ffd08c;
-
-  font-size:
-    clamp(1.7rem,5vw,2.6rem);
-
-  font-weight:950;
-
-  letter-spacing:-.04em;
+  color:#ffc979;
+  font-weight:1000;
+  letter-spacing:.08em;
 }
 
-.delete-key{
+.key-box{
   margin:20px 0;
 
-  padding:18px;
+  padding:20px;
 
-  border:
-    1px solid rgba(255,189,104,.3);
+  border-radius:18px;
 
-  border-radius:16px;
+  border:1px solid rgba(84,233,255,.35);
 
   background:
     linear-gradient(
       135deg,
-      rgba(255,174,77,.08),
-      rgba(155,108,255,.08)
+      rgba(84,233,255,.07),
+      rgba(155,108,255,.1),
+      rgba(255,98,217,.07)
     );
 
-  font:
-    700
-    clamp(.95rem,3vw,1.2rem)
+  box-shadow:
+    inset 0 0 35px rgba(84,233,255,.04),
+    0 0 35px rgba(84,233,255,.08);
+}
+
+.key-label{
+  color:#8f9ac5;
+  font-size:.7rem;
+  letter-spacing:.18em;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.generated-key{
+  font-family:
     ui-monospace,
     SFMono-Regular,
     Consolas,
     monospace;
 
+  font-size:clamp(1rem,4vw,1.5rem);
+
+  font-weight:1000;
+
   color:#fff;
 
   overflow-wrap:anywhere;
 
-  user-select:all;
+  background:
+    linear-gradient(
+      90deg,
+      var(--cyan),
+      #fff,
+      var(--pink)
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+
+  letter-spacing:.04em;
 }
 
 .warning-text{
-  color:#c4c9dc;
+  color:#c3c9dd;
   line-height:1.7;
 }
 
-.warning-important{
-  color:#ff9cad;
+.warning-text strong{
+  color:#fff;
+}
+
+.warning-danger{
+  margin-top:14px;
+  color:#ff91a9;
   font-weight:900;
 }
 
-/* =========================================================
-   ONLINE INDICATOR
-========================================================= */
-
-.online{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-
-  color:#86f7bd;
-
-  font-size:.72rem;
-  font-weight:800;
-
-  letter-spacing:.08em;
-  text-transform:uppercase;
+.copy-key-btn{
+  width:100%;
+  margin-top:10px;
 }
 
-.online-dot{
-  width:7px;
-  height:7px;
+.intro{
+  z-index:300;
+}
+
+.intro .modal{
+  width:min(780px,100%);
+  text-align:center;
+  padding:48px 34px;
+}
+
+.intro h2{
+  font-size:clamp(2.3rem,7vw,4.8rem);
+  line-height:.92;
+  margin:12px 0;
+}
+
+.intro p{
+  color:#c0c7df;
+  line-height:1.8;
+  max-width:630px;
+  margin:18px auto;
+}
+
+.intro-team{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:7px;
+
+  margin:22px auto 28px;
+
+  max-width:700px;
+}
+
+.intro-team span{
+  font-size:.75rem;
+  color:#cdd2e4;
+
+  padding:7px 10px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(145,132,220,.12);
+}
+
+.spinner{
+  width:17px;
+  height:17px;
+
+  border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;
 
   border-radius:50%;
 
-  background:#66f5b1;
+  animation:spinner .7s linear infinite;
 
-  box-shadow:
-    0 0 12px #66f5b1;
+  display:inline-block;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+@keyframes spinner{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+
+/* RESPONSIVE */
 
 @media(max-width:900px){
 
@@ -1578,6 +1389,7 @@ footer{
   .guide{
     grid-template-columns:1fr;
   }
+
 }
 
 @media(max-width:650px){
@@ -1587,7 +1399,7 @@ footer{
   }
 
   .nav{
-    height:68px;
+    min-height:68px;
   }
 
   .navlinks{
@@ -1673,24 +1485,26 @@ footer{
     display:block;
   }
 
-  .footer-row > div + div{
+  .footer-row>div+div{
     margin-top:20px;
   }
 
   .card-actions .btn{
-    flex:1 1 calc(50% - 7px);
+    flex:1;
   }
+
 }
 
 @media(prefers-reduced-motion:reduce){
 
   *,
-  *:before,
-  *:after{
+  *::before,
+  *::after{
     animation-duration:.001ms!important;
     animation-iteration-count:1!important;
     scroll-behavior:auto!important;
   }
+
 }
 </style>
 </head>
@@ -1703,27 +1517,19 @@ footer{
 <header class="header">
   <div class="container nav">
 
-    <a
-      class="brand"
-      href="#home"
-      aria-label="Project File Hub home"
-    >
+    <a class="brand" href="#home">
       <span class="brand-mark"></span>
       <span>PROJECT FILE HUB</span>
     </a>
 
-    <nav class="navlinks" aria-label="Main navigation">
+    <nav class="navlinks">
       <a href="#home">Home</a>
       <a href="#library">Public Files</a>
       <a href="#scripts">Scripts</a>
       <a href="#guide">Guide</a>
-      <a href="#team">Team</a>
     </nav>
 
-    <button
-      class="btn btn-primary"
-      id="headerUpload"
-    >
+    <button class="btn btn-primary" id="headerUpload">
       ＋ UPLOAD
     </button>
 
@@ -1756,36 +1562,18 @@ footer{
     </p>
 
     <div class="actions">
-
-      <button
-        class="btn btn-primary"
-        id="heroUpload"
-      >
+      <button class="btn btn-primary" id="heroUpload">
         UPLOAD FILE
       </button>
 
-      <button
-        class="btn btn-ghost"
-        id="heroScript"
-      >
+      <button class="btn btn-ghost" id="heroScript">
         ＋ ADD SCRIPT
       </button>
-
-    </div>
-
-    <div style="margin-top:20px">
-      <span class="online">
-        <span class="online-dot"></span>
-        LIVE PUBLIC LIBRARY
-      </span>
     </div>
 
   </div>
 
-  <div
-    class="orb-stage"
-    aria-hidden="true"
-  >
+  <div class="orb-stage" aria-hidden="true">
 
     <div class="ring r1"></div>
     <div class="ring r2"></div>
@@ -1800,21 +1588,13 @@ footer{
 
 </section>
 
-
 <section class="container">
 
   <div class="section-head">
-
     <div>
-      <div class="kicker">
-        Live workspace
-      </div>
-
-      <h2>
-        Project statistics
-      </h2>
+      <div class="kicker">Live workspace</div>
+      <h2>Project statistics</h2>
     </div>
-
   </div>
 
   <div class="stats">
@@ -1843,28 +1623,16 @@ footer{
 
 </section>
 
-
-<section
-  class="container"
-  id="library"
->
+<section class="container" id="library">
 
   <div class="section-head">
 
     <div>
-
-      <div class="kicker">
-        Shared resources
-      </div>
-
-      <h2>
-        PUBLIC FILE LIBRARY
-      </h2>
-
+      <div class="kicker">Shared resources</div>
+      <h2>PUBLIC FILE LIBRARY</h2>
       <p class="sub">
         Files uploaded by members of the project.
       </p>
-
     </div>
 
   </div>
@@ -1872,11 +1640,7 @@ footer{
   <div class="library-tools">
 
     <div class="search">
-
-      <label
-        class="sr-only"
-        for="searchInput"
-      >
+      <label class="sr-only" for="searchInput">
         Search public files
       </label>
 
@@ -1884,89 +1648,42 @@ footer{
         id="searchInput"
         type="search"
         placeholder="Search public files or uploader..."
-        aria-label="Search public files or uploader"
       >
-
     </div>
 
     <div class="control">
-
-      <select
-        id="sortSelect"
-        aria-label="Sort files"
-      >
-
-        <option value="newest">
-          Newest
-        </option>
-
-        <option value="oldest">
-          Oldest
-        </option>
-
-        <option value="name">
-          Name A-Z
-        </option>
-
-        <option value="largest">
-          Largest
-        </option>
-
-        <option value="downloads">
-          Most Downloaded
-        </option>
-
+      <select id="sortSelect">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="name">Name A-Z</option>
+        <option value="largest">Largest</option>
       </select>
-
     </div>
 
     <div class="control">
-
-      <select
-        id="uploaderFilter"
-        aria-label="Filter by uploader"
-      >
-
-        <option value="">
-          All Uploaders
-        </option>
-
+      <select id="uploaderFilter">
+        <option value="">All Uploaders</option>
       </select>
-
     </div>
 
   </div>
 
-  <div
-    class="grid"
-    id="fileGrid"
-  ></div>
+  <div class="grid" id="fileGrid"></div>
 
 </section>
 
-
-<section
-  class="container"
-  id="scripts"
->
+<section class="container" id="scripts">
 
   <div class="section-head">
 
     <div>
-
-      <div class="kicker">
-        Code resources
-      </div>
-
-      <h2>
-        SCRIPT HUB
-      </h2>
+      <div class="kicker">Code resources</div>
+      <h2>SCRIPT HUB</h2>
 
       <p class="sub">
         Text-based game-development scripts,
         safely stored and previewed without execution.
       </p>
-
     </div>
 
     <button
@@ -1978,33 +1695,17 @@ footer{
 
   </div>
 
-  <div
-    class="panel"
-    id="scriptSummary"
-  ></div>
+  <div class="panel" id="scriptSummary"></div>
 
 </section>
 
-
-<section
-  class="container"
-  id="guide"
->
+<section class="container" id="guide">
 
   <div class="section-head">
-
     <div>
-
-      <div class="kicker">
-        Workflow
-      </div>
-
-      <h2>
-        HOW TO ADD A SCRIPT
-      </h2>
-
+      <div class="kicker">Workflow</div>
+      <h2>HOW TO ADD A SCRIPT</h2>
     </div>
-
   </div>
 
   <div class="guide">
@@ -2029,8 +1730,7 @@ footer{
           <div>
             <b>SELECT ADD SCRIPT</b>
             <span>
-              Choose your .txt file from
-              the upload center.
+              Choose your .txt file from the upload center.
             </span>
           </div>
         </div>
@@ -2040,8 +1740,7 @@ footer{
           <div>
             <b>NAME YOUR SCRIPT</b>
             <span>
-              Give it a clear project name,
-              such as Door Script or Enemy AI.
+              Give it a clear project name.
             </span>
           </div>
         </div>
@@ -2052,7 +1751,7 @@ footer{
             <b>PUBLISH</b>
             <span>
               Review the uploader, metadata,
-              and safe text preview before publishing.
+              and safe preview before publishing.
             </span>
           </div>
         </div>
@@ -2063,13 +1762,9 @@ footer{
 
     <div class="panel">
 
-      <div class="kicker">
-        Example script
-      </div>
+      <div class="kicker">Example script</div>
 
-      <h3>
-        Door Script
-      </h3>
+      <h3>Door Script</h3>
 
       <pre>extends Area3D
 
@@ -2079,13 +1774,9 @@ func _ready():
 func open_door():
     print("Door opened")</pre>
 
-      <p
-        class="sub"
-        style="margin-top:15px"
-      >
-        Uploaded scripts are stored as text
-        and are never automatically executed
-        by the website.
+      <p class="sub" style="margin-top:15px">
+        Uploaded scripts are displayed as plain text
+        and are never automatically executed.
       </p>
 
     </div>
@@ -2094,21 +1785,13 @@ func open_door():
 
 </section>
 
-
-<section
-  class="container"
-  id="team"
->
+<section class="container">
 
   <div class="panel">
 
-    <div class="kicker">
-      MIL Project
-    </div>
+    <div class="kicker">MIL Project</div>
 
-    <h2>
-      TEAM / PROJECT INFORMATION
-    </h2>
+    <h2>TEAM / PROJECT INFORMATION</h2>
 
     <p class="sub">
       PROJECT FILE HUB is a public browser-based
@@ -2116,17 +1799,13 @@ func open_door():
       Game Development team.
     </p>
 
-    <div
-      class="team"
-      id="teamList"
-    ></div>
+    <div class="team" id="teamList"></div>
 
   </div>
 
 </section>
 
 </main>
-
 
 <footer>
 
@@ -2136,7 +1815,6 @@ func open_door():
       <div class="footer-title">
         PROJECT FILE HUB
       </div>
-
       <div>
         MIL Project • Game Development
       </div>
@@ -2155,17 +1833,13 @@ func open_door():
 
 </footer>
 
-
-<!-- =====================================================
-     INTRO
-===================================================== -->
+<!-- INTRO -->
 
 <div
   class="modal-backdrop intro"
   id="introModal"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="introTitle"
 >
 
   <div class="modal">
@@ -2174,37 +1848,15 @@ func open_door():
       MIL PROJECT • GAME DEVELOPMENT
     </div>
 
-    <h2 id="introTitle">
-
+    <h2>
       <span class="gradient-text">
         WELCOME TO<br>
         PROJECT FILE HUB
       </span>
-
     </h2>
 
     <p>
       This website is handled by:
-      <br>
-
-      <b>
-        Sunnel John Rebano 🧑🏻‍🔧,
-        Rhea Kim,
-        Kimberly,
-        Charles Tiong,
-        Reyden Osia,
-        Mc Lawrence Conzaga,
-        Kimmy Clavo,
-        Dianne Gadia,
-        Carl Caabay,
-        Mark Camaso,
-        Maynard Cabada,
-        Mark Anthony Canta.
-      </b>
-
-      <br><br>
-
-      For MIL Project Game Development.
     </p>
 
     <div
@@ -2212,28 +1864,28 @@ func open_door():
       id="introTeam"
     ></div>
 
+    <p>
+      For MIL Project Game Development.
+    </p>
+
     <button
       class="btn btn-primary"
       id="enterProject"
     >
-      ENTER PROJECT
+      ENTER PROJECT →
     </button>
 
   </div>
 
 </div>
 
-
-<!-- =====================================================
-     UPLOAD MODAL
-===================================================== -->
+<!-- UPLOAD MODAL -->
 
 <div
   class="modal-backdrop"
   id="uploadModal"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="uploadTitle"
 >
 
   <div class="modal">
@@ -2262,13 +1914,11 @@ func open_door():
       <button
         class="close"
         data-close="uploadModal"
-        aria-label="Close upload dialog"
       >
         ×
       </button>
 
     </div>
-
 
     <div id="uploadForm">
 
@@ -2299,11 +1949,9 @@ func open_door():
         <input
           id="fileInput"
           type="file"
-          aria-label="Select a file"
         >
 
       </div>
-
 
       <div class="form-grid">
 
@@ -2322,7 +1970,6 @@ func open_door():
 
         </div>
 
-
         <div
           class="field"
           id="displayNameField"
@@ -2339,7 +1986,6 @@ func open_door():
           >
 
         </div>
-
 
         <div
           class="field"
@@ -2361,12 +2007,10 @@ func open_door():
 
       </div>
 
-
       <div
         class="preview"
         id="filePreview"
       ></div>
-
 
       <div class="modal-actions">
 
@@ -2387,7 +2031,6 @@ func open_door():
       </div>
 
     </div>
-
 
     <div
       class="confirm"
@@ -2433,72 +2076,69 @@ func open_door():
 
 </div>
 
-
-<!-- =====================================================
-     DELETE KEY WARNING
-===================================================== -->
+<!-- DELETE KEY WARNING -->
 
 <div
   class="modal-backdrop"
-  id="deleteKeyWarning"
+  id="keyModal"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="deleteKeyTitle"
 >
 
-  <div class="modal warning-modal">
+  <div class="modal key-modal">
 
-    <div class="warning-icon">
+    <div class="key-warning-icon">
       ⚠️
     </div>
 
-    <div class="kicker">
-      IMPORTANT • SAVE THIS KEY
+    <div class="warning-title">
+      IMPORTANT — SAVE YOUR DELETE KEY
     </div>
 
-    <h2
-      class="warning-title"
-      id="deleteKeyTitle"
-    >
-      Your file is published!
+    <h2>
+      Your file has been published!
     </h2>
 
     <p class="warning-text">
-      Your upload is now public.
-      The server generated a unique delete key
-      for this file.
+      This key is required if you want to
+      <strong>remove your uploaded file later.</strong>
     </p>
 
-    <div
-      class="delete-key"
-      id="generatedDeleteKey"
-    ></div>
+    <div class="key-box">
 
-    <p class="warning-text">
-      <span class="warning-important">
-        ⚠ WARNING:
-      </span>
+      <div class="key-label">
+        YOUR DELETE KEY
+      </div>
 
-      This key is required to remove your
-      uploaded file later.
-      Save it somewhere safe.
-      It cannot be recovered after this message.
+      <div
+        class="generated-key"
+        id="generatedKey"
+      >
+        —
+      </div>
+
+      <button
+        class="btn btn-primary copy-key-btn"
+        id="copyKeyBtn"
+      >
+        📋 COPY DELETE KEY
+      </button>
+
+    </div>
+
+    <p class="warning-danger">
+      ⚠️ WARNING: If you lose this key,
+      you will not be able to delete this
+      file from this browser database.
     </p>
 
     <div class="modal-actions">
 
       <button
-        class="btn btn-warning"
-        id="copyDeleteKey"
-      >
-        COPY KEY
-      </button>
-
-      <button
         class="btn btn-primary"
-        id="closeDeleteKeyWarning"
+        id="keyDoneBtn"
       >
-        I SAVED IT
+        I SAVED MY KEY ✓
       </button>
 
     </div>
@@ -2507,17 +2147,13 @@ func open_door():
 
 </div>
 
-
-<!-- =====================================================
-     SCRIPT VIEWER
-===================================================== -->
+<!-- SCRIPT VIEWER -->
 
 <div
   class="modal-backdrop"
   id="scriptViewer"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="viewerTitle"
 >
 
   <div class="modal">
@@ -2544,7 +2180,6 @@ func open_door():
       <button
         class="close"
         data-close="scriptViewer"
-        aria-label="Close script viewer"
       >
         ×
       </button>
@@ -2584,17 +2219,13 @@ func open_door():
 
 </div>
 
-
-<!-- =====================================================
-     DETAILS
-===================================================== -->
+<!-- DETAILS -->
 
 <div
   class="modal-backdrop"
   id="detailsModal"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="detailsTitle"
 >
 
   <div class="modal">
@@ -2639,29 +2270,25 @@ func open_door():
 
 </div>
 
-
-<!-- =====================================================
-     DELETE
-===================================================== -->
+<!-- DELETE -->
 
 <div
   class="modal-backdrop"
   id="deleteModal"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="deleteTitle"
 >
 
   <div
     class="modal"
-    style="max-width:520px"
+    style="max-width:500px"
   >
 
     <div class="kicker">
       SECURE DELETE
     </div>
 
-    <h2 id="deleteTitle">
+    <h2>
       Delete this file?
     </h2>
 
@@ -2670,21 +2297,17 @@ func open_door():
       id="deleteText"
     ></p>
 
-    <div
-      class="field"
-      style="margin-top:18px"
-    >
+    <div class="field" style="margin-top:18px">
 
       <label for="deleteKeyInput">
-        ENTER DELETE KEY
+        ENTER YOUR DELETE KEY
       </label>
 
       <input
         id="deleteKeyInput"
         type="text"
         autocomplete="off"
-        spellcheck="false"
-        placeholder="Example: Sunnel-John-Rebano-mil-XXXXXXXXXX"
+        placeholder="Paste your delete key"
       >
 
     </div>
@@ -2711,49 +2334,45 @@ func open_door():
 
 </div>
 
-
 <div
   class="toast-wrap"
   id="toastWrap"
   aria-live="polite"
 ></div>
 
-
 <script>
 "use strict";
 
 /* =========================================================
-   CONFIGURATION
-========================================================= */
+   PROJECT FILE HUB
+   COMPLETE FRONTEND ENGINE
+   ========================================================= */
 
-const API = {
-  files: "/api/files",
-  stats: "/api/stats",
-  uploaders: "/api/uploaders",
-  events: "/api/events"
-};
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-const MAX_FILE_SIZE =
-  50 * 1024 * 1024;
+const DB_NAME = "ProjectFileHubDB";
+const DB_VERSION = 2;
+const STORE = "files";
 
-const ALLOWED_EXTENSIONS =
-  new Set([
-    "txt",
-    "json",
-    "gd",
-    "js",
-    "css",
-    "html",
-    "glb",
-    "gltf",
-    "png",
-    "jpg",
-    "jpeg",
-    "webp",
-    "wav",
-    "mp3",
-    "zip"
-  ]);
+const ALLOWED_EXTENSIONS = new Set([
+  "txt",
+  "json",
+  "gd",
+  "js",
+  "css",
+  "html",
+  "glb",
+  "gltf",
+  "png",
+  "jpg",
+  "jpeg",
+  "webp",
+  "wav",
+  "mp3",
+  "zip"
+]);
+
+/* ALL HANDLED NAMES */
 
 const TEAM = [
   "Sunnel John Rebano 🧑🏻‍🔧",
@@ -2770,372 +2389,500 @@ const TEAM = [
   "Mark Anthony Canta"
 ];
 
+/* =========================================================
+   DOM HELPERS
+   ========================================================= */
+
+const $ = selector =>
+  document.querySelector(selector);
+
+const $$ = selector =>
+  [...document.querySelectorAll(selector)];
 
 /* =========================================================
-   HELPERS
-========================================================= */
+   DATABASE
+   ========================================================= */
 
-const $ =
-  selector =>
-    document.querySelector(selector);
+let dbPromise = null;
 
-const $$ =
-  selector =>
-    [...document.querySelectorAll(selector)];
+function openDB(){
 
-const esc =
-  value =>
-    String(value ?? "")
-      .replace(
-        /[&<>"']/g,
-        character =>
-          ({
-            "&":"&amp;",
-            "<":"&lt;",
-            ">":"&gt;",
-            '"':"&quot;",
-            "'":"&#039;"
-          }[character])
+  if(dbPromise){
+    return dbPromise;
+  }
+
+  dbPromise = new Promise((resolve,reject)=>{
+
+    if(!("indexedDB" in window)){
+      reject(
+        new Error("IndexedDB unavailable")
+      );
+      return;
+    }
+
+    const request =
+      indexedDB.open(
+        DB_NAME,
+        DB_VERSION
       );
 
-const ext =
-  name =>
-    name.includes(".")
-      ? name
-          .split(".")
-          .pop()
-          .toLowerCase()
-      : "";
+    request.onupgradeneeded = event => {
 
-const formatSize =
-  bytes => {
+      const db = event.target.result;
 
-    if (!bytes) {
-      return "0 B";
-    }
+      let store;
 
-    const units =
-      ["B","KB","MB","GB"];
+      if(
+        !db.objectStoreNames.contains(STORE)
+      ){
 
-    let index = 0;
-    let value = Number(bytes);
+        store =
+          db.createObjectStore(
+            STORE,
+            {keyPath:"id"}
+          );
 
-    while (
-      value >= 1024 &&
-      index < units.length - 1
-    ) {
-      value /= 1024;
-      index++;
-    }
+      }else{
 
-    return `${
-      value >= 10 || index === 0
-        ? value.toFixed(0)
-        : value.toFixed(1)
-    } ${units[index]}`;
-  };
+        store =
+          event.target.transaction
+            .objectStore(STORE);
 
-const formatDate =
-  timestamp =>
-    new Intl.DateTimeFormat(
-      undefined,
-      {
-        month:"short",
-        day:"2-digit",
-        year:"numeric",
-        hour:"2-digit",
-        minute:"2-digit"
       }
-    ).format(
-      new Date(timestamp)
+
+      if(
+        !store.indexNames.contains("date")
+      ){
+
+        store.createIndex(
+          "date",
+          "date"
+        );
+
+      }
+
+      if(
+        !store.indexNames.contains("uploader")
+      ){
+
+        store.createIndex(
+          "uploader",
+          "uploader"
+        );
+
+      }
+
+    };
+
+    request.onsuccess = () => {
+
+      const db = request.result;
+
+      db.onversionchange = () => {
+        db.close();
+      };
+
+      resolve(db);
+
+    };
+
+    request.onerror = () => {
+      reject(request.error);
+    };
+
+  });
+
+  return dbPromise;
+}
+
+/* =========================================================
+   FILE STORAGE
+   ========================================================= */
+
+async function uploadFile(record){
+
+  const db = await openDB();
+
+  return new Promise((resolve,reject)=>{
+
+    const tx =
+      db.transaction(
+        STORE,
+        "readwrite"
+      );
+
+    tx.objectStore(STORE)
+      .put(record);
+
+    tx.oncomplete = () => {
+      resolve(record);
+    };
+
+    tx.onerror = () => {
+      reject(tx.error);
+    };
+
+  });
+}
+
+async function getFiles(){
+
+  try{
+
+    const db = await openDB();
+
+    return new Promise((resolve,reject)=>{
+
+      const request =
+        db.transaction(
+          STORE,
+          "readonly"
+        )
+        .objectStore(STORE)
+        .getAll();
+
+      request.onsuccess = () => {
+
+        resolve(
+          request.result || []
+        );
+
+      };
+
+      request.onerror = () => {
+        reject(request.error);
+      };
+
+    });
+
+  }catch(error){
+
+    toast(
+      "Browser storage is unavailable.",
+      "err"
     );
 
-const iconFor =
-  extension =>
-    ({
-      png:"🖼️",
-      jpg:"🖼️",
-      jpeg:"🖼️",
-      webp:"🖼️",
-      mp3:"🎵",
-      wav:"🎵",
-      zip:"📦",
-      glb:"🧊",
-      gltf:"🧊",
-      json:"{}",
-      js:"</>",
-      css:"#",
-      html:"<>",
-      gd:"G",
-      txt:"TXT"
-    }[extension] || "📄");
+    return [];
+
+  }
+
+}
+
+async function deleteFile(id){
+
+  const db = await openDB();
+
+  return new Promise((resolve,reject)=>{
+
+    const tx =
+      db.transaction(
+        STORE,
+        "readwrite"
+      );
+
+    tx.objectStore(STORE)
+      .delete(id);
+
+    tx.oncomplete = resolve;
+
+    tx.onerror = () => {
+      reject(tx.error);
+    };
+
+  });
+
+}
+
+/* =========================================================
+   FAST DOWNLOAD COUNTER
+   ========================================================= */
+
+async function incrementDownload(id){
+
+  const db = await openDB();
+
+  return new Promise((resolve,reject)=>{
+
+    const tx =
+      db.transaction(
+        STORE,
+        "readwrite"
+      );
+
+    const store =
+      tx.objectStore(STORE);
+
+    const request =
+      store.get(id);
+
+    request.onsuccess = () => {
+
+      const record =
+        request.result;
+
+      if(record){
+
+        record.downloads =
+          Number(record.downloads || 0) + 1;
+
+        store.put(record);
+
+      }
+
+    };
+
+    tx.oncomplete = resolve;
+
+    tx.onerror = () => {
+      reject(tx.error);
+    };
+
+  });
+
+}
+
+/* =========================================================
+   UTILITIES
+   ========================================================= */
+
+function esc(value){
+
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[char])
+  );
+
+}
+
+function uid(){
+
+  if(
+    crypto.randomUUID
+  ){
+    return crypto.randomUUID();
+  }
+
+  return (
+    "f_" +
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+function ext(name){
+
+  const index =
+    name.lastIndexOf(".");
+
+  if(index === -1){
+    return "";
+  }
+
+  return name
+    .slice(index + 1)
+    .toLowerCase();
+
+}
+
+function formatSize(bytes){
+
+  if(!bytes){
+    return "0 B";
+  }
+
+  const units = [
+    "B",
+    "KB",
+    "MB",
+    "GB"
+  ];
+
+  let i = 0;
+  let size = bytes;
+
+  while(
+    size >= 1024 &&
+    i < units.length - 1
+  ){
+
+    size /= 1024;
+    i++;
+
+  }
+
+  return (
+    size >= 10 || i === 0
+      ? size.toFixed(0)
+      : size.toFixed(1)
+  ) + " " + units[i];
+
+}
+
+function formatDate(value){
+
+  return new Intl.DateTimeFormat(
+    undefined,
+    {
+      month:"short",
+      day:"2-digit",
+      year:"numeric",
+      hour:"2-digit",
+      minute:"2-digit"
+    }
+  ).format(
+    new Date(value)
+  );
+
+}
+
+/*
+FIXED:
+The previous version had an invalid txt mapping.
+*/
+
+const iconFor = extension => ({
+  png:"🖼️",
+  jpg:"🖼️",
+  jpeg:"🖼️",
+  webp:"🖼️",
+  mp3:"🎵",
+  wav:"🎵",
+  zip:"📦",
+  glb:"🧊",
+  gltf:"🧊",
+  json:"{}",
+  js:"</>",
+  css:"#",
+  html:"<>",
+  gd:"G",
+  txt:"TXT"
+}[extension] || "📄");
 
 const isScript =
-  file =>
-    file.script === true;
+  file => file.script === true;
 
+function slugName(name){
+
+  return String(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"")
+    .slice(0,30) ||
+    "uploader";
+
+}
+
+/* =========================================================
+   DELETE KEY SYSTEM
+   ========================================================= */
+
+function randomCode(length = 8){
+
+  const alphabet =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  let result = "";
+
+  const random =
+    new Uint32Array(length);
+
+  crypto.getRandomValues(random);
+
+  for(
+    let i = 0;
+    i < length;
+    i++
+  ){
+
+    result +=
+      alphabet[
+        random[i] % alphabet.length
+      ];
+
+  }
+
+  return result;
+
+}
+
+function generateDeleteKey(uploader){
+
+  return (
+    slugName(uploader) +
+    "-MIL-" +
+    randomCode(8)
+  );
+
+}
+
+/*
+Hash the key before storing the verification copy.
+The visible key is only shown immediately after upload.
+*/
+
+async function hashKey(key){
+
+  const data =
+    new TextEncoder().encode(key);
+
+  const digest =
+    await crypto.subtle.digest(
+      "SHA-256",
+      data
+    );
+
+  return [...new Uint8Array(digest)]
+    .map(
+      byte =>
+        byte
+          .toString(16)
+          .padStart(2,"0")
+    )
+    .join("");
+
+}
+
+async function verifyDeleteKey(
+  input,
+  storedHash
+){
+
+  if(!input || !storedHash){
+    return false;
+  }
+
+  const inputHash =
+    await hashKey(input.trim());
+
+  return inputHash === storedHash;
+
+}
 
 /* =========================================================
    STATE
-========================================================= */
+   ========================================================= */
 
 let files = [];
 let selectedFile = null;
 let pendingDelete = null;
-let viewerFile = null;
 let uploadMode = "file";
-
-
-/* =========================================================
-   API
-========================================================= */
-
-async function apiJSON(
-  url,
-  options = {}
-) {
-
-  const response =
-    await fetch(
-      url,
-      {
-        cache:"no-store",
-        ...options
-      }
-    );
-
-  let data = null;
-
-  try {
-    data =
-      await response.json();
-  }
-  catch {
-    throw new Error(
-      `Server returned HTTP ${response.status}.`
-    );
-  }
-
-  if (
-    !response.ok ||
-    data.success === false
-  ) {
-
-    throw new Error(
-      data.error ||
-      `Request failed with HTTP ${response.status}.`
-    );
-  }
-
-  return data;
-}
-
+let viewerFile = null;
 
 /* =========================================================
-   LOAD PUBLIC FILES
-========================================================= */
-
-async function getFiles() {
-
-  const search =
-    $("#searchInput")?.value.trim() || "";
-
-  const uploader =
-    $("#uploaderFilter")?.value || "";
-
-  const sort =
-    $("#sortSelect")?.value || "newest";
-
-  const params =
-    new URLSearchParams();
-
-  if (search) {
-    params.set("search",search);
-  }
-
-  if (uploader) {
-    params.set("uploader",uploader);
-  }
-
-  params.set("sort",sort);
-
-  params.set(
-    "_",
-    Date.now().toString()
-  );
-
-  const data =
-    await apiJSON(
-      `${API.files}?${params.toString()}`
-    );
-
-  return data.files || [];
-}
-
-
-/* =========================================================
-   LOAD STATS
-========================================================= */
-
-async function getStats() {
-
-  const data =
-    await apiJSON(
-      `${API.stats}?_=${Date.now()}`
-    );
-
-  return data.stats || {};
-}
-
-
-/* =========================================================
-   UPLOAD TO REAL SERVER
-========================================================= */
-
-async function publishToServer(
-  file,
-  uploader,
-  displayName,
-  script
-) {
-
-  const form =
-    new FormData();
-
-  form.append(
-    "file",
-    file,
-    file.name
-  );
-
-  form.append(
-    "uploader",
-    uploader
-  );
-
-  form.append(
-    "displayName",
-    displayName
-  );
-
-  form.append(
-    "isScript",
-    script ? "true" : "false"
-  );
-
-  return apiJSON(
-    API.files,
-    {
-      method:"POST",
-      body:form
-    }
-  );
-}
-
-
-/* =========================================================
-   DELETE THROUGH SERVER
-========================================================= */
-
-async function deleteFromServer(
-  id,
-  deleteToken
-) {
-
-  return apiJSON(
-    `${API.files}/${encodeURIComponent(id)}`,
-    {
-      method:"DELETE",
-
-      headers:{
-        "Content-Type":
-          "application/json"
-      },
-
-      body:
-        JSON.stringify({
-          deleteToken
-        })
-    }
-  );
-}
-
-
-/* =========================================================
-   REFRESH
-========================================================= */
-
-async function refresh() {
-
-  try {
-
-    const [
-      loadedFiles,
-      stats
-    ] =
-      await Promise.all([
-        getFiles(),
-        getStats()
-      ]);
-
-    files =
-      loadedFiles;
-
-    updateStats(
-      stats
-    );
-
-    renderUploaderFilter();
-    renderCards();
-    updateScriptSummary();
-
-    openHashFile();
-
-  }
-  catch(error) {
-
-    console.error(
-      "Refresh failed:",
-      error
-    );
-
-    toast(
-      error.message ||
-      "Unable to load public files.",
-      "err"
-    );
-
-  }
-}
-
-
-/* =========================================================
-   STATISTICS
-========================================================= */
-
-function updateStats(
-  stats
-) {
-
-  $("#statFiles").textContent =
-    Number(stats.files || 0);
-
-  $("#statScripts").textContent =
-    Number(stats.scripts || 0);
-
-  $("#statSize").textContent =
-    formatSize(
-      Number(stats.totalSize || 0)
-    );
-
-  $("#statDownloads").textContent =
-    Number(stats.downloads || 0);
-}
-
-
-/* =========================================================
-   PARTICLES — AUTO OPTIMIZED
-========================================================= */
+   PARTICLES
+   ========================================================= */
 
 const canvas =
   $("#particleCanvas");
@@ -3149,84 +2896,40 @@ const ctx =
     }
   );
 
-const reducedMotion =
-  window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-
-const cores =
-  navigator.hardwareConcurrency || 4;
-
-const memory =
-  navigator.deviceMemory || 4;
-
-const mobile =
-  window.matchMedia(
-    "(max-width:700px)"
-  ).matches;
-
-let particleCount;
-
-if (reducedMotion) {
-  particleCount =
-    mobile ? 4 : 8;
-}
-else if (
-  cores <= 2 ||
-  memory <= 2
-) {
-  particleCount =
-    mobile ? 10 : 18;
-}
-else if (
-  cores >= 8 &&
-  memory >= 8
-) {
-  particleCount =
-    mobile ? 24 : 48;
-}
-else {
-  particleCount =
-    mobile ? 16 : 32;
-}
-
 let particles = [];
-let canvasWidth = 0;
-let canvasHeight = 0;
-let dpr = 1;
-let particleFrame = null;
+
+let particleCount =
+  matchMedia(
+    "(max-width:650px)"
+  ).matches
+    ? 28
+    : 55;
+
 let particleRunning = true;
-let particleLastTime = 0;
 
-function resizeParticles() {
+function resizeCanvas(){
 
-  canvasWidth =
-    window.innerWidth;
-
-  canvasHeight =
-    window.innerHeight;
-
-  dpr =
+  const dpr =
     Math.min(
-      window.devicePixelRatio || 1,
+      devicePixelRatio || 1,
       1.5
     );
 
   canvas.width =
     Math.floor(
-      canvasWidth * dpr
+      innerWidth * dpr
     );
 
   canvas.height =
     Math.floor(
-      canvasHeight * dpr
+      innerHeight * dpr
     );
 
   canvas.style.width =
-    `${canvasWidth}px`;
+    innerWidth + "px";
 
   canvas.style.height =
-    `${canvasHeight}px`;
+    innerHeight + "px";
 
   ctx.setTransform(
     dpr,
@@ -3237,223 +2940,138 @@ function resizeParticles() {
     0
   );
 
-  while (
+  while(
     particles.length <
     particleCount
-  ) {
+  ){
 
     particles.push({
-      x:
-        Math.random() *
-        canvasWidth,
-
-      y:
-        Math.random() *
-        canvasHeight,
-
-      vx:
-        (Math.random() - .5) *
-        .16,
-
-      vy:
-        (Math.random() - .5) *
-        .16,
-
-      r:
-        Math.random() *
-        1.4 +
-        .4,
-
-      alpha:
-        Math.random() *
-        .45 +
-        .15
+      x:Math.random()*innerWidth,
+      y:Math.random()*innerHeight,
+      r:Math.random()*1.5+.35,
+      vx:(Math.random()-.5)*.16,
+      vy:(Math.random()-.5)*.16,
+      a:Math.random()*.55+.12,
+      hue:Math.random()*80
     });
 
   }
 
   particles.length =
     particleCount;
+
 }
 
-function animateParticles(
-  timestamp
-) {
+function particleLoop(){
 
-  if (!particleRunning) {
-    particleFrame = null;
+  if(!particleRunning){
     return;
   }
-
-  if (!particleLastTime) {
-    particleLastTime =
-      timestamp;
-  }
-
-  const delta =
-    Math.min(
-      timestamp -
-      particleLastTime,
-      32
-    );
-
-  particleLastTime =
-    timestamp;
 
   ctx.clearRect(
     0,
     0,
-    canvasWidth,
-    canvasHeight
+    innerWidth,
+    innerHeight
   );
 
-  const movement =
-    delta * .06;
+  for(
+    const p of particles
+  ){
 
-  ctx.fillStyle =
-    "rgba(105,225,255,.55)";
+    p.x += p.vx;
+    p.y += p.vy;
 
-  for (
-    const particle
-    of particles
-  ) {
-
-    particle.x +=
-      particle.vx *
-      movement;
-
-    particle.y +=
-      particle.vy *
-      movement;
-
-    if (
-      particle.x < -5
-    ) {
-      particle.x =
-        canvasWidth + 5;
+    if(p.x < -5){
+      p.x = innerWidth + 5;
     }
 
-    if (
-      particle.x >
-      canvasWidth + 5
-    ) {
-      particle.x = -5;
+    if(p.x > innerWidth + 5){
+      p.x = -5;
     }
 
-    if (
-      particle.y < -5
-    ) {
-      particle.y =
-        canvasHeight + 5;
+    if(p.y < -5){
+      p.y = innerHeight + 5;
     }
 
-    if (
-      particle.y >
-      canvasHeight + 5
-    ) {
-      particle.y = -5;
+    if(p.y > innerHeight + 5){
+      p.y = -5;
     }
 
-    ctx.globalAlpha =
-      particle.alpha;
+    const hue =
+      185 + p.hue;
 
     ctx.beginPath();
 
     ctx.arc(
-      particle.x,
-      particle.y,
-      particle.r,
+      p.x,
+      p.y,
+      p.r,
       0,
       Math.PI * 2
     );
 
+    ctx.fillStyle =
+      `hsla(${hue},90%,70%,${p.a})`;
+
     ctx.fill();
+
   }
 
-  ctx.globalAlpha = 1;
+  requestAnimationFrame(
+    particleLoop
+  );
 
-  particleFrame =
-    requestAnimationFrame(
-      animateParticles
-    );
 }
-
-function startParticles() {
-
-  if (
-    reducedMotion
-  ) {
-    return;
-  }
-
-  particleRunning = true;
-  particleLastTime = 0;
-
-  if (!particleFrame) {
-    particleFrame =
-      requestAnimationFrame(
-        animateParticles
-      );
-  }
-}
-
-function stopParticles() {
-
-  particleRunning = false;
-
-  if (particleFrame) {
-
-    cancelAnimationFrame(
-      particleFrame
-    );
-
-    particleFrame = null;
-  }
-}
-
-resizeParticles();
-startParticles();
-
-window.addEventListener(
-  "resize",
-  resizeParticles,
-  { passive:true }
-);
 
 document.addEventListener(
   "visibilitychange",
   () => {
 
-    if (
-      document.hidden
-    ) {
-      stopParticles();
-    }
-    else {
-      startParticles();
+    particleRunning =
+      !document.hidden;
+
+    if(
+      particleRunning
+    ){
+
+      requestAnimationFrame(
+        particleLoop
+      );
+
     }
 
   }
 );
 
+addEventListener(
+  "resize",
+  resizeCanvas,
+  {passive:true}
+);
+
+resizeCanvas();
+
+particleLoop();
 
 /* =========================================================
-   INTRO
-========================================================= */
+   INTRO / TEAM
+   ========================================================= */
 
-function showIntro() {
+function showIntro(){
 
-  if (
+  if(
     sessionStorage.getItem(
       "pfhIntroSeen"
     ) !== "1"
-  ) {
+  ){
 
     $("#introModal")
       .classList
       .add("open");
 
   }
+
 }
 
 $("#enterProject")
@@ -3473,8 +3091,7 @@ $("#enterProject")
     }
   );
 
-
-function renderTeam() {
+function renderTeam(){
 
   $("#teamList").innerHTML =
     TEAM
@@ -3491,113 +3108,110 @@ function renderTeam() {
           `<span>${esc(name)}</span>`
       )
       .join("");
+
 }
 
 renderTeam();
 
-
 /* =========================================================
    MODALS
-========================================================= */
+   ========================================================= */
 
-function openModal(
-  selector
-) {
+function openModal(id){
 
-  $(selector)
+  $(id)
     .classList
     .add("open");
+
 }
 
-function closeModal(
-  selector
-) {
+function closeModal(id){
 
-  $(selector)
+  $(id)
     .classList
     .remove("open");
+
 }
 
 $$("[data-close]")
-  .forEach(
-    button => {
+  .forEach(button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+    button.addEventListener(
+      "click",
+      () => {
 
-          closeModal(
-            `#${button.dataset.close}`
+        closeModal(
+          "#" +
+          button.dataset.close
+        );
+
+      }
+    );
+
+  });
+
+$$(".modal-backdrop")
+  .forEach(modal => {
+
+    modal.addEventListener(
+      "click",
+      event => {
+
+        if(
+          event.target === modal &&
+          !modal.classList.contains("intro")
+        ){
+
+          modal.classList.remove(
+            "open"
           );
 
         }
-      );
 
-    }
-  );
+      }
+    );
 
-$$(".modal-backdrop")
-  .forEach(
-    modal => {
-
-      modal.addEventListener(
-        "click",
-        event => {
-
-          if (
-            event.target === modal &&
-            !modal.classList.contains(
-              "intro"
-            )
-          ) {
-
-            modal.classList
-              .remove("open");
-
-          }
-
-        }
-      );
-
-    }
-  );
+  });
 
 document.addEventListener(
   "keydown",
   event => {
 
-    if (
-      event.key === "Escape"
-    ) {
-
-      $$(
-        ".modal-backdrop.open:not(.intro)"
-      )
-      .forEach(
-        modal =>
-          modal.classList
-            .remove("open")
-      );
-
+    if(event.key !== "Escape"){
+      return;
     }
+
+    $$(".modal-backdrop.open")
+      .forEach(modal => {
+
+        if(
+          !modal.classList.contains(
+            "intro"
+          )
+        ){
+
+          modal.classList.remove(
+            "open"
+          );
+
+        }
+
+      });
 
   }
 );
 
-
 /* =========================================================
-   TOASTS
-========================================================= */
+   TOAST
+   ========================================================= */
 
 function toast(
   message,
   type = "ok"
-) {
+){
 
   const element =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   element.className =
     `toast ${type}`;
@@ -3606,9 +3220,7 @@ function toast(
     message;
 
   $("#toastWrap")
-    .appendChild(
-      element
-    );
+    .appendChild(element);
 
   setTimeout(
     () => {
@@ -3620,20 +3232,22 @@ function toast(
         "translateY(10px)";
 
       setTimeout(
-        () =>
-          element.remove(),
+        () => element.remove(),
         250
       );
 
     },
     3000
   );
-}
 
+}
 
 /* =========================================================
    UPLOAD
-========================================================= */
+   ========================================================= */
+
+const uploadModal =
+  $("#uploadModal");
 
 const fileInput =
   $("#fileInput");
@@ -3641,10 +3255,9 @@ const fileInput =
 const dropzone =
   $("#dropzone");
 
-
 function resetUpload(
   mode = "file"
-) {
+){
 
   uploadMode =
     mode;
@@ -3669,8 +3282,7 @@ function resetUpload(
     .remove("show");
 
   $("#filePreview")
-    .textContent =
-    "";
+    .textContent = "";
 
   $("#uploadForm")
     .style.display =
@@ -3682,41 +3294,41 @@ function resetUpload(
 
   $("#scriptNameField")
     .style.display =
-      mode === "script"
-        ? "block"
-        : "none";
+    mode === "script"
+      ? "block"
+      : "none";
 
   $("#displayNameField")
     .style.display =
-      mode === "script"
-        ? "none"
-        : "block";
+    mode === "script"
+      ? "none"
+      : "block";
 
   $("#uploadKicker")
     .textContent =
-      mode === "script"
-        ? "CUSTOM SCRIPT UPLOAD"
-        : "UPLOAD CENTER";
+    mode === "script"
+      ? "CUSTOM SCRIPT UPLOAD"
+      : "UPLOAD CENTER";
 
   $("#uploadTitle")
     .textContent =
-      mode === "script"
-        ? "Add a custom script"
-        : "Upload a project file";
-}
+    mode === "script"
+      ? "Add a custom script"
+      : "Upload a project file";
 
+}
 
 function openUpload(
   mode = "file"
-) {
+){
 
   resetUpload(mode);
 
   openModal(
     "#uploadModal"
   );
-}
 
+}
 
 $("#headerUpload")
   .addEventListener(
@@ -3742,12 +3354,13 @@ $("#scriptSectionBtn")
     () => openUpload("script")
   );
 
+/* =========================================================
+   VALIDATION
+   ========================================================= */
 
-function validateFile(
-  file
-) {
+function validateFile(file){
 
-  if (!file) {
+  if(!file){
 
     toast(
       "Please select a file.",
@@ -3755,12 +3368,13 @@ function validateFile(
     );
 
     return false;
+
   }
 
-  if (
+  if(
     file.size >
     MAX_FILE_SIZE
-  ) {
+  ){
 
     toast(
       "File is too large. Maximum allowed size is 50 MB.",
@@ -3768,15 +3382,17 @@ function validateFile(
     );
 
     return false;
+
   }
 
   const extension =
     ext(file.name);
 
-  if (
-    !ALLOWED_EXTENSIONS
-      .has(extension)
-  ) {
+  if(
+    !ALLOWED_EXTENSIONS.has(
+      extension
+    )
+  ){
 
     toast(
       "This file type is not supported.",
@@ -3784,12 +3400,13 @@ function validateFile(
     );
 
     return false;
+
   }
 
-  if (
+  if(
     uploadMode === "script" &&
     extension !== "txt"
-  ) {
+  ){
 
     toast(
       "Custom scripts must be .txt files.",
@@ -3797,19 +3414,22 @@ function validateFile(
     );
 
     return false;
+
   }
 
   return true;
+
 }
 
+/* =========================================================
+   FILE PREVIEW
+   ========================================================= */
 
-async function selectFile(
-  file
-) {
+async function selectFile(file){
 
-  if (
+  if(
     !validateFile(file)
-  ) {
+  ){
     return;
   }
 
@@ -3821,194 +3441,137 @@ async function selectFile(
     .add("show");
 
   $("#filePreview")
-    .innerHTML =
-    "";
+    .innerHTML = "";
 
-  const rows = [
-    [
-      "File",
-      file.name
-    ],
-    [
-      "Type",
-      file.type ||
-      "Unknown"
-    ],
-    [
-      "Size",
-      formatSize(
-        file.size
-      )
-    ],
+  [
+    ["File",file.name],
+    ["Type",file.type || "Unknown"],
+    ["Size",formatSize(file.size)],
     [
       "Extension",
       ext(file.name)
-        .toUpperCase() ||
-      "—"
+        .toUpperCase() || "—"
     ]
-  ];
+  ]
+  .forEach(
+    ([label,value]) => {
 
-  for (
-    const [label,value]
-    of rows
-  ) {
+      const row =
+        document.createElement("div");
 
-    const row =
-      document.createElement(
-        "div"
+      row.className =
+        "preview-row";
+
+      const left =
+        document.createElement("span");
+
+      left.textContent =
+        label;
+
+      const right =
+        document.createElement("b");
+
+      right.textContent =
+        value;
+
+      row.append(
+        left,
+        right
       );
-
-    row.className =
-      "preview-row";
-
-    const left =
-      document.createElement(
-        "span"
-      );
-
-    left.textContent =
-      label;
-
-    const right =
-      document.createElement(
-        "b"
-      );
-
-    right.textContent =
-      value;
-
-    row.append(
-      left,
-      right
-    );
-
-    $("#filePreview")
-      .appendChild(
-        row
-      );
-  }
-
-  if (
-    uploadMode === "script"
-  ) {
-
-    try {
-
-      const text =
-        await file.text();
-
-      const preview =
-        document.createElement(
-          "pre"
-        );
-
-      preview.style.maxHeight =
-        "220px";
-
-      preview.textContent =
-        text.slice(
-          0,
-          10000
-        );
 
       $("#filePreview")
-        .appendChild(
-          preview
-        );
+        .appendChild(row);
 
     }
-    catch {
-      toast(
-        "Could not preview this script.",
-        "warn"
-      );
-    }
-  }
-}
-
-
-fileInput
-  .addEventListener(
-    "change",
-    () =>
-      selectFile(
-        fileInput.files[0]
-      )
   );
 
+}
 
-[
-  "dragenter",
-  "dragover"
-]
-.forEach(
-  eventName => {
-
-    dropzone.addEventListener(
-      eventName,
-      event => {
-
-        event.preventDefault();
-
-        dropzone
-          .classList
-          .add("drag");
-
-      }
-    );
-
-  }
+fileInput.addEventListener(
+  "change",
+  () => selectFile(
+    fileInput.files[0]
+  )
 );
 
+["dragenter","dragover"]
+  .forEach(
+    eventName => {
 
-[
-  "dragleave",
-  "drop"
-]
-.forEach(
-  eventName => {
+      dropzone.addEventListener(
+        eventName,
+        event => {
 
-    dropzone.addEventListener(
-      eventName,
-      event => {
+          event.preventDefault();
 
-        event.preventDefault();
+          dropzone.classList.add(
+            "drag"
+          );
 
-        dropzone
-          .classList
-          .remove("drag");
+        }
+      );
 
-      }
-    );
+    }
+  );
 
-  }
-);
+["dragleave","drop"]
+  .forEach(
+    eventName => {
 
+      dropzone.addEventListener(
+        eventName,
+        event => {
+
+          event.preventDefault();
+
+          dropzone.classList.remove(
+            "drag"
+          );
+
+        }
+      );
+
+    }
+  );
 
 dropzone.addEventListener(
   "drop",
-  event =>
+  event => {
+
     selectFile(
       event.dataTransfer.files[0]
-    )
+    );
+
+  }
 );
 
+/* =========================================================
+   FILE TO BLOB
+   ========================================================= */
+
+async function fileToBlob(file){
+
+  return file;
+
+}
 
 /* =========================================================
    REVIEW
-========================================================= */
+   ========================================================= */
 
 $("#reviewBtn")
   .addEventListener(
     "click",
     async () => {
 
-      if (
+      if(
         !validateFile(
           selectedFile
         )
-      ) {
+      ){
+
         return;
+
       }
 
       const uploader =
@@ -4016,10 +3579,10 @@ $("#reviewBtn")
           .value
           .trim();
 
-      if (!uploader) {
+      if(!uploader){
 
         toast(
-          "Please enter your uploader name.",
+          "Please enter your name.",
           "warn"
         );
 
@@ -4027,21 +3590,18 @@ $("#reviewBtn")
           .focus();
 
         return;
+
       }
 
-      let displayName =
+      let display =
         uploadMode === "script"
-          ? $("#scriptNameInput")
-              .value
-              .trim()
-          : $("#displayNameInput")
-              .value
-              .trim();
+          ? $("#scriptNameInput").value.trim()
+          : $("#displayNameInput").value.trim();
 
-      if (
+      if(
         uploadMode === "script" &&
-        !displayName
-      ) {
+        !display
+      ){
 
         toast(
           "Script name is required.",
@@ -4052,40 +3612,117 @@ $("#reviewBtn")
           .focus();
 
         return;
+
       }
 
-      if (!displayName) {
+      if(!display){
 
-        displayName =
+        display =
           selectedFile.name
             .replace(
               /\.[^.]+$/,
               ""
             );
+
       }
 
-      try {
-
-        $("#reviewBtn")
-          .disabled =
-          true;
+      try{
 
         toast(
-          "Preparing preview...",
+          "Preparing file...",
           "ok"
         );
 
-        let scriptContent =
-          "";
+        let data;
 
-        if (
+        if(
           uploadMode === "script"
-        ) {
+        ){
 
-          scriptContent =
+          data =
             await selectedFile.text();
 
+        }else{
+
+          /*
+          IMPORTANT:
+          Store the Blob directly.
+
+          This removes the old
+          FileReader → DataURL → fetch()
+          round trip that caused download delay.
+          */
+
+          data =
+            await fileToBlob(
+              selectedFile
+            );
+
         }
+
+        const deleteKey =
+          generateDeleteKey(
+            uploader
+          );
+
+        const deleteKeyHash =
+          await hashKey(
+            deleteKey
+          );
+
+        const draft = {
+
+          name:
+            selectedFile.name,
+
+          displayName:
+            display,
+
+          uploader,
+
+          extension:
+            ext(
+              selectedFile.name
+            ),
+
+          type:
+            selectedFile.type ||
+            "application/octet-stream",
+
+          size:
+            selectedFile.size,
+
+          date:
+            Date.now(),
+
+          downloads:
+            0,
+
+          script:
+            uploadMode === "script",
+
+          data,
+
+          /*
+          The actual key is NOT
+          stored in the database.
+          Only its hash is stored.
+          */
+
+          deleteKeyHash
+
+        };
+
+        /*
+        Keep the key only in the
+        temporary publish object.
+        */
+
+        selectedFile._draft =
+          draft;
+
+        selectedFile._deleteKey =
+          deleteKey;
 
         $("#uploadForm")
           .style.display =
@@ -4102,97 +3739,69 @@ $("#reviewBtn")
             : "Review file";
 
         $("#confirmCard")
-          .innerHTML =
-          "";
+          .innerHTML = "";
 
-        const rows = [
-          [
-            "File",
-            selectedFile.name
-          ],
-          [
-            "Display Name",
-            displayName
-          ],
-          [
-            "Uploaded by",
-            uploader
-          ],
-          [
-            "Type",
-            ext(
-              selectedFile.name
-            ).toUpperCase()
-          ],
-          [
-            "Size",
-            formatSize(
-              selectedFile.size
-            )
-          ]
-        ];
+        [
+          ["File",draft.name],
+          ["Uploaded by",draft.uploader],
+          ["Type",draft.extension.toUpperCase()],
+          ["Size",formatSize(draft.size)]
+        ]
+        .forEach(
+          ([label,value]) => {
 
-        for (
-          const [label,value]
-          of rows
-        ) {
+            const row =
+              document.createElement("div");
 
-          const row =
-            document.createElement(
-              "div"
+            row.className =
+              "preview-row";
+
+            const left =
+              document.createElement("span");
+
+            left.textContent =
+              label;
+
+            const right =
+              document.createElement("b");
+
+            right.textContent =
+              value;
+
+            row.append(
+              left,
+              right
             );
 
-          row.className =
-            "preview-row";
+            $("#confirmCard")
+              .appendChild(row);
 
-          const left =
-            document.createElement(
-              "span"
-            );
-
-          left.textContent =
-            label;
-
-          const right =
-            document.createElement(
-              "b"
-            );
-
-          right.textContent =
-            value;
-
-          row.append(
-            left,
-            right
-          );
-
-          $("#confirmCard")
-            .appendChild(
-              row
-            );
-        }
+          }
+        );
 
         $("#confirmScriptPreview")
-          .innerHTML =
-          "";
+          .innerHTML = "";
 
-        if (
+        if(
           uploadMode === "script"
-        ) {
+        ){
 
-          const label =
+          const title =
             document.createElement(
               "div"
             );
 
-          label.className =
+          title.className =
             "kicker";
 
-          label.style.marginTop =
+          title.style.marginTop =
             "18px";
 
-          label.textContent =
+          title.textContent =
             "SCRIPT PREVIEW";
+
+          $("#confirmScriptPreview")
+            .appendChild(title);
 
           const code =
             document.createElement(
@@ -4200,36 +3809,30 @@ $("#reviewBtn")
             );
 
           code.textContent =
-            scriptContent;
+            data;
 
           $("#confirmScriptPreview")
-            .append(
-              label,
-              code
-            );
+            .appendChild(code);
+
         }
 
-      }
-      catch(error) {
+      }catch(error){
 
         console.error(error);
 
         toast(
-          "Could not prepare the file preview.",
+          "Could not prepare the selected file.",
           "err"
         );
 
       }
-      finally {
 
-        $("#reviewBtn")
-          .disabled =
-          false;
-
-      }
     }
   );
 
+/* =========================================================
+   BACK REVIEW
+   ========================================================= */
 
 $("#backReview")
   .addEventListener(
@@ -4247,214 +3850,575 @@ $("#backReview")
     }
   );
 
-
 /* =========================================================
-   REAL PUBLISH
-========================================================= */
+   PUBLISH
+   ========================================================= */
 
 $("#publishBtn")
   .addEventListener(
     "click",
     async () => {
 
-      if (!selectedFile) {
+      if(!selectedFile){
         return;
       }
 
-      const uploader =
-        $("#uploaderInput")
-          .value
-          .trim();
+      const draft =
+        selectedFile._draft;
 
-      let displayName =
-        uploadMode === "script"
-          ? $("#scriptNameInput")
-              .value
-              .trim()
-          : $("#displayNameInput")
-              .value
-              .trim();
+      const deleteKey =
+        selectedFile._deleteKey;
 
-      if (!displayName) {
-
-        displayName =
-          selectedFile.name
-            .replace(
-              /\.[^.]+$/,
-              ""
-            );
+      if(!draft || !deleteKey){
+        return;
       }
 
-      const button =
-        $("#publishBtn");
+      const record = {
+        id:uid(),
+        ...draft
+      };
 
-      const originalText =
-        button.innerHTML;
+      try{
 
-      try {
+        const publishButton =
+          $("#publishBtn");
 
-        button.disabled =
+        publishButton.disabled =
           true;
 
-        button.innerHTML =
-          `<span class="spinner"></span> PUBLISHING...`;
+        publishButton.innerHTML =
+          '<span class="spinner"></span> PUBLISHING...';
 
-        const result =
-          await publishToServer(
-            selectedFile,
-            uploader,
-            displayName,
-            uploadMode === "script"
-          );
+        await uploadFile(
+          record
+        );
+
+        /*
+        Update the library FIRST,
+        immediately.
+        */
+
+        await refresh();
 
         closeModal(
           "#uploadModal"
         );
 
         /*
-          IMPORTANT:
-          The delete token is returned
-          only once by the server.
+        SHOW KEY IMMEDIATELY.
         */
 
-        const deleteToken =
-          result.deleteToken;
+        $("#generatedKey")
+          .textContent =
+          deleteKey;
 
-        await refresh();
-
-        showDeleteKeyWarning(
-          deleteToken
+        openModal(
+          "#keyModal"
         );
 
-        toast(
-          uploadMode === "script"
-            ? "✓ Script published to the public library!"
-            : "✓ File published to the public library!",
-          "ok"
-        );
+        /*
+        Reset temporary secret
+        from the selected File object.
+        */
 
         selectedFile =
           null;
 
-      }
-      catch(error) {
-
-        console.error(
-          "Publish error:",
-          error
+        toast(
+          "✓ File published successfully",
+          "ok"
         );
 
+      }catch(error){
+
+        console.error(error);
+
         toast(
-          error.message ||
-          "Upload failed.",
+          "Could not save the file.",
           "err"
         );
 
-      }
-      finally {
+      }finally{
 
-        button.disabled =
+        $("#publishBtn")
+          .disabled =
           false;
 
-        button.innerHTML =
-          originalText;
+        $("#publishBtn")
+          .textContent =
+          "PUBLISH";
 
       }
 
     }
   );
 
-
 /* =========================================================
-   DELETE KEY WARNING
-========================================================= */
+   KEY COPY
+   ========================================================= */
 
-function showDeleteKeyWarning(
-  key
-) {
-
-  $("#generatedDeleteKey")
-    .textContent =
-    key;
-
-  openModal(
-    "#deleteKeyWarning"
-  );
-}
-
-
-$("#copyDeleteKey")
+$("#copyKeyBtn")
   .addEventListener(
     "click",
     async () => {
 
       const key =
-        $("#generatedDeleteKey")
+        $("#generatedKey")
           .textContent;
 
-      try {
+      try{
 
         await navigator.clipboard
           .writeText(key);
 
-        toast(
-          "✓ Delete key copied.",
-          "ok"
-        );
-
-      }
-      catch {
-
-        const textarea =
-          document.createElement(
-            "textarea"
-          );
-
-        textarea.value =
-          key;
-
-        textarea.style.position =
-          "fixed";
-
-        textarea.style.opacity =
-          "0";
-
-        document.body.appendChild(
-          textarea
-        );
-
-        textarea.select();
-
-        document.execCommand(
-          "copy"
-        );
-
-        textarea.remove();
+        $("#copyKeyBtn")
+          .textContent =
+          "✓ KEY COPIED";
 
         toast(
           "✓ Delete key copied.",
           "ok"
         );
+
+        setTimeout(
+          () => {
+
+            $("#copyKeyBtn")
+              .textContent =
+              "📋 COPY DELETE KEY";
+
+          },
+          1800
+        );
+
+      }catch{
+
+        toast(
+          "Could not copy automatically. Select the key manually.",
+          "warn"
+        );
+
       }
+
     }
   );
 
-
-$("#closeDeleteKeyWarning")
+$("#keyDoneBtn")
   .addEventListener(
     "click",
-    () =>
+    () => {
+
       closeModal(
-        "#deleteKeyWarning"
-      )
+        "#keyModal"
+      );
+
+    }
   );
 
+/* =========================================================
+   SEARCH / SORT
+   ========================================================= */
+
+function matches(
+  file,
+  query
+){
+
+  if(!query){
+    return true;
+  }
+
+  query =
+    query.toLowerCase();
+
+  return [
+    file.name,
+    file.displayName,
+    file.uploader,
+    file.extension
+  ]
+  .some(
+    value =>
+      String(value)
+        .toLowerCase()
+        .includes(query)
+  );
+
+}
+
+function filteredFiles(){
+
+  const query =
+    $("#searchInput")
+      .value
+      .trim();
+
+  const sort =
+    $("#sortSelect")
+      .value;
+
+  const uploader =
+    $("#uploaderFilter")
+      .value;
+
+  const output =
+    files.filter(
+      file =>
+        matches(
+          file,
+          query
+        ) &&
+        (
+          uploader === "" ||
+          file.uploader === uploader
+        )
+    );
+
+  if(sort === "newest"){
+    output.sort(
+      (a,b) =>
+        b.date - a.date
+    );
+  }
+
+  if(sort === "oldest"){
+    output.sort(
+      (a,b) =>
+        a.date - b.date
+    );
+  }
+
+  if(sort === "name"){
+    output.sort(
+      (a,b) =>
+        a.displayName
+          .localeCompare(
+            b.displayName
+          )
+    );
+  }
+
+  if(sort === "largest"){
+    output.sort(
+      (a,b) =>
+        b.size - a.size
+    );
+  }
+
+  return output;
+
+}
 
 /* =========================================================
-   FILTERING
-========================================================= */
+   FILE CARDS
+   ========================================================= */
 
-function renderUploaderFilter() {
+function renderCards(){
+
+  const grid =
+    $("#fileGrid");
+
+  const list =
+    filteredFiles();
+
+  grid.innerHTML = "";
+
+  if(!list.length){
+
+    const empty =
+      document.createElement(
+        "div"
+      );
+
+    empty.className =
+      "empty";
+
+    empty.innerHTML = `
+      <div class="big">◈</div>
+      <h3>
+        ${
+          files.length
+            ? "No matching files"
+            : "No files uploaded yet."
+        }
+      </h3>
+      <p class="sub">
+        ${
+          files.length
+            ? "Try another search or filter."
+            : "Be the first to contribute to the project."
+        }
+      </p>
+      <button class="btn btn-primary empty-upload">
+        UPLOAD FILE
+      </button>
+    `;
+
+    grid.appendChild(empty);
+
+    $(".empty-upload")
+      .addEventListener(
+        "click",
+        () => openUpload("file")
+      );
+
+    return;
+
+  }
+
+  for(
+    const file of list
+  ){
+
+    const card =
+      document.createElement(
+        "article"
+      );
+
+    card.className =
+      "card";
+
+    const top =
+      document.createElement(
+        "div"
+      );
+
+    top.className =
+      "card-top";
+
+    const icon =
+      document.createElement(
+        "div"
+      );
+
+    icon.className =
+      "file-icon";
+
+    icon.textContent =
+      isScript(file)
+        ? "</>"
+        : iconFor(
+            file.extension
+          );
+
+    const badge =
+      document.createElement(
+        "div"
+      );
+
+    badge.className =
+      "badge";
+
+    badge.textContent =
+      file.extension
+        .toUpperCase();
+
+    top.append(
+      icon,
+      badge
+    );
+
+    card.appendChild(top);
+
+    const title =
+      document.createElement(
+        "h3"
+      );
+
+    title.textContent =
+      file.displayName;
+
+    card.appendChild(title);
+
+    const filename =
+      document.createElement(
+        "div"
+      );
+
+    filename.className =
+      "filename";
+
+    filename.textContent =
+      file.name;
+
+    card.appendChild(filename);
+
+    const by =
+      document.createElement(
+        "div"
+      );
+
+    by.className =
+      "by";
+
+    by.append(
+      document.createTextNode(
+        "Uploaded by "
+      )
+    );
+
+    const uploader =
+      document.createElement(
+        "b"
+      );
+
+    uploader.textContent =
+      file.uploader;
+
+    by.appendChild(
+      uploader
+    );
+
+    card.appendChild(by);
+
+    const meta =
+      document.createElement(
+        "div"
+      );
+
+    meta.className =
+      "meta";
+
+    meta.textContent =
+      `${file.extension.toUpperCase()} • ${formatSize(file.size)}`;
+
+    card.appendChild(meta);
+
+    const meta2 =
+      document.createElement(
+        "div"
+      );
+
+    meta2.className =
+      "meta";
+
+    meta2.textContent =
+      `Uploaded: ${formatDate(file.date)} • Downloads: ${file.downloads || 0}`;
+
+    card.appendChild(meta2);
+
+    const actions =
+      document.createElement(
+        "div"
+      );
+
+    actions.className =
+      "card-actions";
+
+    const preview =
+      document.createElement(
+        "button"
+      );
+
+    preview.className =
+      "btn btn-small btn-ghost";
+
+    preview.textContent =
+      isScript(file)
+        ? "VIEW SCRIPT"
+        : "DETAILS";
+
+    preview.onclick =
+      () =>
+        isScript(file)
+          ? openScript(file)
+          : openDetails(file);
+
+    const download =
+      document.createElement(
+        "button"
+      );
+
+    download.className =
+      "btn btn-small btn-primary";
+
+    download.textContent =
+      "DOWNLOAD";
+
+    download.onclick =
+      () => downloadStored(file);
+
+    const copy =
+      document.createElement(
+        "button"
+      );
+
+    copy.className =
+      "btn btn-small btn-ghost";
+
+    copy.textContent =
+      "COPY LINK";
+
+    copy.onclick =
+      () => copyLink(file);
+
+    const deleteButton =
+      document.createElement(
+        "button"
+      );
+
+    deleteButton.className =
+      "btn btn-small btn-danger";
+
+    deleteButton.textContent =
+      "DELETE";
+
+    deleteButton.onclick =
+      () => askDelete(file);
+
+    actions.append(
+      preview,
+      download,
+      copy,
+      deleteButton
+    );
+
+    card.appendChild(
+      actions
+    );
+
+    grid.appendChild(
+      card
+    );
+
+  }
+
+}
+
+/* =========================================================
+   FILTER EVENTS
+   ========================================================= */
+
+["input","change"]
+  .forEach(
+    eventName => {
+
+      $("#searchInput")
+        .addEventListener(
+          eventName,
+          renderCards
+        );
+
+    }
+  );
+
+$("#sortSelect")
+  .addEventListener(
+    "change",
+    renderCards
+  );
+
+$("#uploaderFilter")
+  .addEventListener(
+    "change",
+    renderCards
+  );
+
+/* =========================================================
+   UPLOADER FILTER
+   ========================================================= */
+
+function renderUploaderFilter(){
 
   const current =
     $("#uploaderFilter")
@@ -4486,519 +4450,99 @@ function renderUploaderFilter() {
         )
         .join("");
 
-  if (
+  if(
     names.includes(current)
-  ) {
+  ){
 
     $("#uploaderFilter")
       .value =
       current;
+
   }
+
 }
-
-
-function filteredFiles() {
-
-  const query =
-    $("#searchInput")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const sort =
-    $("#sortSelect")
-      .value;
-
-  const uploader =
-    $("#uploaderFilter")
-      .value;
-
-  let output =
-    files.filter(
-      file => {
-
-        const matchesQuery =
-          !query ||
-          [
-            file.name,
-            file.displayName,
-            file.uploader,
-            file.extension
-          ]
-          .some(
-            value =>
-              String(value)
-                .toLowerCase()
-                .includes(query)
-          );
-
-        const matchesUploader =
-          !uploader ||
-          file.uploader ===
-            uploader;
-
-        return (
-          matchesQuery &&
-          matchesUploader
-        );
-      }
-    );
-
-  if (
-    sort === "newest"
-  ) {
-
-    output.sort(
-      (a,b) =>
-        b.date - a.date
-    );
-
-  }
-  else if (
-    sort === "oldest"
-  ) {
-
-    output.sort(
-      (a,b) =>
-        a.date - b.date
-    );
-
-  }
-  else if (
-    sort === "name"
-  ) {
-
-    output.sort(
-      (a,b) =>
-        a.displayName
-          .localeCompare(
-            b.displayName
-          )
-    );
-
-  }
-  else if (
-    sort === "largest"
-  ) {
-
-    output.sort(
-      (a,b) =>
-        b.size - a.size
-    );
-
-  }
-  else if (
-    sort === "downloads"
-  ) {
-
-    output.sort(
-      (a,b) =>
-        (b.downloads || 0) -
-        (a.downloads || 0)
-    );
-
-  }
-
-  return output;
-}
-
 
 /* =========================================================
-   FILE CARDS
-========================================================= */
+   FAST DOWNLOAD
+   ========================================================= */
 
-function renderCards() {
+async function downloadStored(file){
 
-  const grid =
-    $("#fileGrid");
+  try{
 
-  const list =
-    filteredFiles();
+    /*
+    If the file is a new record,
+    data is already a Blob.
 
-  grid.innerHTML =
-    "";
+    This is much faster than the
+    previous fetch(dataURL) approach.
+    */
 
-  if (!list.length) {
+    let blob;
 
-    const empty =
-      document.createElement(
-        "div"
-      );
+    if(
+      file.data instanceof Blob
+    ){
 
-    empty.className =
-      "empty";
-
-    empty.innerHTML =
-      `
-        <div class="big">◈</div>
-
-        <h3>
-          ${
-            files.length
-              ? "No matching files"
-              : "No files uploaded yet."
-          }
-        </h3>
-
-        <p class="sub">
-          ${
-            files.length
-              ? "Try another search or filter."
-              : "Be the first to contribute to the project."
-          }
-        </p>
-
-        <button
-          class="btn btn-primary empty-upload"
-        >
-          UPLOAD FILE
-        </button>
-      `;
-
-    grid.appendChild(
-      empty
-    );
-
-    $(".empty-upload")
-      .addEventListener(
-        "click",
-        () =>
-          openUpload("file")
-      );
-
-    return;
-  }
-
-
-  for (
-    const file
-    of list
-  ) {
-
-    const card =
-      document.createElement(
-        "article"
-      );
-
-    card.className =
-      "card";
-
-
-    const top =
-      document.createElement(
-        "div"
-      );
-
-    top.className =
-      "card-top";
-
-
-    const icon =
-      document.createElement(
-        "div"
-      );
-
-    icon.className =
-      "file-icon";
-
-    icon.textContent =
-      isScript(file)
-        ? "</>"
-        : iconFor(
-            file.extension
-          );
-
-
-    const badge =
-      document.createElement(
-        "div"
-      );
-
-    badge.className =
-      "badge";
-
-    badge.textContent =
-      file.extension
-        .toUpperCase();
-
-
-    top.append(
-      icon,
-      badge
-    );
-
-
-    const title =
-      document.createElement(
-        "h3"
-      );
-
-    title.textContent =
-      file.displayName;
-
-
-    const filename =
-      document.createElement(
-        "div"
-      );
-
-    filename.className =
-      "filename";
-
-    filename.textContent =
-      file.name;
-
-
-    const by =
-      document.createElement(
-        "div"
-      );
-
-    by.className =
-      "by";
-
-    by.append(
-      document.createTextNode(
-        "Uploaded by "
-      )
-    );
-
-    const uploader =
-      document.createElement(
-        "b"
-      );
-
-    uploader.textContent =
-      file.uploader;
-
-    by.appendChild(
-      uploader
-    );
-
-
-    const meta =
-      document.createElement(
-        "div"
-      );
-
-    meta.className =
-      "meta";
-
-    meta.innerHTML =
-      `
-        <span>
-          ${esc(
-            file.extension
-              .toUpperCase()
-          )}
-        </span>
-
-        <span>
-          ${formatSize(
-            file.size
-          )}
-        </span>
-      `;
-
-
-    const meta2 =
-      document.createElement(
-        "div"
-      );
-
-    meta2.className =
-      "meta";
-
-    meta2.innerHTML =
-      `
-        <span>
-          Uploaded:
-          ${esc(
-            formatDate(
-              file.date
-            )
-          )}
-        </span>
-
-        <span>
-          ↓ ${Number(
-            file.downloads || 0
-          )}
-        </span>
-      `;
-
-
-    const actions =
-      document.createElement(
-        "div"
-      );
-
-    actions.className =
-      "card-actions";
-
-
-    const view =
-      document.createElement(
-        "button"
-      );
-
-    view.className =
-      "btn btn-small btn-ghost";
-
-    view.textContent =
-      isScript(file)
-        ? "VIEW SCRIPT"
-        : "DETAILS";
-
-    view.onclick =
-      () =>
-        isScript(file)
-          ? openScript(file)
-          : openDetails(file);
-
-
-    const download =
-      document.createElement(
-        "button"
-      );
-
-    download.className =
-      "btn btn-small btn-primary";
-
-    download.textContent =
-      "DOWNLOAD";
-
-    download.onclick =
-      () =>
-        downloadFile(file);
-
-
-    const copy =
-      document.createElement(
-        "button"
-      );
-
-    copy.className =
-      "btn btn-small btn-ghost";
-
-    copy.textContent =
-      "COPY LINK";
-
-    copy.onclick =
-      () =>
-        copyLink(file);
-
-
-    const deleteButton =
-      document.createElement(
-        "button"
-      );
-
-    deleteButton.className =
-      "btn btn-small btn-danger";
-
-    deleteButton.textContent =
-      "DELETE";
-
-    deleteButton.onclick =
-      () =>
-        askDelete(file);
-
-
-    actions.append(
-      view,
-      download,
-      copy,
-      deleteButton
-    );
-
-
-    card.append(
-      top,
-      title,
-      filename,
-      by,
-      meta,
-      meta2,
-      actions
-    );
-
-
-    grid.appendChild(
-      card
-    );
-  }
-}
-
-
-/* =========================================================
-   SEARCH EVENTS
-========================================================= */
-
-$("#searchInput")
-  .addEventListener(
-    "input",
-    () => {
-
-      refresh();
+      blob =
+        file.data;
 
     }
-  );
+    else if(
+      file.script ||
+      file.type === "text/plain"
+    ){
 
-$("#sortSelect")
-  .addEventListener(
-    "change",
-    () =>
-      refresh()
-  );
+      blob =
+        new Blob(
+          [file.data || ""],
+          {
+            type:
+              file.type ||
+              "text/plain"
+          }
+        );
 
-$("#uploaderFilter")
-  .addEventListener(
-    "change",
-    () =>
-      refresh()
-  );
+    }
+    else if(
+      typeof file.data === "string"
+    ){
 
+      /*
+      Backward compatibility for
+      old DataURL records.
+      */
 
-/* =========================================================
-   DOWNLOAD REAL SERVER FILE
-========================================================= */
+      if(
+        file.data.startsWith(
+          "data:"
+        )
+      ){
 
-async function downloadFile(
-  file
-) {
+        const response =
+          await fetch(
+            file.data
+          );
 
-  try {
+        blob =
+          await response.blob();
 
-    const response =
-      await fetch(
-        `/api/files/${encodeURIComponent(file.id)}/download`
-      );
+      }else{
 
-    if (!response.ok) {
-
-      let message =
-        "Download failed.";
-
-      try {
-
-        const data =
-          await response.json();
-
-        message =
-          data.error ||
-          message;
+        throw new Error(
+          "Unsupported stored file format."
+        );
 
       }
-      catch {}
+
+    }
+    else{
 
       throw new Error(
-        message
+        "File data unavailable."
       );
-    }
 
-    const blob =
-      await response.blob();
+    }
 
     const url =
       URL.createObjectURL(
@@ -5016,76 +4560,112 @@ async function downloadFile(
     anchor.download =
       file.name;
 
-    document.body.appendChild(
-      anchor
-    );
+    anchor.style.display =
+      "none";
+
+    document.body
+      .appendChild(anchor);
+
+    /*
+    START DOWNLOAD IMMEDIATELY.
+    */
 
     anchor.click();
 
     anchor.remove();
 
+    /*
+    Release later.
+    */
+
     setTimeout(
-      () =>
-        URL.revokeObjectURL(
-          url
-        ),
-      1000
+      () => URL.revokeObjectURL(url),
+      10000
     );
 
+    /*
+    Do NOT wait for the
+    download counter before
+    telling the user.
+    */
+
     toast(
-      "✓ Download started.",
+      "✓ Download started",
       "ok"
     );
 
     /*
-      Download count is updated
-      by the backend.
+    Update counter in background.
     */
 
-    setTimeout(
-      refresh,
-      500
+    incrementDownload(
+      file.id
+    )
+    .then(
+      () => {
+
+        const local =
+          files.find(
+            item =>
+              item.id === file.id
+          );
+
+        if(local){
+
+          local.downloads =
+            Number(
+              local.downloads || 0
+            ) + 1;
+
+          updateStats();
+
+          renderCards();
+
+        }
+
+      }
+    )
+    .catch(
+      error =>
+        console.warn(
+          "Download counter update failed:",
+          error
+        )
     );
 
-  }
-  catch(error) {
+  }catch(error){
 
-    console.error(
-      error
-    );
+    console.error(error);
 
     toast(
-      error.message ||
-      "Download failed.",
+      "Download could not be started.",
       "err"
     );
-  }
-}
 
+  }
+
+}
 
 /* =========================================================
    COPY LINK
-========================================================= */
+   ========================================================= */
 
-async function copyLink(
-  file
-) {
+async function copyLink(file){
 
   const link =
-    `${location.origin}${location.pathname}#file=${encodeURIComponent(file.id)}`;
+    `${location.href.split("#")[0]}#file=${encodeURIComponent(file.id)}`;
 
-  try {
+  try{
 
     await navigator.clipboard
       .writeText(link);
 
     toast(
-      "✓ Public file link copied.",
+      "✓ Link copied",
       "ok"
     );
 
-  }
-  catch {
+  }catch{
 
     const textarea =
       document.createElement(
@@ -5101,9 +4681,8 @@ async function copyLink(
     textarea.style.opacity =
       "0";
 
-    document.body.appendChild(
-      textarea
-    );
+    document.body
+      .appendChild(textarea);
 
     textarea.select();
 
@@ -5114,215 +4693,158 @@ async function copyLink(
     textarea.remove();
 
     toast(
-      "✓ Public file link copied.",
+      "✓ Link copied",
       "ok"
     );
-  }
-}
 
+  }
+
+}
 
 /* =========================================================
    SCRIPT VIEWER
-========================================================= */
+   ========================================================= */
 
-async function openScript(
-  file
-) {
+function openScript(file){
 
-  try {
+  viewerFile =
+    file;
 
-    const data =
-      await apiJSON(
-        `/api/files/${encodeURIComponent(file.id)}/preview`
-      );
+  $("#viewerTitle")
+    .textContent =
+    file.displayName;
 
-    const script =
-      data.file;
+  $("#viewerMeta")
+    .textContent =
+    `by ${file.uploader} • ${formatSize(file.size)} • ${formatDate(file.date)}`;
 
-    viewerFile =
-      file;
+  $("#viewerFile")
+    .textContent =
+    file.name;
 
-    $("#viewerTitle")
-      .textContent =
-      script.displayName;
+  $("#viewerCode")
+    .textContent =
+    file.data || "";
 
-    $("#viewerMeta")
-      .textContent =
-      `by ${script.uploader} • ${formatSize(script.size)} • ${formatDate(script.date)}`;
+  openModal(
+    "#scriptViewer"
+  );
 
-    $("#viewerFile")
-      .textContent =
-      script.name;
-
-    $("#viewerCode")
-      .textContent =
-      script.content;
-
-    openModal(
-      "#scriptViewer"
-    );
-
-  }
-  catch(error) {
-
-    toast(
-      error.message ||
-      "Unable to preview script.",
-      "err"
-    );
-
-  }
 }
-
 
 $("#viewerDownload")
   .addEventListener(
     "click",
     () => {
 
-      if (
-        viewerFile
-      ) {
-
-        downloadFile(
+      if(viewerFile){
+        downloadStored(
           viewerFile
         );
-
       }
 
     }
   );
 
-
 /* =========================================================
    DETAILS
-========================================================= */
+   ========================================================= */
 
-function openDetails(
-  file
-) {
+function openDetails(file){
 
   $("#detailsTitle")
     .textContent =
     file.displayName;
 
   $("#detailsContent")
-    .innerHTML =
-    "";
+    .innerHTML = "";
 
-  const rows = [
-    [
-      "File Name",
-      file.name
-    ],
-    [
-      "Display Name",
-      file.displayName
-    ],
-    [
-      "Uploaded By",
-      file.uploader
-    ],
-    [
-      "Type",
-      file.type ||
-      "Unknown"
-    ],
-    [
-      "Extension",
-      file.extension
-        .toUpperCase()
-    ],
-    [
-      "Size",
-      formatSize(
-        file.size
-      )
-    ],
-    [
-      "Upload Date",
-      formatDate(
-        file.date
-      )
-    ],
-    [
-      "Downloads",
-      Number(
-        file.downloads || 0
-      )
-    ],
-    [
-      "Script",
-      file.script
-        ? "Yes"
-        : "No"
-    ]
-  ];
+  [
+    ["File Name",file.name],
+    ["Display Name",file.displayName],
+    ["Uploaded By",file.uploader],
+    ["Type",file.type || "Unknown"],
+    ["Extension",file.extension.toUpperCase()],
+    ["Size",formatSize(file.size)],
+    ["Upload Date",formatDate(file.date)],
+    ["Downloads",file.downloads || 0],
+    ["Script",file.script ? "Yes" : "No"],
+    ["Delete Key","Protected"]
+  ]
+  .forEach(
+    ([label,value]) => {
 
-  for (
-    const [label,value]
-    of rows
-  ) {
+      const row =
+        document.createElement(
+          "div"
+        );
 
-    const row =
-      document.createElement(
-        "div"
+      row.className =
+        "preview-row";
+
+      const left =
+        document.createElement(
+          "span"
+        );
+
+      left.textContent =
+        label;
+
+      const right =
+        document.createElement(
+          "b"
+        );
+
+      right.textContent =
+        value;
+
+      row.append(
+        left,
+        right
       );
 
-    row.className =
-      "preview-row";
+      $("#detailsContent")
+        .appendChild(row);
 
-    const left =
-      document.createElement(
-        "span"
-      );
-
-    left.textContent =
-      label;
-
-    const right =
-      document.createElement(
-        "b"
-      );
-
-    right.textContent =
-      value;
-
-    row.append(
-      left,
-      right
-    );
-
-    $("#detailsContent")
-      .appendChild(
-        row
-      );
-  }
+    }
+  );
 
   openModal(
     "#detailsModal"
   );
+
 }
 
+/* =========================================================
+   SCRIPT SUMMARY
+   ========================================================= */
+
+$("#scriptSummary")
+  .innerHTML = `
+    <p class="sub">
+      Use <b>ADD SCRIPT</b> to publish a
+      <code>.txt</code> game-development script.
+      Every script stores its uploader and
+      script name, and its content is displayed
+      as plain text only.
+    </p>
+  `;
 
 /* =========================================================
-   DELETE
-========================================================= */
+   DELETE SYSTEM
+   ========================================================= */
 
-function askDelete(
-  file
-) {
+function askDelete(file){
 
   pendingDelete =
     file;
 
   $("#deleteText")
     .textContent =
-    `Enter the delete key that was generated when "${file.displayName}" was published.`;
+    `You are about to permanently delete "${file.displayName}". Enter the delete key that was shown when this file was published.`;
 
   $("#deleteKeyInput")
-    .value =
-    "";
+    .value = "";
 
   openModal(
     "#deleteModal"
@@ -5334,52 +4856,58 @@ function askDelete(
         .focus(),
     100
   );
-}
 
+}
 
 $("#deleteConfirm")
   .addEventListener(
     "click",
     async () => {
 
-      if (
-        !pendingDelete
-      ) {
+      if(!pendingDelete){
         return;
       }
 
-      const deleteToken =
+      const enteredKey =
         $("#deleteKeyInput")
           .value
           .trim();
 
-      if (!deleteToken) {
+      if(!enteredKey){
 
         toast(
-          "Enter the delete key.",
+          "Enter your delete key.",
           "warn"
         );
 
         return;
+
       }
 
-      const button =
-        $("#deleteConfirm");
+      try{
 
-      const original =
-        button.innerHTML;
+        const valid =
+          await verifyDeleteKey(
+            enteredKey,
+            pendingDelete.deleteKeyHash
+          );
 
-      try {
+        if(!valid){
 
-        button.disabled =
-          true;
+          toast(
+            "❌ Incorrect delete key.",
+            "err"
+          );
 
-        button.innerHTML =
-          `<span class="spinner"></span> DELETING...`;
+          $("#deleteKeyInput")
+            .select();
 
-        await deleteFromServer(
-          pendingDelete.id,
-          deleteToken
+          return;
+
+        }
+
+        await deleteFile(
+          pendingDelete.id
         );
 
         pendingDelete =
@@ -5396,147 +4924,95 @@ $("#deleteConfirm")
           "ok"
         );
 
-      }
-      catch(error) {
+      }catch(error){
+
+        console.error(error);
 
         toast(
-          error.message ||
           "Could not delete the file.",
           "err"
         );
 
       }
-      finally {
 
-        button.disabled =
-          false;
-
-        button.innerHTML =
-          original;
-
-      }
     }
   );
 
-
 /* =========================================================
-   SCRIPT SUMMARY
-========================================================= */
+   STATISTICS
+   ========================================================= */
 
-function updateScriptSummary() {
+function updateStats(){
 
-  const scripts =
+  $("#statFiles")
+    .textContent =
+    files.length;
+
+  $("#statScripts")
+    .textContent =
     files.filter(
-      file =>
-        file.script === true
+      isScript
+    ).length;
+
+  $("#statSize")
+    .textContent =
+    formatSize(
+      files.reduce(
+        (total,file) =>
+          total +
+          (
+            Number(
+              file.size
+            ) || 0
+          ),
+        0
+      )
     );
 
-  $("#scriptSummary")
-    .innerHTML =
-    `
-      <p class="sub">
-        There are
-        <b>${scripts.length}</b>
-        published script resources.
-        Use <b>ADD SCRIPT</b> to publish
-        a .txt game-development script.
-      </p>
-    `;
-}
-
-
-/* =========================================================
-   LIVE SERVER-SENT EVENTS
-========================================================= */
-
-let eventSource = null;
-
-function connectLiveUpdates() {
-
-  if (
-    !("EventSource" in window)
-  ) {
-    return;
-  }
-
-  if (
-    eventSource
-  ) {
-    eventSource.close();
-  }
-
-  eventSource =
-    new EventSource(
-      API.events
+  $("#statDownloads")
+    .textContent =
+    files.reduce(
+      (total,file) =>
+        total +
+        (
+          Number(
+            file.downloads
+          ) || 0
+        ),
+      0
     );
 
-  eventSource.addEventListener(
-    "connected",
-    () => {
-
-      console.log(
-        "PROJECT FILE HUB live connection established."
-      );
-
-    }
-  );
-
-  eventSource.addEventListener(
-    "library-update",
-    () => {
-
-      console.log(
-        "Library updated — refreshing."
-      );
-
-      refresh();
-
-    }
-  );
-
-  eventSource.addEventListener(
-    "download",
-    () => {
-
-      refresh();
-
-    }
-  );
-
-  eventSource.addEventListener(
-    "delete",
-    () => {
-
-      refresh();
-
-    }
-  );
-
-  eventSource.onerror =
-    () => {
-
-      console.warn(
-        "Live connection interrupted. Browser will retry automatically."
-      );
-
-    };
 }
 
-connectLiveUpdates();
+/* =========================================================
+   REFRESH
+   ========================================================= */
 
+async function refresh(){
+
+  files =
+    await getFiles();
+
+  updateStats();
+
+  renderUploaderFilter();
+
+  renderCards();
+
+}
 
 /* =========================================================
-   HASH FILE LINKS
-========================================================= */
+   HASH FILE OPENING
+   ========================================================= */
 
-function openHashFile() {
+function openHashFile(){
 
   const match =
     location.hash.match(
       /^#file=(.+)$/
     );
 
-  if (!match) {
+  if(!match){
     return;
   }
 
@@ -5551,44 +5027,39 @@ function openHashFile() {
         item.id === id
     );
 
-  if (!file) {
+  if(!file){
     return;
   }
 
   setTimeout(
     () => {
 
-      if (
+      if(
         isScript(file)
-      ) {
+      ){
 
-        openScript(
-          file
-        );
+        openScript(file);
 
-      }
-      else {
+      }else{
 
-        openDetails(
-          file
-        );
+        openDetails(file);
 
       }
 
     },
-    100
+    150
   );
+
 }
 
-window.addEventListener(
+addEventListener(
   "hashchange",
   openHashFile
 );
 
-
 /* =========================================================
-   START
-========================================================= */
+   INITIALIZATION
+   ========================================================= */
 
 $("#year")
   .textContent =
@@ -5597,7 +5068,17 @@ $("#year")
 
 showIntro();
 
-refresh();
+refresh()
+  .then(
+    openHashFile
+  )
+  .catch(
+    error =>
+      console.error(
+        "Initialization failed:",
+        error
+      )
+  );
 
 </script>
 
