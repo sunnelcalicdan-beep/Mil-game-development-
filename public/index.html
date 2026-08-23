@@ -1,89 +1,5605 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
-    >
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="PROJECT FILE HUB — MIL Project Game Development public file-sharing workspace.">
+<title>PROJECT FILE HUB • MIL PROJECT</title>
 
-    <title>Project File Hub</title>
+<style>
+:root{
+  --bg:#050611;
+  --bg2:#090b1d;
+  --panel:rgba(13,16,40,.76);
+  --panel2:rgba(19,23,55,.9);
+  --line:rgba(146,121,255,.25);
+  --text:#f5f7ff;
+  --muted:#aeb5d1;
+  --purple:#9b6cff;
+  --blue:#4f8cff;
+  --cyan:#54e9ff;
+  --danger:#ff6685;
+  --ok:#66f5b1;
+  --warning:#ffbd68;
+  --shadow:0 24px 80px rgba(0,0,0,.42);
+  --radius:24px;
+}
 
-    <link rel="stylesheet" href="style.css">
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  overflow-x:hidden;
+  color:var(--text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 12% 15%,
+      rgba(93,59,255,.17),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(0,210,255,.13),
+      transparent 28%
+    ),
+    linear-gradient(
+      135deg,
+      var(--bg),
+      #080918 55%,
+      #050612
+    );
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:-30%;
+  pointer-events:none;
+  z-index:-4;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(137,94,255,.08),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 70% 20%,
+      rgba(40,210,255,.06),
+      transparent 18%
+    );
+
+  animation:drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift{
+  to{
+    transform:translate(4%,3%) scale(1.08);
+  }
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:disabled{
+  cursor:not-allowed;
+  opacity:.55;
+}
+
+::selection{
+  background:rgba(139,91,255,.45);
+}
+
+#particleCanvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  pointer-events:none;
+  z-index:-2;
+  opacity:.72;
+}
+
+.noise{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  opacity:.035;
+
+  background-image:url(
+    "data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"
+  );
+}
+
+.container{
+  width:min(1180px,calc(100% - 36px));
+  margin:auto;
+}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:50;
+
+  background:rgba(4,6,18,.72);
+  backdrop-filter:blur(18px);
+
+  border-bottom:
+    1px solid rgba(164,139,255,.14);
+}
+
+.nav{
+  height:76px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.brand-mark{
+  width:38px;
+  height:38px;
+
+  border-radius:12px;
+
+  position:relative;
+
+  background:
+    conic-gradient(
+      from 180deg,
+      var(--cyan),
+      var(--purple),
+      #3b62ff,
+      var(--cyan)
+    );
+
+  box-shadow:
+    0 0 28px rgba(110,105,255,.32);
+
+  animation:brandSpin 8s linear infinite;
+}
+
+@keyframes brandSpin{
+  to{
+    filter:hue-rotate(360deg);
+  }
+}
+
+.brand-mark:after{
+  content:"";
+  position:absolute;
+  inset:7px;
+
+  border-radius:8px;
+
+  background:#080a18;
+}
+
+.navlinks{
+  display:flex;
+  gap:7px;
+}
+
+.navlinks a{
+  padding:10px 13px;
+
+  color:var(--muted);
+  font-size:.92rem;
+
+  border-radius:12px;
+
+  transition:.25s;
+}
+
+.navlinks a:hover{
+  color:#fff;
+  background:rgba(255,255,255,.06);
+}
+
+.btn{
+  border:1px solid transparent;
+  border-radius:13px;
+
+  padding:12px 17px;
+
+  font-weight:800;
+  color:#fff;
+
+  transition:
+    transform .25s,
+    box-shadow .25s,
+    background .25s;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.btn-primary{
+  background:
+    linear-gradient(
+      110deg,
+      #7045f5,
+      #3d78ff
+    );
+
+  box-shadow:
+    0 10px 32px rgba(82,76,255,.25);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 15px 42px rgba(82,76,255,.38);
+}
+
+.btn-ghost{
+  background:rgba(255,255,255,.045);
+  border-color:var(--line);
+}
+
+.btn-ghost:hover{
+  background:rgba(255,255,255,.09);
+}
+
+.btn-danger{
+  background:rgba(255,74,109,.1);
+  border-color:rgba(255,74,109,.28);
+  color:#ff9db2;
+}
+
+.btn-warning{
+  background:rgba(255,189,104,.1);
+  border-color:rgba(255,189,104,.3);
+  color:#ffd28e;
+}
+
+.btn-small{
+  padding:9px 11px;
+  font-size:.8rem;
+  border-radius:10px;
+}
+
+.hero{
+  padding:90px 0 58px;
+  min-height:570px;
+
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+
+  align-items:center;
+  gap:35px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+
+  color:#cfc9ff;
+
+  font-size:.78rem;
+  font-weight:800;
+
+  letter-spacing:.16em;
+  text-transform:uppercase;
+
+  padding:8px 12px;
+
+  border:1px solid var(--line);
+  border-radius:999px;
+
+  background:rgba(105,75,255,.07);
+}
+
+.dot{
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:var(--cyan);
+
+  box-shadow:
+    0 0 14px var(--cyan);
+
+  animation:pulse 1.8s infinite;
+}
+
+@keyframes pulse{
+  50%{
+    transform:scale(1.45);
+    opacity:.6;
+  }
+}
+
+h1{
+  font-size:clamp(3.3rem,8vw,7rem);
+  line-height:.88;
+
+  letter-spacing:-.065em;
+
+  margin:24px 0 25px;
+
+  max-width:800px;
+}
+
+.gradient-text{
+  background:
+    linear-gradient(
+      90deg,
+      #fff,
+      var(--cyan),
+      #aa77ff,
+      #fff
+    );
+
+  background-size:250% auto;
+
+  -webkit-background-clip:text;
+  background-clip:text;
+
+  color:transparent;
+
+  animation:shine 6s linear infinite;
+}
+
+@keyframes shine{
+  to{
+    background-position:250% center;
+  }
+}
+
+.hero p{
+  color:var(--muted);
+  font-size:1.12rem;
+  line-height:1.75;
+  max-width:650px;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+.orb-stage{
+  height:420px;
+
+  position:relative;
+
+  display:grid;
+  place-items:center;
+}
+
+.orb{
+  width:180px;
+  height:180px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 28%,
+      #fff 0 3%,
+      #72eaff 8%,
+      #7251ff 34%,
+      #171039 68%,
+      transparent 69%
+    );
+
+  box-shadow:
+    0 0 45px #6c63ff,
+    0 0 130px rgba(77,119,255,.5);
+
+  animation:orb 5s ease-in-out infinite;
+}
+
+@keyframes orb{
+  50%{
+    transform:translateY(-15px) scale(1.04);
+    filter:hue-rotate(25deg);
+  }
+}
+
+.ring{
+  position:absolute;
+
+  border:1px solid rgba(112,225,255,.5);
+
+  border-radius:50%;
+
+  transform:
+    rotateX(65deg)
+    rotateZ(20deg);
+
+  animation:
+    spin 12s linear infinite;
+}
+
+.ring.r1{
+  width:290px;
+  height:290px;
+}
+
+.ring.r2{
+  width:360px;
+  height:360px;
+
+  border-color:rgba(162,102,255,.4);
+
+  animation-duration:18s;
+  animation-direction:reverse;
+}
+
+@keyframes spin{
+  to{
+    transform:
+      rotateX(65deg)
+      rotateZ(380deg);
+  }
+}
+
+.code-float{
+  position:absolute;
+
+  color:#b79dff;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+
+  font-size:1.15rem;
+
+  animation:
+    float 5s ease-in-out infinite;
+}
+
+.c1{
+  top:45px;
+  left:15%;
+  animation-delay:-1s;
+}
+
+.c2{
+  right:10%;
+  top:100px;
+  animation-delay:-3s;
+}
+
+.c3{
+  bottom:60px;
+  left:20%;
+  animation-delay:-2s;
+}
+
+.c4{
+  right:20%;
+  bottom:90px;
+  animation-delay:-4s;
+}
+
+@keyframes float{
+  50%{
+    transform:
+      translateY(-18px)
+      rotate(4deg);
+
+    opacity:.55;
+  }
+}
+
+section{
+  padding:55px 0;
+}
+
+.section-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:20px;
+
+  margin-bottom:22px;
+}
+
+.kicker{
+  color:#8f9ac5;
+
+  font-size:.75rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+
+  font-weight:800;
+}
+
+h2{
+  font-size:clamp(1.8rem,4vw,3rem);
+  letter-spacing:-.04em;
+  margin:6px 0;
+}
+
+.sub{
+  color:var(--muted);
+  margin:0;
+  line-height:1.6;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.stat{
+  padding:24px;
+
+  border:
+    1px solid var(--line);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(19,23,54,.74),
+      rgba(10,12,30,.6)
+    );
+
+  border-radius:20px;
+
+  box-shadow:var(--shadow);
+}
+
+.stat strong{
+  font-size:2rem;
+  display:block;
+  margin-top:8px;
+}
+
+.stat span{
+  font-size:.72rem;
+  letter-spacing:.12em;
+  color:#929bbb;
+}
+
+.library-tools{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+
+.search{
+  flex:1;
+  min-width:230px;
+}
+
+input,
+select{
+  width:100%;
+
+  border:
+    1px solid rgba(145,132,220,.24);
+
+  background:
+    rgba(5,7,21,.75);
+
+  color:#fff;
+
+  border-radius:13px;
+
+  padding:13px 14px;
+
+  outline:none;
+
+  transition:.2s;
+}
+
+input:focus,
+select:focus{
+  border-color:#8067ff;
+
+  box-shadow:
+    0 0 0 3px rgba(128,103,255,.12);
+}
+
+.library-tools .control{
+  min-width:160px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.card{
+  position:relative;
+  overflow:hidden;
+
+  padding:21px;
+
+  border:
+    1px solid rgba(145,132,220,.2);
+
+  background:
+    linear-gradient(
+      150deg,
+      rgba(18,21,49,.78),
+      rgba(8,10,27,.8)
+    );
+
+  border-radius:20px;
+
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.25);
+
+  transition:.3s;
+}
+
+.card:before{
+  content:"";
+
+  position:absolute;
+  inset:-80%;
+
+  background:
+    conic-gradient(
+      transparent,
+      rgba(84,233,255,.08),
+      transparent,
+      rgba(155,108,255,.1),
+      transparent
+    );
+
+  animation:
+    cardGlow 8s linear infinite;
+
+  pointer-events:none;
+}
+
+@keyframes cardGlow{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+.card:hover{
+  transform:translateY(-4px);
+
+  border-color:
+    rgba(124,103,255,.46);
+
+  box-shadow:
+    0 25px 70px rgba(46,38,120,.25);
+}
+
+.card > *{
+  position:relative;
+  z-index:1;
+}
+
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.file-icon{
+  width:48px;
+  height:48px;
+
+  border-radius:14px;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    rgba(109,84,255,.12);
+
+  border:
+    1px solid rgba(130,111,255,.2);
+
+  font-size:1.25rem;
+}
+
+.badge{
+  font-size:.7rem;
+  color:#b8c0de;
+
+  border:
+    1px solid rgba(153,158,200,.18);
+
+  padding:6px 8px;
+
+  border-radius:999px;
+
+  height:max-content;
+}
+
+.card h3{
+  margin:17px 0 5px;
+  font-size:1.1rem;
+}
+
+.filename{
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+
+  color:#aeb7d5;
+  font-size:.82rem;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.by{
+  margin:13px 0;
+
+  color:#aeb5d1;
+  font-size:.86rem;
+}
+
+.by b{
+  background:
+    linear-gradient(
+      90deg,
+      var(--cyan),
+      #bd85ff
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+
+  color:transparent;
+}
+
+.meta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+
+  color:#7f89ac;
+  font-size:.75rem;
+
+  margin:15px 0;
+}
+
+.card-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.empty{
+  grid-column:1/-1;
+
+  text-align:center;
+
+  padding:65px 20px;
+
+  border:
+    1px dashed rgba(142,130,220,.3);
+
+  border-radius:22px;
+
+  background:
+    rgba(12,14,34,.45);
+}
+
+.empty .big{
+  font-size:2.3rem;
+  margin-bottom:8px;
+}
+
+.guide{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.panel{
+  padding:26px;
+
+  border:
+    1px solid var(--line);
+
+  background:var(--panel);
+
+  border-radius:var(--radius);
+
+  box-shadow:var(--shadow);
+}
+
+.steps{
+  display:grid;
+  gap:13px;
+}
+
+.step{
+  display:flex;
+  gap:14px;
+}
+
+.num{
+  min-width:38px;
+  height:38px;
+
+  border-radius:11px;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    rgba(116,78,255,.15);
+
+  color:#c6b7ff;
+
+  font-weight:900;
+}
+
+.step b{
+  display:block;
+  margin-bottom:3px;
+}
+
+.step span{
+  color:var(--muted);
+  font-size:.9rem;
+  line-height:1.5;
+}
+
+pre{
+  margin:18px 0 0;
+
+  padding:20px;
+
+  overflow:auto;
+  max-height:320px;
+
+  border:
+    1px solid rgba(125,142,195,.16);
+
+  border-radius:15px;
+
+  background:#050712;
+
+  color:#c8d3ef;
+
+  font:
+    13px/1.7
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+
+.team{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:18px;
+}
+
+.member{
+  padding:9px 12px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:
+    1px solid rgba(145,132,220,.17);
+
+  color:#c9cee0;
+
+  font-size:.82rem;
+
+  transition:.25s;
+}
+
+.member:hover{
+  transform:translateY(-2px);
+
+  border-color:
+    rgba(84,233,255,.4);
+
+  color:#fff;
+}
+
+footer{
+  padding:55px 0 35px;
+
+  border-top:
+    1px solid rgba(143,126,222,.14);
+
+  margin-top:30px;
+
+  color:#8992b0;
+}
+
+.footer-title{
+  font-weight:900;
+  color:#fff;
+  letter-spacing:.08em;
+}
+
+.footer-row{
+  display:flex;
+  justify-content:space-between;
+  gap:25px;
+  flex-wrap:wrap;
+}
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+
+  background:
+    rgba(2,3,12,.78);
+
+  backdrop-filter:blur(12px);
+
+  z-index:100;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:18px;
+}
+
+.modal-backdrop.open{
+  display:flex;
+
+  animation:
+    fade .2s ease;
+}
+
+.modal{
+  width:min(700px,100%);
+  max-height:calc(100vh - 36px);
+
+  overflow:auto;
+
+  position:relative;
+
+  border-radius:25px;
+
+  border:
+    1px solid rgba(151,122,255,.35);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18,21,50,.97),
+      rgba(6,8,22,.97)
+    );
+
+  box-shadow:
+    0 30px 120px rgba(0,0,0,.65);
+
+  padding:26px;
+
+  animation:
+    scale .25s ease;
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+  }
+
+  to{
+    opacity:1;
+  }
+}
+
+@keyframes scale{
+  from{
+    transform:scale(.94);
+    opacity:0;
+  }
+
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+.modal:before{
+  content:"";
+
+  position:absolute;
+  inset:-1px;
+
+  border-radius:inherit;
+
+  padding:1px;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent,
+      #7e5dff,
+      #44e5ff,
+      transparent
+    );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite:xor;
+
+  mask-composite:exclude;
+
+  opacity:.65;
+
+  pointer-events:none;
+
+  animation:
+    borderflow 5s linear infinite;
+}
+
+@keyframes borderflow{
+  to{
+    filter:hue-rotate(90deg);
+  }
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:start;
+  margin-bottom:20px;
+}
+
+.close{
+  border:0;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+
+  border-radius:10px;
+
+  width:38px;
+  height:38px;
+}
+
+.dropzone{
+  border:
+    1px dashed rgba(120,113,255,.5);
+
+  border-radius:18px;
+
+  padding:32px;
+
+  text-align:center;
+
+  background:
+    rgba(97,72,255,.055);
+
+  transition:.25s;
+}
+
+.dropzone.drag{
+  background:
+    rgba(76,209,255,.08);
+
+  border-color:var(--cyan);
+
+  transform:scale(1.01);
+}
+
+.dropzone input{
+  display:none;
+}
+
+.drop-title{
+  font-size:1.1rem;
+  font-weight:850;
+}
+
+.drop-sub{
+  color:var(--muted);
+  font-size:.85rem;
+  margin:8px 0 15px;
+}
+
+.form-grid{
+  display:grid;
+  gap:15px;
+  margin-top:18px;
+}
+
+.field label{
+  display:block;
+
+  font-size:.78rem;
+
+  color:#aeb6d4;
+
+  margin-bottom:7px;
+}
+
+.preview{
+  display:none;
+
+  margin-top:18px;
+
+  padding:15px;
+
+  border:
+    1px solid rgba(145,132,220,.18);
+
+  border-radius:15px;
+
+  background:
+    rgba(0,0,0,.18);
+}
+
+.preview.show{
+  display:block;
+}
+
+.preview-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+
+  padding:7px 0;
+
+  color:#b2bad4;
+  font-size:.85rem;
+}
+
+.preview-row b{
+  color:#fff;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  margin-top:20px;
+}
+
+.confirm{
+  display:none;
+}
+
+.confirm.show{
+  display:block;
+}
+
+.confirm-card{
+  padding:16px;
+
+  border-radius:15px;
+
+  background:
+    rgba(0,0,0,.2);
+
+  border:
+    1px solid rgba(146,121,255,.18);
+}
+
+.code-viewer{
+  background:#04050d;
+
+  border:
+    1px solid rgba(126,141,187,.17);
+
+  border-radius:15px;
+
+  overflow:hidden;
+
+  margin-top:16px;
+}
+
+.code-bar{
+  padding:9px 13px;
+
+  border-bottom:
+    1px solid rgba(126,141,187,.13);
+
+  color:#8490b5;
+
+  font-size:.75rem;
+}
+
+.code-viewer pre{
+  border:0;
+  border-radius:0;
+  margin:0;
+  max-height:50vh;
+}
+
+.spinner{
+  width:17px;
+  height:17px;
+
+  border:
+    2px solid rgba(255,255,255,.25);
+
+  border-top-color:#fff;
+
+  border-radius:50%;
+
+  animation:
+    spin2 .7s linear infinite;
+
+  display:inline-block;
+}
+
+@keyframes spin2{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+.toast-wrap{
+  position:fixed;
+
+  right:18px;
+  bottom:18px;
+
+  z-index:200;
+
+  display:grid;
+  gap:10px;
+
+  width:min(390px,calc(100% - 36px));
+}
+
+.toast{
+  padding:13px 15px;
+
+  border-radius:14px;
+
+  border:
+    1px solid rgba(147,132,255,.25);
+
+  background:
+    rgba(12,15,34,.94);
+
+  backdrop-filter:blur(15px);
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.45);
+
+  animation:
+    toastIn .3s ease;
+
+  color:#e8ebf7;
+
+  font-size:.86rem;
+}
+
+.toast.ok{
+  border-color:
+    rgba(102,245,177,.3);
+}
+
+.toast.warn{
+  border-color:
+    rgba(255,178,89,.3);
+}
+
+.toast.err{
+  border-color:
+    rgba(255,102,133,.35);
+}
+
+@keyframes toastIn{
+  from{
+    transform:translateY(18px);
+    opacity:0;
+  }
+
+  to{
+    transform:none;
+    opacity:1;
+  }
+}
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.intro{
+  z-index:300;
+}
+
+.intro .modal{
+  width:min(780px,100%);
+  text-align:center;
+  padding:48px 34px;
+}
+
+.intro h2{
+  font-size:
+    clamp(2.3rem,7vw,4.8rem);
+
+  line-height:.92;
+
+  margin:12px 0;
+}
+
+.intro p{
+  color:#c0c7df;
+  line-height:1.8;
+
+  max-width:630px;
+
+  margin:18px auto;
+}
+
+.intro-team{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+
+  gap:7px;
+
+  margin:22px auto 28px;
+
+  max-width:700px;
+}
+
+.intro-team span{
+  font-size:.75rem;
+
+  color:#cdd2e4;
+
+  padding:7px 10px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.04);
+
+  border:
+    1px solid rgba(255,255,255,.06);
+}
+
+/* =========================================================
+   DELETE KEY WARNING
+========================================================= */
+
+.warning-modal{
+  width:min(620px,100%);
+  text-align:center;
+}
+
+.warning-icon{
+  width:90px;
+  height:90px;
+
+  margin:0 auto 18px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:50%;
+
+  font-size:3rem;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,190,90,.28),
+      rgba(255,70,110,.06) 65%,
+      transparent 70%
+    );
+
+  border:
+    1px solid rgba(255,189,104,.45);
+
+  box-shadow:
+    0 0 35px rgba(255,150,80,.2);
+
+  animation:
+    warningPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes warningPulse{
+  from{
+    transform:scale(.94);
+    box-shadow:
+      0 0 20px rgba(255,150,80,.15);
+  }
+
+  to{
+    transform:scale(1.06);
+    box-shadow:
+      0 0 45px rgba(255,150,80,.4);
+  }
+}
+
+.warning-title{
+  color:#ffd08c;
+
+  font-size:
+    clamp(1.7rem,5vw,2.6rem);
+
+  font-weight:950;
+
+  letter-spacing:-.04em;
+}
+
+.delete-key{
+  margin:20px 0;
+
+  padding:18px;
+
+  border:
+    1px solid rgba(255,189,104,.3);
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,174,77,.08),
+      rgba(155,108,255,.08)
+    );
+
+  font:
+    700
+    clamp(.95rem,3vw,1.2rem)
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+
+  color:#fff;
+
+  overflow-wrap:anywhere;
+
+  user-select:all;
+}
+
+.warning-text{
+  color:#c4c9dc;
+  line-height:1.7;
+}
+
+.warning-important{
+  color:#ff9cad;
+  font-weight:900;
+}
+
+/* =========================================================
+   ONLINE INDICATOR
+========================================================= */
+
+.online{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+
+  color:#86f7bd;
+
+  font-size:.72rem;
+  font-weight:800;
+
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.online-dot{
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:#66f5b1;
+
+  box-shadow:
+    0 0 12px #66f5b1;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+  .hero{
+    grid-template-columns:1fr;
+    padding-top:65px;
+  }
+
+  .orb-stage{
+    height:300px;
+    order:-1;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .guide{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:650px){
+
+  .container{
+    width:min(100% - 24px,1180px);
+  }
+
+  .nav{
+    height:68px;
+  }
+
+  .navlinks{
+    display:none;
+  }
+
+  .brand{
+    font-size:.86rem;
+  }
+
+  .hero{
+    min-height:auto;
+    padding:55px 0 35px;
+  }
+
+  .hero p{
+    font-size:1rem;
+  }
+
+  .orb-stage{
+    height:250px;
+  }
+
+  .orb{
+    width:125px;
+    height:125px;
+  }
+
+  .ring.r1{
+    width:205px;
+    height:205px;
+  }
+
+  .ring.r2{
+    width:250px;
+    height:250px;
+  }
+
+  .c1{
+    left:5%;
+  }
+
+  .c2{
+    right:2%;
+  }
+
+  .grid,
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .section-head{
+    align-items:start;
+    flex-direction:column;
+  }
+
+  .library-tools{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .library-tools .control{
+    min-width:0;
+  }
+
+  .intro .modal{
+    padding:36px 18px;
+  }
+
+  .modal{
+    padding:20px;
+  }
+
+  .modal-actions{
+    flex-wrap:wrap;
+  }
+
+  .modal-actions .btn{
+    flex:1;
+  }
+
+  .footer-row{
+    display:block;
+  }
+
+  .footer-row > div + div{
+    margin-top:20px;
+  }
+
+  .card-actions .btn{
+    flex:1 1 calc(50% - 7px);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *:before,
+  *:after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+  }
+}
+</style>
 </head>
 
-<body class="landing-page">
+<body>
 
-    <canvas id="particleCanvas"></canvas>
+<canvas id="particleCanvas" aria-hidden="true"></canvas>
+<div class="noise"></div>
 
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
+<header class="header">
+  <div class="container nav">
 
-    <main class="landing-shell">
+    <a
+      class="brand"
+      href="#home"
+      aria-label="Project File Hub home"
+    >
+      <span class="brand-mark"></span>
+      <span>PROJECT FILE HUB</span>
+    </a>
 
-        <section class="hero-card">
+    <nav class="navlinks" aria-label="Main navigation">
+      <a href="#home">Home</a>
+      <a href="#library">Public Files</a>
+      <a href="#scripts">Scripts</a>
+      <a href="#guide">Guide</a>
+      <a href="#team">Team</a>
+    </nav>
 
-            <div class="hero-glow"></div>
+    <button
+      class="btn btn-primary"
+      id="headerUpload"
+    >
+      ＋ UPLOAD
+    </button>
 
-            <div class="eyebrow">
-                MIL PROJECT · GAME DEVELOPMENT
-            </div>
+  </div>
+</header>
 
-            <h1>
-                WELCOME TO
-                <span>PROJECT FILE HUB</span>
-            </h1>
+<main id="home">
 
-            <p class="handled-title">
-                This website is handled by:
-            </p>
+<section class="hero container">
 
-            <div class="people-list">
+  <div>
 
-                <span class="person featured">
-                    Sunnel John Rebano 🧑🏻‍🔧
-                </span>
+    <span class="eyebrow">
+      <i class="dot"></i>
+      MIL PROJECT • GAME DEVELOPMENT
+    </span>
 
-                <span class="person">Rhea Kim</span>
-                <span class="person">Kimberly</span>
-                <span class="person">Charles Tiong</span>
-                <span class="person">Reyden Osia</span>
-                <span class="person">Mc Lawrence Conzaga</span>
-                <span class="person">Kimmy Clavo</span>
-                <span class="person">Dianne Gadia</span>
-                <span class="person">Carl Caabay</span>
-                <span class="person">Mark Camaso</span>
-                <span class="person">Maynard Cabada</span>
-                <span class="person">Mark Anthony Canta</span>
+    <h1>
+      <span class="gradient-text">
+        UPLOAD.<br>
+        SHARE.<br>
+        BUILD.
+      </span>
+    </h1>
 
-            </div>
+    <p>
+      A professional workspace for sharing
+      game-development files, resources,
+      custom scripts, and project assets.
+    </p>
 
-            <p class="project-description">
-                For MIL Project Game Development.
-            </p>
+    <div class="actions">
 
-            <button
-                class="enter-button"
-                id="enterProject"
-                type="button"
-            >
-                <span>ENTER PROJECT</span>
-                <strong>→</strong>
-            </button>
+      <button
+        class="btn btn-primary"
+        id="heroUpload"
+      >
+        UPLOAD FILE
+      </button>
 
-        </section>
+      <button
+        class="btn btn-ghost"
+        id="heroScript"
+      >
+        ＋ ADD SCRIPT
+      </button>
 
-    </main>
+    </div>
 
-    <script src="particle.js"></script>
+    <div style="margin-top:20px">
+      <span class="online">
+        <span class="online-dot"></span>
+        LIVE PUBLIC LIBRARY
+      </span>
+    </div>
 
-    <script>
-        document
-            .getElementById("enterProject")
-            .addEventListener("click", () => {
-                window.location.href = "hub.html";
-            });
-    </script>
+  </div>
+
+  <div
+    class="orb-stage"
+    aria-hidden="true"
+  >
+
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="orb"></div>
+
+    <span class="code-float c1">&lt;/&gt;</span>
+    <span class="code-float c2">{ }</span>
+    <span class="code-float c3">#game</span>
+    <span class="code-float c4">01</span>
+
+  </div>
+
+</section>
+
+
+<section class="container">
+
+  <div class="section-head">
+
+    <div>
+      <div class="kicker">
+        Live workspace
+      </div>
+
+      <h2>
+        Project statistics
+      </h2>
+    </div>
+
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <span>PUBLIC FILES</span>
+      <strong id="statFiles">0</strong>
+    </div>
+
+    <div class="stat">
+      <span>SCRIPTS</span>
+      <strong id="statScripts">0</strong>
+    </div>
+
+    <div class="stat">
+      <span>TOTAL SIZE</span>
+      <strong id="statSize">0 B</strong>
+    </div>
+
+    <div class="stat">
+      <span>DOWNLOADS</span>
+      <strong id="statDownloads">0</strong>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="container"
+  id="library"
+>
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="kicker">
+        Shared resources
+      </div>
+
+      <h2>
+        PUBLIC FILE LIBRARY
+      </h2>
+
+      <p class="sub">
+        Files uploaded by members of the project.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="library-tools">
+
+    <div class="search">
+
+      <label
+        class="sr-only"
+        for="searchInput"
+      >
+        Search public files
+      </label>
+
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search public files or uploader..."
+        aria-label="Search public files or uploader"
+      >
+
+    </div>
+
+    <div class="control">
+
+      <select
+        id="sortSelect"
+        aria-label="Sort files"
+      >
+
+        <option value="newest">
+          Newest
+        </option>
+
+        <option value="oldest">
+          Oldest
+        </option>
+
+        <option value="name">
+          Name A-Z
+        </option>
+
+        <option value="largest">
+          Largest
+        </option>
+
+        <option value="downloads">
+          Most Downloaded
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="control">
+
+      <select
+        id="uploaderFilter"
+        aria-label="Filter by uploader"
+      >
+
+        <option value="">
+          All Uploaders
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+  <div
+    class="grid"
+    id="fileGrid"
+  ></div>
+
+</section>
+
+
+<section
+  class="container"
+  id="scripts"
+>
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="kicker">
+        Code resources
+      </div>
+
+      <h2>
+        SCRIPT HUB
+      </h2>
+
+      <p class="sub">
+        Text-based game-development scripts,
+        safely stored and previewed without execution.
+      </p>
+
+    </div>
+
+    <button
+      class="btn btn-primary"
+      id="scriptSectionBtn"
+    >
+      ＋ ADD SCRIPT
+    </button>
+
+  </div>
+
+  <div
+    class="panel"
+    id="scriptSummary"
+  ></div>
+
+</section>
+
+
+<section
+  class="container"
+  id="guide"
+>
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="kicker">
+        Workflow
+      </div>
+
+      <h2>
+        HOW TO ADD A SCRIPT
+      </h2>
+
+    </div>
+
+  </div>
+
+  <div class="guide">
+
+    <div class="panel">
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="num">01</div>
+          <div>
+            <b>CREATE YOUR SCRIPT</b>
+            <span>
+              Write your game-development script
+              and save it as a text file.
+            </span>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">02</div>
+          <div>
+            <b>SELECT ADD SCRIPT</b>
+            <span>
+              Choose your .txt file from
+              the upload center.
+            </span>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">03</div>
+          <div>
+            <b>NAME YOUR SCRIPT</b>
+            <span>
+              Give it a clear project name,
+              such as Door Script or Enemy AI.
+            </span>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">04</div>
+          <div>
+            <b>PUBLISH</b>
+            <span>
+              Review the uploader, metadata,
+              and safe text preview before publishing.
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="kicker">
+        Example script
+      </div>
+
+      <h3>
+        Door Script
+      </h3>
+
+      <pre>extends Area3D
+
+func _ready():
+    print("Door ready")
+
+func open_door():
+    print("Door opened")</pre>
+
+      <p
+        class="sub"
+        style="margin-top:15px"
+      >
+        Uploaded scripts are stored as text
+        and are never automatically executed
+        by the website.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="container"
+  id="team"
+>
+
+  <div class="panel">
+
+    <div class="kicker">
+      MIL Project
+    </div>
+
+    <h2>
+      TEAM / PROJECT INFORMATION
+    </h2>
+
+    <p class="sub">
+      PROJECT FILE HUB is a public browser-based
+      file-sharing workspace for the MIL Project
+      Game Development team.
+    </p>
+
+    <div
+      class="team"
+      id="teamList"
+    ></div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+  <div class="container footer-row">
+
+    <div>
+      <div class="footer-title">
+        PROJECT FILE HUB
+      </div>
+
+      <div>
+        MIL Project • Game Development
+      </div>
+    </div>
+
+    <div>
+      Created by Sunnel John Rebano
+    </div>
+
+    <div>
+      © <span id="year"></span>
+      Project File Hub
+    </div>
+
+  </div>
+
+</footer>
+
+
+<!-- =====================================================
+     INTRO
+===================================================== -->
+
+<div
+  class="modal-backdrop intro"
+  id="introModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="introTitle"
+>
+
+  <div class="modal">
+
+    <div class="kicker">
+      MIL PROJECT • GAME DEVELOPMENT
+    </div>
+
+    <h2 id="introTitle">
+
+      <span class="gradient-text">
+        WELCOME TO<br>
+        PROJECT FILE HUB
+      </span>
+
+    </h2>
+
+    <p>
+      This website is handled by:
+      <br>
+
+      <b>
+        Sunnel John Rebano 🧑🏻‍🔧,
+        Rhea Kim,
+        Kimberly,
+        Charles Tiong,
+        Reyden Osia,
+        Mc Lawrence Conzaga,
+        Kimmy Clavo,
+        Dianne Gadia,
+        Carl Caabay,
+        Mark Camaso,
+        Maynard Cabada,
+        Mark Anthony Canta.
+      </b>
+
+      <br><br>
+
+      For MIL Project Game Development.
+    </p>
+
+    <div
+      class="intro-team"
+      id="introTeam"
+    ></div>
+
+    <button
+      class="btn btn-primary"
+      id="enterProject"
+    >
+      ENTER PROJECT
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     UPLOAD MODAL
+===================================================== -->
+
+<div
+  class="modal-backdrop"
+  id="uploadModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="uploadTitle"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+
+        <div
+          class="kicker"
+          id="uploadKicker"
+        >
+          UPLOAD CENTER
+        </div>
+
+        <h2 id="uploadTitle">
+          Upload a project file
+        </h2>
+
+        <p class="sub">
+          Maximum file size: 50 MB
+        </p>
+
+      </div>
+
+      <button
+        class="close"
+        data-close="uploadModal"
+        aria-label="Close upload dialog"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div id="uploadForm">
+
+      <div
+        class="dropzone"
+        id="dropzone"
+      >
+
+        <div style="font-size:2rem">
+          ⇧
+        </div>
+
+        <div class="drop-title">
+          Drop a file here
+        </div>
+
+        <div class="drop-sub">
+          or choose a file from your device
+        </div>
+
+        <label
+          class="btn btn-ghost"
+          for="fileInput"
+        >
+          SELECT FILE
+        </label>
+
+        <input
+          id="fileInput"
+          type="file"
+          aria-label="Select a file"
+        >
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label for="uploaderInput">
+            WHO UPLOADED THIS FILE? <b>*</b>
+          </label>
+
+          <input
+            id="uploaderInput"
+            maxlength="80"
+            placeholder="Enter your name"
+            autocomplete="name"
+          >
+
+        </div>
+
+
+        <div
+          class="field"
+          id="displayNameField"
+        >
+
+          <label for="displayNameInput">
+            DISPLAY NAME (OPTIONAL)
+          </label>
+
+          <input
+            id="displayNameInput"
+            maxlength="100"
+            placeholder="Example: House Model"
+          >
+
+        </div>
+
+
+        <div
+          class="field"
+          id="scriptNameField"
+          style="display:none"
+        >
+
+          <label for="scriptNameInput">
+            WHAT IS THE NAME OF YOUR SCRIPT? <b>*</b>
+          </label>
+
+          <input
+            id="scriptNameInput"
+            maxlength="100"
+            placeholder="Example: Door Script"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="preview"
+        id="filePreview"
+      ></div>
+
+
+      <div class="modal-actions">
+
+        <button
+          class="btn btn-ghost"
+          data-close="uploadModal"
+        >
+          CANCEL
+        </button>
+
+        <button
+          class="btn btn-primary"
+          id="reviewBtn"
+        >
+          REVIEW & PUBLISH
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="confirm"
+      id="confirmPanel"
+    >
+
+      <div class="kicker">
+        READY TO PUBLISH
+      </div>
+
+      <h2 id="confirmTitle">
+        Review file
+      </h2>
+
+      <div
+        class="confirm-card"
+        id="confirmCard"
+      ></div>
+
+      <div id="confirmScriptPreview"></div>
+
+      <div class="modal-actions">
+
+        <button
+          class="btn btn-ghost"
+          id="backReview"
+        >
+          BACK
+        </button>
+
+        <button
+          class="btn btn-primary"
+          id="publishBtn"
+        >
+          PUBLISH
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     DELETE KEY WARNING
+===================================================== -->
+
+<div
+  class="modal-backdrop"
+  id="deleteKeyWarning"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="deleteKeyTitle"
+>
+
+  <div class="modal warning-modal">
+
+    <div class="warning-icon">
+      ⚠️
+    </div>
+
+    <div class="kicker">
+      IMPORTANT • SAVE THIS KEY
+    </div>
+
+    <h2
+      class="warning-title"
+      id="deleteKeyTitle"
+    >
+      Your file is published!
+    </h2>
+
+    <p class="warning-text">
+      Your upload is now public.
+      The server generated a unique delete key
+      for this file.
+    </p>
+
+    <div
+      class="delete-key"
+      id="generatedDeleteKey"
+    ></div>
+
+    <p class="warning-text">
+      <span class="warning-important">
+        ⚠ WARNING:
+      </span>
+
+      This key is required to remove your
+      uploaded file later.
+      Save it somewhere safe.
+      It cannot be recovered after this message.
+    </p>
+
+    <div class="modal-actions">
+
+      <button
+        class="btn btn-warning"
+        id="copyDeleteKey"
+      >
+        COPY KEY
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="closeDeleteKeyWarning"
+      >
+        I SAVED IT
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     SCRIPT VIEWER
+===================================================== -->
+
+<div
+  class="modal-backdrop"
+  id="scriptViewer"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="viewerTitle"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+
+        <div class="kicker">
+          SCRIPT VIEWER
+        </div>
+
+        <h2 id="viewerTitle">
+          Script
+        </h2>
+
+        <p
+          class="sub"
+          id="viewerMeta"
+        ></p>
+
+      </div>
+
+      <button
+        class="close"
+        data-close="scriptViewer"
+        aria-label="Close script viewer"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="code-viewer">
+
+      <div
+        class="code-bar"
+        id="viewerFile"
+      ></div>
+
+      <pre id="viewerCode"></pre>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        class="btn btn-ghost"
+        data-close="scriptViewer"
+      >
+        CLOSE
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="viewerDownload"
+      >
+        DOWNLOAD
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     DETAILS
+===================================================== -->
+
+<div
+  class="modal-backdrop"
+  id="detailsModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="detailsTitle"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+
+        <div class="kicker">
+          FILE DETAILS
+        </div>
+
+        <h2 id="detailsTitle">
+          File
+        </h2>
+
+      </div>
+
+      <button
+        class="close"
+        data-close="detailsModal"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="detailsContent"></div>
+
+    <div class="modal-actions">
+
+      <button
+        class="btn btn-ghost"
+        data-close="detailsModal"
+      >
+        CLOSE
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     DELETE
+===================================================== -->
+
+<div
+  class="modal-backdrop"
+  id="deleteModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="deleteTitle"
+>
+
+  <div
+    class="modal"
+    style="max-width:520px"
+  >
+
+    <div class="kicker">
+      SECURE DELETE
+    </div>
+
+    <h2 id="deleteTitle">
+      Delete this file?
+    </h2>
+
+    <p
+      class="sub"
+      id="deleteText"
+    ></p>
+
+    <div
+      class="field"
+      style="margin-top:18px"
+    >
+
+      <label for="deleteKeyInput">
+        ENTER DELETE KEY
+      </label>
+
+      <input
+        id="deleteKeyInput"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Example: Sunnel-John-Rebano-mil-XXXXXXXXXX"
+      >
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        class="btn btn-ghost"
+        data-close="deleteModal"
+      >
+        CANCEL
+      </button>
+
+      <button
+        class="btn btn-danger"
+        id="deleteConfirm"
+      >
+        DELETE FILE
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div
+  class="toast-wrap"
+  id="toastWrap"
+  aria-live="polite"
+></div>
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const API = {
+  files: "/api/files",
+  stats: "/api/stats",
+  uploaders: "/api/uploaders",
+  events: "/api/events"
+};
+
+const MAX_FILE_SIZE =
+  50 * 1024 * 1024;
+
+const ALLOWED_EXTENSIONS =
+  new Set([
+    "txt",
+    "json",
+    "gd",
+    "js",
+    "css",
+    "html",
+    "glb",
+    "gltf",
+    "png",
+    "jpg",
+    "jpeg",
+    "webp",
+    "wav",
+    "mp3",
+    "zip"
+  ]);
+
+const TEAM = [
+  "Sunnel John Rebano 🧑🏻‍🔧",
+  "Rhea Kim",
+  "Kimberly",
+  "Charles Tiong",
+  "Reyden Osia",
+  "Mc Lawrence Conzaga",
+  "Kimmy Clavo",
+  "Dianne Gadia",
+  "Carl Caabay",
+  "Mark Camaso",
+  "Maynard Cabada",
+  "Mark Anthony Canta"
+];
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ =
+  selector =>
+    document.querySelector(selector);
+
+const $$ =
+  selector =>
+    [...document.querySelectorAll(selector)];
+
+const esc =
+  value =>
+    String(value ?? "")
+      .replace(
+        /[&<>"']/g,
+        character =>
+          ({
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#039;"
+          }[character])
+      );
+
+const ext =
+  name =>
+    name.includes(".")
+      ? name
+          .split(".")
+          .pop()
+          .toLowerCase()
+      : "";
+
+const formatSize =
+  bytes => {
+
+    if (!bytes) {
+      return "0 B";
+    }
+
+    const units =
+      ["B","KB","MB","GB"];
+
+    let index = 0;
+    let value = Number(bytes);
+
+    while (
+      value >= 1024 &&
+      index < units.length - 1
+    ) {
+      value /= 1024;
+      index++;
+    }
+
+    return `${
+      value >= 10 || index === 0
+        ? value.toFixed(0)
+        : value.toFixed(1)
+    } ${units[index]}`;
+  };
+
+const formatDate =
+  timestamp =>
+    new Intl.DateTimeFormat(
+      undefined,
+      {
+        month:"short",
+        day:"2-digit",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    ).format(
+      new Date(timestamp)
+    );
+
+const iconFor =
+  extension =>
+    ({
+      png:"🖼️",
+      jpg:"🖼️",
+      jpeg:"🖼️",
+      webp:"🖼️",
+      mp3:"🎵",
+      wav:"🎵",
+      zip:"📦",
+      glb:"🧊",
+      gltf:"🧊",
+      json:"{}",
+      js:"</>",
+      css:"#",
+      html:"<>",
+      gd:"G",
+      txt:"TXT"
+    }[extension] || "📄");
+
+const isScript =
+  file =>
+    file.script === true;
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let files = [];
+let selectedFile = null;
+let pendingDelete = null;
+let viewerFile = null;
+let uploadMode = "file";
+
+
+/* =========================================================
+   API
+========================================================= */
+
+async function apiJSON(
+  url,
+  options = {}
+) {
+
+  const response =
+    await fetch(
+      url,
+      {
+        cache:"no-store",
+        ...options
+      }
+    );
+
+  let data = null;
+
+  try {
+    data =
+      await response.json();
+  }
+  catch {
+    throw new Error(
+      `Server returned HTTP ${response.status}.`
+    );
+  }
+
+  if (
+    !response.ok ||
+    data.success === false
+  ) {
+
+    throw new Error(
+      data.error ||
+      `Request failed with HTTP ${response.status}.`
+    );
+  }
+
+  return data;
+}
+
+
+/* =========================================================
+   LOAD PUBLIC FILES
+========================================================= */
+
+async function getFiles() {
+
+  const search =
+    $("#searchInput")?.value.trim() || "";
+
+  const uploader =
+    $("#uploaderFilter")?.value || "";
+
+  const sort =
+    $("#sortSelect")?.value || "newest";
+
+  const params =
+    new URLSearchParams();
+
+  if (search) {
+    params.set("search",search);
+  }
+
+  if (uploader) {
+    params.set("uploader",uploader);
+  }
+
+  params.set("sort",sort);
+
+  params.set(
+    "_",
+    Date.now().toString()
+  );
+
+  const data =
+    await apiJSON(
+      `${API.files}?${params.toString()}`
+    );
+
+  return data.files || [];
+}
+
+
+/* =========================================================
+   LOAD STATS
+========================================================= */
+
+async function getStats() {
+
+  const data =
+    await apiJSON(
+      `${API.stats}?_=${Date.now()}`
+    );
+
+  return data.stats || {};
+}
+
+
+/* =========================================================
+   UPLOAD TO REAL SERVER
+========================================================= */
+
+async function publishToServer(
+  file,
+  uploader,
+  displayName,
+  script
+) {
+
+  const form =
+    new FormData();
+
+  form.append(
+    "file",
+    file,
+    file.name
+  );
+
+  form.append(
+    "uploader",
+    uploader
+  );
+
+  form.append(
+    "displayName",
+    displayName
+  );
+
+  form.append(
+    "isScript",
+    script ? "true" : "false"
+  );
+
+  return apiJSON(
+    API.files,
+    {
+      method:"POST",
+      body:form
+    }
+  );
+}
+
+
+/* =========================================================
+   DELETE THROUGH SERVER
+========================================================= */
+
+async function deleteFromServer(
+  id,
+  deleteToken
+) {
+
+  return apiJSON(
+    `${API.files}/${encodeURIComponent(id)}`,
+    {
+      method:"DELETE",
+
+      headers:{
+        "Content-Type":
+          "application/json"
+      },
+
+      body:
+        JSON.stringify({
+          deleteToken
+        })
+    }
+  );
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+async function refresh() {
+
+  try {
+
+    const [
+      loadedFiles,
+      stats
+    ] =
+      await Promise.all([
+        getFiles(),
+        getStats()
+      ]);
+
+    files =
+      loadedFiles;
+
+    updateStats(
+      stats
+    );
+
+    renderUploaderFilter();
+    renderCards();
+    updateScriptSummary();
+
+    openHashFile();
+
+  }
+  catch(error) {
+
+    console.error(
+      "Refresh failed:",
+      error
+    );
+
+    toast(
+      error.message ||
+      "Unable to load public files.",
+      "err"
+    );
+
+  }
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+function updateStats(
+  stats
+) {
+
+  $("#statFiles").textContent =
+    Number(stats.files || 0);
+
+  $("#statScripts").textContent =
+    Number(stats.scripts || 0);
+
+  $("#statSize").textContent =
+    formatSize(
+      Number(stats.totalSize || 0)
+    );
+
+  $("#statDownloads").textContent =
+    Number(stats.downloads || 0);
+}
+
+
+/* =========================================================
+   PARTICLES — AUTO OPTIMIZED
+========================================================= */
+
+const canvas =
+  $("#particleCanvas");
+
+const ctx =
+  canvas.getContext(
+    "2d",
+    {
+      alpha:true,
+      desynchronized:true
+    }
+  );
+
+const reducedMotion =
+  window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+const cores =
+  navigator.hardwareConcurrency || 4;
+
+const memory =
+  navigator.deviceMemory || 4;
+
+const mobile =
+  window.matchMedia(
+    "(max-width:700px)"
+  ).matches;
+
+let particleCount;
+
+if (reducedMotion) {
+  particleCount =
+    mobile ? 4 : 8;
+}
+else if (
+  cores <= 2 ||
+  memory <= 2
+) {
+  particleCount =
+    mobile ? 10 : 18;
+}
+else if (
+  cores >= 8 &&
+  memory >= 8
+) {
+  particleCount =
+    mobile ? 24 : 48;
+}
+else {
+  particleCount =
+    mobile ? 16 : 32;
+}
+
+let particles = [];
+let canvasWidth = 0;
+let canvasHeight = 0;
+let dpr = 1;
+let particleFrame = null;
+let particleRunning = true;
+let particleLastTime = 0;
+
+function resizeParticles() {
+
+  canvasWidth =
+    window.innerWidth;
+
+  canvasHeight =
+    window.innerHeight;
+
+  dpr =
+    Math.min(
+      window.devicePixelRatio || 1,
+      1.5
+    );
+
+  canvas.width =
+    Math.floor(
+      canvasWidth * dpr
+    );
+
+  canvas.height =
+    Math.floor(
+      canvasHeight * dpr
+    );
+
+  canvas.style.width =
+    `${canvasWidth}px`;
+
+  canvas.style.height =
+    `${canvasHeight}px`;
+
+  ctx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+  while (
+    particles.length <
+    particleCount
+  ) {
+
+    particles.push({
+      x:
+        Math.random() *
+        canvasWidth,
+
+      y:
+        Math.random() *
+        canvasHeight,
+
+      vx:
+        (Math.random() - .5) *
+        .16,
+
+      vy:
+        (Math.random() - .5) *
+        .16,
+
+      r:
+        Math.random() *
+        1.4 +
+        .4,
+
+      alpha:
+        Math.random() *
+        .45 +
+        .15
+    });
+
+  }
+
+  particles.length =
+    particleCount;
+}
+
+function animateParticles(
+  timestamp
+) {
+
+  if (!particleRunning) {
+    particleFrame = null;
+    return;
+  }
+
+  if (!particleLastTime) {
+    particleLastTime =
+      timestamp;
+  }
+
+  const delta =
+    Math.min(
+      timestamp -
+      particleLastTime,
+      32
+    );
+
+  particleLastTime =
+    timestamp;
+
+  ctx.clearRect(
+    0,
+    0,
+    canvasWidth,
+    canvasHeight
+  );
+
+  const movement =
+    delta * .06;
+
+  ctx.fillStyle =
+    "rgba(105,225,255,.55)";
+
+  for (
+    const particle
+    of particles
+  ) {
+
+    particle.x +=
+      particle.vx *
+      movement;
+
+    particle.y +=
+      particle.vy *
+      movement;
+
+    if (
+      particle.x < -5
+    ) {
+      particle.x =
+        canvasWidth + 5;
+    }
+
+    if (
+      particle.x >
+      canvasWidth + 5
+    ) {
+      particle.x = -5;
+    }
+
+    if (
+      particle.y < -5
+    ) {
+      particle.y =
+        canvasHeight + 5;
+    }
+
+    if (
+      particle.y >
+      canvasHeight + 5
+    ) {
+      particle.y = -5;
+    }
+
+    ctx.globalAlpha =
+      particle.alpha;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      particle.x,
+      particle.y,
+      particle.r,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+
+  particleFrame =
+    requestAnimationFrame(
+      animateParticles
+    );
+}
+
+function startParticles() {
+
+  if (
+    reducedMotion
+  ) {
+    return;
+  }
+
+  particleRunning = true;
+  particleLastTime = 0;
+
+  if (!particleFrame) {
+    particleFrame =
+      requestAnimationFrame(
+        animateParticles
+      );
+  }
+}
+
+function stopParticles() {
+
+  particleRunning = false;
+
+  if (particleFrame) {
+
+    cancelAnimationFrame(
+      particleFrame
+    );
+
+    particleFrame = null;
+  }
+}
+
+resizeParticles();
+startParticles();
+
+window.addEventListener(
+  "resize",
+  resizeParticles,
+  { passive:true }
+);
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (
+      document.hidden
+    ) {
+      stopParticles();
+    }
+    else {
+      startParticles();
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+function showIntro() {
+
+  if (
+    sessionStorage.getItem(
+      "pfhIntroSeen"
+    ) !== "1"
+  ) {
+
+    $("#introModal")
+      .classList
+      .add("open");
+
+  }
+}
+
+$("#enterProject")
+  .addEventListener(
+    "click",
+    () => {
+
+      sessionStorage.setItem(
+        "pfhIntroSeen",
+        "1"
+      );
+
+      $("#introModal")
+        .classList
+        .remove("open");
+
+    }
+  );
+
+
+function renderTeam() {
+
+  $("#teamList").innerHTML =
+    TEAM
+      .map(
+        name =>
+          `<span class="member">${esc(name)}</span>`
+      )
+      .join("");
+
+  $("#introTeam").innerHTML =
+    TEAM
+      .map(
+        name =>
+          `<span>${esc(name)}</span>`
+      )
+      .join("");
+}
+
+renderTeam();
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(
+  selector
+) {
+
+  $(selector)
+    .classList
+    .add("open");
+}
+
+function closeModal(
+  selector
+) {
+
+  $(selector)
+    .classList
+    .remove("open");
+}
+
+$$("[data-close]")
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          closeModal(
+            `#${button.dataset.close}`
+          );
+
+        }
+      );
+
+    }
+  );
+
+$$(".modal-backdrop")
+  .forEach(
+    modal => {
+
+      modal.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target === modal &&
+            !modal.classList.contains(
+              "intro"
+            )
+          ) {
+
+            modal.classList
+              .remove("open");
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Escape"
+    ) {
+
+      $$(
+        ".modal-backdrop.open:not(.intro)"
+      )
+      .forEach(
+        modal =>
+          modal.classList
+            .remove("open")
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   TOASTS
+========================================================= */
+
+function toast(
+  message,
+  type = "ok"
+) {
+
+  const element =
+    document.createElement(
+      "div"
+    );
+
+  element.className =
+    `toast ${type}`;
+
+  element.textContent =
+    message;
+
+  $("#toastWrap")
+    .appendChild(
+      element
+    );
+
+  setTimeout(
+    () => {
+
+      element.style.opacity =
+        "0";
+
+      element.style.transform =
+        "translateY(10px)";
+
+      setTimeout(
+        () =>
+          element.remove(),
+        250
+      );
+
+    },
+    3000
+  );
+}
+
+
+/* =========================================================
+   UPLOAD
+========================================================= */
+
+const fileInput =
+  $("#fileInput");
+
+const dropzone =
+  $("#dropzone");
+
+
+function resetUpload(
+  mode = "file"
+) {
+
+  uploadMode =
+    mode;
+
+  selectedFile =
+    null;
+
+  fileInput.value =
+    "";
+
+  $("#uploaderInput").value =
+    "";
+
+  $("#displayNameInput").value =
+    "";
+
+  $("#scriptNameInput").value =
+    "";
+
+  $("#filePreview")
+    .classList
+    .remove("show");
+
+  $("#filePreview")
+    .textContent =
+    "";
+
+  $("#uploadForm")
+    .style.display =
+    "block";
+
+  $("#confirmPanel")
+    .classList
+    .remove("show");
+
+  $("#scriptNameField")
+    .style.display =
+      mode === "script"
+        ? "block"
+        : "none";
+
+  $("#displayNameField")
+    .style.display =
+      mode === "script"
+        ? "none"
+        : "block";
+
+  $("#uploadKicker")
+    .textContent =
+      mode === "script"
+        ? "CUSTOM SCRIPT UPLOAD"
+        : "UPLOAD CENTER";
+
+  $("#uploadTitle")
+    .textContent =
+      mode === "script"
+        ? "Add a custom script"
+        : "Upload a project file";
+}
+
+
+function openUpload(
+  mode = "file"
+) {
+
+  resetUpload(mode);
+
+  openModal(
+    "#uploadModal"
+  );
+}
+
+
+$("#headerUpload")
+  .addEventListener(
+    "click",
+    () => openUpload("file")
+  );
+
+$("#heroUpload")
+  .addEventListener(
+    "click",
+    () => openUpload("file")
+  );
+
+$("#heroScript")
+  .addEventListener(
+    "click",
+    () => openUpload("script")
+  );
+
+$("#scriptSectionBtn")
+  .addEventListener(
+    "click",
+    () => openUpload("script")
+  );
+
+
+function validateFile(
+  file
+) {
+
+  if (!file) {
+
+    toast(
+      "Please select a file.",
+      "warn"
+    );
+
+    return false;
+  }
+
+  if (
+    file.size >
+    MAX_FILE_SIZE
+  ) {
+
+    toast(
+      "File is too large. Maximum allowed size is 50 MB.",
+      "err"
+    );
+
+    return false;
+  }
+
+  const extension =
+    ext(file.name);
+
+  if (
+    !ALLOWED_EXTENSIONS
+      .has(extension)
+  ) {
+
+    toast(
+      "This file type is not supported.",
+      "err"
+    );
+
+    return false;
+  }
+
+  if (
+    uploadMode === "script" &&
+    extension !== "txt"
+  ) {
+
+    toast(
+      "Custom scripts must be .txt files.",
+      "err"
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+
+async function selectFile(
+  file
+) {
+
+  if (
+    !validateFile(file)
+  ) {
+    return;
+  }
+
+  selectedFile =
+    file;
+
+  $("#filePreview")
+    .classList
+    .add("show");
+
+  $("#filePreview")
+    .innerHTML =
+    "";
+
+  const rows = [
+    [
+      "File",
+      file.name
+    ],
+    [
+      "Type",
+      file.type ||
+      "Unknown"
+    ],
+    [
+      "Size",
+      formatSize(
+        file.size
+      )
+    ],
+    [
+      "Extension",
+      ext(file.name)
+        .toUpperCase() ||
+      "—"
+    ]
+  ];
+
+  for (
+    const [label,value]
+    of rows
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.className =
+      "preview-row";
+
+    const left =
+      document.createElement(
+        "span"
+      );
+
+    left.textContent =
+      label;
+
+    const right =
+      document.createElement(
+        "b"
+      );
+
+    right.textContent =
+      value;
+
+    row.append(
+      left,
+      right
+    );
+
+    $("#filePreview")
+      .appendChild(
+        row
+      );
+  }
+
+  if (
+    uploadMode === "script"
+  ) {
+
+    try {
+
+      const text =
+        await file.text();
+
+      const preview =
+        document.createElement(
+          "pre"
+        );
+
+      preview.style.maxHeight =
+        "220px";
+
+      preview.textContent =
+        text.slice(
+          0,
+          10000
+        );
+
+      $("#filePreview")
+        .appendChild(
+          preview
+        );
+
+    }
+    catch {
+      toast(
+        "Could not preview this script.",
+        "warn"
+      );
+    }
+  }
+}
+
+
+fileInput
+  .addEventListener(
+    "change",
+    () =>
+      selectFile(
+        fileInput.files[0]
+      )
+  );
+
+
+[
+  "dragenter",
+  "dragover"
+]
+.forEach(
+  eventName => {
+
+    dropzone.addEventListener(
+      eventName,
+      event => {
+
+        event.preventDefault();
+
+        dropzone
+          .classList
+          .add("drag");
+
+      }
+    );
+
+  }
+);
+
+
+[
+  "dragleave",
+  "drop"
+]
+.forEach(
+  eventName => {
+
+    dropzone.addEventListener(
+      eventName,
+      event => {
+
+        event.preventDefault();
+
+        dropzone
+          .classList
+          .remove("drag");
+
+      }
+    );
+
+  }
+);
+
+
+dropzone.addEventListener(
+  "drop",
+  event =>
+    selectFile(
+      event.dataTransfer.files[0]
+    )
+);
+
+
+/* =========================================================
+   REVIEW
+========================================================= */
+
+$("#reviewBtn")
+  .addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !validateFile(
+          selectedFile
+        )
+      ) {
+        return;
+      }
+
+      const uploader =
+        $("#uploaderInput")
+          .value
+          .trim();
+
+      if (!uploader) {
+
+        toast(
+          "Please enter your uploader name.",
+          "warn"
+        );
+
+        $("#uploaderInput")
+          .focus();
+
+        return;
+      }
+
+      let displayName =
+        uploadMode === "script"
+          ? $("#scriptNameInput")
+              .value
+              .trim()
+          : $("#displayNameInput")
+              .value
+              .trim();
+
+      if (
+        uploadMode === "script" &&
+        !displayName
+      ) {
+
+        toast(
+          "Script name is required.",
+          "warn"
+        );
+
+        $("#scriptNameInput")
+          .focus();
+
+        return;
+      }
+
+      if (!displayName) {
+
+        displayName =
+          selectedFile.name
+            .replace(
+              /\.[^.]+$/,
+              ""
+            );
+      }
+
+      try {
+
+        $("#reviewBtn")
+          .disabled =
+          true;
+
+        toast(
+          "Preparing preview...",
+          "ok"
+        );
+
+        let scriptContent =
+          "";
+
+        if (
+          uploadMode === "script"
+        ) {
+
+          scriptContent =
+            await selectedFile.text();
+
+        }
+
+        $("#uploadForm")
+          .style.display =
+          "none";
+
+        $("#confirmPanel")
+          .classList
+          .add("show");
+
+        $("#confirmTitle")
+          .textContent =
+          uploadMode === "script"
+            ? "Review script"
+            : "Review file";
+
+        $("#confirmCard")
+          .innerHTML =
+          "";
+
+        const rows = [
+          [
+            "File",
+            selectedFile.name
+          ],
+          [
+            "Display Name",
+            displayName
+          ],
+          [
+            "Uploaded by",
+            uploader
+          ],
+          [
+            "Type",
+            ext(
+              selectedFile.name
+            ).toUpperCase()
+          ],
+          [
+            "Size",
+            formatSize(
+              selectedFile.size
+            )
+          ]
+        ];
+
+        for (
+          const [label,value]
+          of rows
+        ) {
+
+          const row =
+            document.createElement(
+              "div"
+            );
+
+          row.className =
+            "preview-row";
+
+          const left =
+            document.createElement(
+              "span"
+            );
+
+          left.textContent =
+            label;
+
+          const right =
+            document.createElement(
+              "b"
+            );
+
+          right.textContent =
+            value;
+
+          row.append(
+            left,
+            right
+          );
+
+          $("#confirmCard")
+            .appendChild(
+              row
+            );
+        }
+
+        $("#confirmScriptPreview")
+          .innerHTML =
+          "";
+
+        if (
+          uploadMode === "script"
+        ) {
+
+          const label =
+            document.createElement(
+              "div"
+            );
+
+          label.className =
+            "kicker";
+
+          label.style.marginTop =
+            "18px";
+
+          label.textContent =
+            "SCRIPT PREVIEW";
+
+          const code =
+            document.createElement(
+              "pre"
+            );
+
+          code.textContent =
+            scriptContent;
+
+          $("#confirmScriptPreview")
+            .append(
+              label,
+              code
+            );
+        }
+
+      }
+      catch(error) {
+
+        console.error(error);
+
+        toast(
+          "Could not prepare the file preview.",
+          "err"
+        );
+
+      }
+      finally {
+
+        $("#reviewBtn")
+          .disabled =
+          false;
+
+      }
+    }
+  );
+
+
+$("#backReview")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("#uploadForm")
+        .style.display =
+        "block";
+
+      $("#confirmPanel")
+        .classList
+        .remove("show");
+
+    }
+  );
+
+
+/* =========================================================
+   REAL PUBLISH
+========================================================= */
+
+$("#publishBtn")
+  .addEventListener(
+    "click",
+    async () => {
+
+      if (!selectedFile) {
+        return;
+      }
+
+      const uploader =
+        $("#uploaderInput")
+          .value
+          .trim();
+
+      let displayName =
+        uploadMode === "script"
+          ? $("#scriptNameInput")
+              .value
+              .trim()
+          : $("#displayNameInput")
+              .value
+              .trim();
+
+      if (!displayName) {
+
+        displayName =
+          selectedFile.name
+            .replace(
+              /\.[^.]+$/,
+              ""
+            );
+      }
+
+      const button =
+        $("#publishBtn");
+
+      const originalText =
+        button.innerHTML;
+
+      try {
+
+        button.disabled =
+          true;
+
+        button.innerHTML =
+          `<span class="spinner"></span> PUBLISHING...`;
+
+        const result =
+          await publishToServer(
+            selectedFile,
+            uploader,
+            displayName,
+            uploadMode === "script"
+          );
+
+        closeModal(
+          "#uploadModal"
+        );
+
+        /*
+          IMPORTANT:
+          The delete token is returned
+          only once by the server.
+        */
+
+        const deleteToken =
+          result.deleteToken;
+
+        await refresh();
+
+        showDeleteKeyWarning(
+          deleteToken
+        );
+
+        toast(
+          uploadMode === "script"
+            ? "✓ Script published to the public library!"
+            : "✓ File published to the public library!",
+          "ok"
+        );
+
+        selectedFile =
+          null;
+
+      }
+      catch(error) {
+
+        console.error(
+          "Publish error:",
+          error
+        );
+
+        toast(
+          error.message ||
+          "Upload failed.",
+          "err"
+        );
+
+      }
+      finally {
+
+        button.disabled =
+          false;
+
+        button.innerHTML =
+          originalText;
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   DELETE KEY WARNING
+========================================================= */
+
+function showDeleteKeyWarning(
+  key
+) {
+
+  $("#generatedDeleteKey")
+    .textContent =
+    key;
+
+  openModal(
+    "#deleteKeyWarning"
+  );
+}
+
+
+$("#copyDeleteKey")
+  .addEventListener(
+    "click",
+    async () => {
+
+      const key =
+        $("#generatedDeleteKey")
+          .textContent;
+
+      try {
+
+        await navigator.clipboard
+          .writeText(key);
+
+        toast(
+          "✓ Delete key copied.",
+          "ok"
+        );
+
+      }
+      catch {
+
+        const textarea =
+          document.createElement(
+            "textarea"
+          );
+
+        textarea.value =
+          key;
+
+        textarea.style.position =
+          "fixed";
+
+        textarea.style.opacity =
+          "0";
+
+        document.body.appendChild(
+          textarea
+        );
+
+        textarea.select();
+
+        document.execCommand(
+          "copy"
+        );
+
+        textarea.remove();
+
+        toast(
+          "✓ Delete key copied.",
+          "ok"
+        );
+      }
+    }
+  );
+
+
+$("#closeDeleteKeyWarning")
+  .addEventListener(
+    "click",
+    () =>
+      closeModal(
+        "#deleteKeyWarning"
+      )
+  );
+
+
+/* =========================================================
+   FILTERING
+========================================================= */
+
+function renderUploaderFilter() {
+
+  const current =
+    $("#uploaderFilter")
+      .value;
+
+  const names =
+    [
+      ...new Set(
+        files
+          .map(
+            file =>
+              file.uploader
+          )
+          .filter(Boolean)
+      )
+    ]
+    .sort(
+      (a,b) =>
+        a.localeCompare(b)
+    );
+
+  $("#uploaderFilter")
+    .innerHTML =
+      `<option value="">All Uploaders</option>` +
+      names
+        .map(
+          name =>
+            `<option value="${esc(name)}">${esc(name)}</option>`
+        )
+        .join("");
+
+  if (
+    names.includes(current)
+  ) {
+
+    $("#uploaderFilter")
+      .value =
+      current;
+  }
+}
+
+
+function filteredFiles() {
+
+  const query =
+    $("#searchInput")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const sort =
+    $("#sortSelect")
+      .value;
+
+  const uploader =
+    $("#uploaderFilter")
+      .value;
+
+  let output =
+    files.filter(
+      file => {
+
+        const matchesQuery =
+          !query ||
+          [
+            file.name,
+            file.displayName,
+            file.uploader,
+            file.extension
+          ]
+          .some(
+            value =>
+              String(value)
+                .toLowerCase()
+                .includes(query)
+          );
+
+        const matchesUploader =
+          !uploader ||
+          file.uploader ===
+            uploader;
+
+        return (
+          matchesQuery &&
+          matchesUploader
+        );
+      }
+    );
+
+  if (
+    sort === "newest"
+  ) {
+
+    output.sort(
+      (a,b) =>
+        b.date - a.date
+    );
+
+  }
+  else if (
+    sort === "oldest"
+  ) {
+
+    output.sort(
+      (a,b) =>
+        a.date - b.date
+    );
+
+  }
+  else if (
+    sort === "name"
+  ) {
+
+    output.sort(
+      (a,b) =>
+        a.displayName
+          .localeCompare(
+            b.displayName
+          )
+    );
+
+  }
+  else if (
+    sort === "largest"
+  ) {
+
+    output.sort(
+      (a,b) =>
+        b.size - a.size
+    );
+
+  }
+  else if (
+    sort === "downloads"
+  ) {
+
+    output.sort(
+      (a,b) =>
+        (b.downloads || 0) -
+        (a.downloads || 0)
+    );
+
+  }
+
+  return output;
+}
+
+
+/* =========================================================
+   FILE CARDS
+========================================================= */
+
+function renderCards() {
+
+  const grid =
+    $("#fileGrid");
+
+  const list =
+    filteredFiles();
+
+  grid.innerHTML =
+    "";
+
+  if (!list.length) {
+
+    const empty =
+      document.createElement(
+        "div"
+      );
+
+    empty.className =
+      "empty";
+
+    empty.innerHTML =
+      `
+        <div class="big">◈</div>
+
+        <h3>
+          ${
+            files.length
+              ? "No matching files"
+              : "No files uploaded yet."
+          }
+        </h3>
+
+        <p class="sub">
+          ${
+            files.length
+              ? "Try another search or filter."
+              : "Be the first to contribute to the project."
+          }
+        </p>
+
+        <button
+          class="btn btn-primary empty-upload"
+        >
+          UPLOAD FILE
+        </button>
+      `;
+
+    grid.appendChild(
+      empty
+    );
+
+    $(".empty-upload")
+      .addEventListener(
+        "click",
+        () =>
+          openUpload("file")
+      );
+
+    return;
+  }
+
+
+  for (
+    const file
+    of list
+  ) {
+
+    const card =
+      document.createElement(
+        "article"
+      );
+
+    card.className =
+      "card";
+
+
+    const top =
+      document.createElement(
+        "div"
+      );
+
+    top.className =
+      "card-top";
+
+
+    const icon =
+      document.createElement(
+        "div"
+      );
+
+    icon.className =
+      "file-icon";
+
+    icon.textContent =
+      isScript(file)
+        ? "</>"
+        : iconFor(
+            file.extension
+          );
+
+
+    const badge =
+      document.createElement(
+        "div"
+      );
+
+    badge.className =
+      "badge";
+
+    badge.textContent =
+      file.extension
+        .toUpperCase();
+
+
+    top.append(
+      icon,
+      badge
+    );
+
+
+    const title =
+      document.createElement(
+        "h3"
+      );
+
+    title.textContent =
+      file.displayName;
+
+
+    const filename =
+      document.createElement(
+        "div"
+      );
+
+    filename.className =
+      "filename";
+
+    filename.textContent =
+      file.name;
+
+
+    const by =
+      document.createElement(
+        "div"
+      );
+
+    by.className =
+      "by";
+
+    by.append(
+      document.createTextNode(
+        "Uploaded by "
+      )
+    );
+
+    const uploader =
+      document.createElement(
+        "b"
+      );
+
+    uploader.textContent =
+      file.uploader;
+
+    by.appendChild(
+      uploader
+    );
+
+
+    const meta =
+      document.createElement(
+        "div"
+      );
+
+    meta.className =
+      "meta";
+
+    meta.innerHTML =
+      `
+        <span>
+          ${esc(
+            file.extension
+              .toUpperCase()
+          )}
+        </span>
+
+        <span>
+          ${formatSize(
+            file.size
+          )}
+        </span>
+      `;
+
+
+    const meta2 =
+      document.createElement(
+        "div"
+      );
+
+    meta2.className =
+      "meta";
+
+    meta2.innerHTML =
+      `
+        <span>
+          Uploaded:
+          ${esc(
+            formatDate(
+              file.date
+            )
+          )}
+        </span>
+
+        <span>
+          ↓ ${Number(
+            file.downloads || 0
+          )}
+        </span>
+      `;
+
+
+    const actions =
+      document.createElement(
+        "div"
+      );
+
+    actions.className =
+      "card-actions";
+
+
+    const view =
+      document.createElement(
+        "button"
+      );
+
+    view.className =
+      "btn btn-small btn-ghost";
+
+    view.textContent =
+      isScript(file)
+        ? "VIEW SCRIPT"
+        : "DETAILS";
+
+    view.onclick =
+      () =>
+        isScript(file)
+          ? openScript(file)
+          : openDetails(file);
+
+
+    const download =
+      document.createElement(
+        "button"
+      );
+
+    download.className =
+      "btn btn-small btn-primary";
+
+    download.textContent =
+      "DOWNLOAD";
+
+    download.onclick =
+      () =>
+        downloadFile(file);
+
+
+    const copy =
+      document.createElement(
+        "button"
+      );
+
+    copy.className =
+      "btn btn-small btn-ghost";
+
+    copy.textContent =
+      "COPY LINK";
+
+    copy.onclick =
+      () =>
+        copyLink(file);
+
+
+    const deleteButton =
+      document.createElement(
+        "button"
+      );
+
+    deleteButton.className =
+      "btn btn-small btn-danger";
+
+    deleteButton.textContent =
+      "DELETE";
+
+    deleteButton.onclick =
+      () =>
+        askDelete(file);
+
+
+    actions.append(
+      view,
+      download,
+      copy,
+      deleteButton
+    );
+
+
+    card.append(
+      top,
+      title,
+      filename,
+      by,
+      meta,
+      meta2,
+      actions
+    );
+
+
+    grid.appendChild(
+      card
+    );
+  }
+}
+
+
+/* =========================================================
+   SEARCH EVENTS
+========================================================= */
+
+$("#searchInput")
+  .addEventListener(
+    "input",
+    () => {
+
+      refresh();
+
+    }
+  );
+
+$("#sortSelect")
+  .addEventListener(
+    "change",
+    () =>
+      refresh()
+  );
+
+$("#uploaderFilter")
+  .addEventListener(
+    "change",
+    () =>
+      refresh()
+  );
+
+
+/* =========================================================
+   DOWNLOAD REAL SERVER FILE
+========================================================= */
+
+async function downloadFile(
+  file
+) {
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/files/${encodeURIComponent(file.id)}/download`
+      );
+
+    if (!response.ok) {
+
+      let message =
+        "Download failed.";
+
+      try {
+
+        const data =
+          await response.json();
+
+        message =
+          data.error ||
+          message;
+
+      }
+      catch {}
+
+      throw new Error(
+        message
+      );
+    }
+
+    const blob =
+      await response.blob();
+
+    const url =
+      URL.createObjectURL(
+        blob
+      );
+
+    const anchor =
+      document.createElement(
+        "a"
+      );
+
+    anchor.href =
+      url;
+
+    anchor.download =
+      file.name;
+
+    document.body.appendChild(
+      anchor
+    );
+
+    anchor.click();
+
+    anchor.remove();
+
+    setTimeout(
+      () =>
+        URL.revokeObjectURL(
+          url
+        ),
+      1000
+    );
+
+    toast(
+      "✓ Download started.",
+      "ok"
+    );
+
+    /*
+      Download count is updated
+      by the backend.
+    */
+
+    setTimeout(
+      refresh,
+      500
+    );
+
+  }
+  catch(error) {
+
+    console.error(
+      error
+    );
+
+    toast(
+      error.message ||
+      "Download failed.",
+      "err"
+    );
+  }
+}
+
+
+/* =========================================================
+   COPY LINK
+========================================================= */
+
+async function copyLink(
+  file
+) {
+
+  const link =
+    `${location.origin}${location.pathname}#file=${encodeURIComponent(file.id)}`;
+
+  try {
+
+    await navigator.clipboard
+      .writeText(link);
+
+    toast(
+      "✓ Public file link copied.",
+      "ok"
+    );
+
+  }
+  catch {
+
+    const textarea =
+      document.createElement(
+        "textarea"
+      );
+
+    textarea.value =
+      link;
+
+    textarea.style.position =
+      "fixed";
+
+    textarea.style.opacity =
+      "0";
+
+    document.body.appendChild(
+      textarea
+    );
+
+    textarea.select();
+
+    document.execCommand(
+      "copy"
+    );
+
+    textarea.remove();
+
+    toast(
+      "✓ Public file link copied.",
+      "ok"
+    );
+  }
+}
+
+
+/* =========================================================
+   SCRIPT VIEWER
+========================================================= */
+
+async function openScript(
+  file
+) {
+
+  try {
+
+    const data =
+      await apiJSON(
+        `/api/files/${encodeURIComponent(file.id)}/preview`
+      );
+
+    const script =
+      data.file;
+
+    viewerFile =
+      file;
+
+    $("#viewerTitle")
+      .textContent =
+      script.displayName;
+
+    $("#viewerMeta")
+      .textContent =
+      `by ${script.uploader} • ${formatSize(script.size)} • ${formatDate(script.date)}`;
+
+    $("#viewerFile")
+      .textContent =
+      script.name;
+
+    $("#viewerCode")
+      .textContent =
+      script.content;
+
+    openModal(
+      "#scriptViewer"
+    );
+
+  }
+  catch(error) {
+
+    toast(
+      error.message ||
+      "Unable to preview script.",
+      "err"
+    );
+
+  }
+}
+
+
+$("#viewerDownload")
+  .addEventListener(
+    "click",
+    () => {
+
+      if (
+        viewerFile
+      ) {
+
+        downloadFile(
+          viewerFile
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+function openDetails(
+  file
+) {
+
+  $("#detailsTitle")
+    .textContent =
+    file.displayName;
+
+  $("#detailsContent")
+    .innerHTML =
+    "";
+
+  const rows = [
+    [
+      "File Name",
+      file.name
+    ],
+    [
+      "Display Name",
+      file.displayName
+    ],
+    [
+      "Uploaded By",
+      file.uploader
+    ],
+    [
+      "Type",
+      file.type ||
+      "Unknown"
+    ],
+    [
+      "Extension",
+      file.extension
+        .toUpperCase()
+    ],
+    [
+      "Size",
+      formatSize(
+        file.size
+      )
+    ],
+    [
+      "Upload Date",
+      formatDate(
+        file.date
+      )
+    ],
+    [
+      "Downloads",
+      Number(
+        file.downloads || 0
+      )
+    ],
+    [
+      "Script",
+      file.script
+        ? "Yes"
+        : "No"
+    ]
+  ];
+
+  for (
+    const [label,value]
+    of rows
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.className =
+      "preview-row";
+
+    const left =
+      document.createElement(
+        "span"
+      );
+
+    left.textContent =
+      label;
+
+    const right =
+      document.createElement(
+        "b"
+      );
+
+    right.textContent =
+      value;
+
+    row.append(
+      left,
+      right
+    );
+
+    $("#detailsContent")
+      .appendChild(
+        row
+      );
+  }
+
+  openModal(
+    "#detailsModal"
+  );
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+function askDelete(
+  file
+) {
+
+  pendingDelete =
+    file;
+
+  $("#deleteText")
+    .textContent =
+    `Enter the delete key that was generated when "${file.displayName}" was published.`;
+
+  $("#deleteKeyInput")
+    .value =
+    "";
+
+  openModal(
+    "#deleteModal"
+  );
+
+  setTimeout(
+    () =>
+      $("#deleteKeyInput")
+        .focus(),
+    100
+  );
+}
+
+
+$("#deleteConfirm")
+  .addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !pendingDelete
+      ) {
+        return;
+      }
+
+      const deleteToken =
+        $("#deleteKeyInput")
+          .value
+          .trim();
+
+      if (!deleteToken) {
+
+        toast(
+          "Enter the delete key.",
+          "warn"
+        );
+
+        return;
+      }
+
+      const button =
+        $("#deleteConfirm");
+
+      const original =
+        button.innerHTML;
+
+      try {
+
+        button.disabled =
+          true;
+
+        button.innerHTML =
+          `<span class="spinner"></span> DELETING...`;
+
+        await deleteFromServer(
+          pendingDelete.id,
+          deleteToken
+        );
+
+        pendingDelete =
+          null;
+
+        closeModal(
+          "#deleteModal"
+        );
+
+        await refresh();
+
+        toast(
+          "✓ File deleted successfully.",
+          "ok"
+        );
+
+      }
+      catch(error) {
+
+        toast(
+          error.message ||
+          "Could not delete the file.",
+          "err"
+        );
+
+      }
+      finally {
+
+        button.disabled =
+          false;
+
+        button.innerHTML =
+          original;
+
+      }
+    }
+  );
+
+
+/* =========================================================
+   SCRIPT SUMMARY
+========================================================= */
+
+function updateScriptSummary() {
+
+  const scripts =
+    files.filter(
+      file =>
+        file.script === true
+    );
+
+  $("#scriptSummary")
+    .innerHTML =
+    `
+      <p class="sub">
+        There are
+        <b>${scripts.length}</b>
+        published script resources.
+        Use <b>ADD SCRIPT</b> to publish
+        a .txt game-development script.
+      </p>
+    `;
+}
+
+
+/* =========================================================
+   LIVE SERVER-SENT EVENTS
+========================================================= */
+
+let eventSource = null;
+
+function connectLiveUpdates() {
+
+  if (
+    !("EventSource" in window)
+  ) {
+    return;
+  }
+
+  if (
+    eventSource
+  ) {
+    eventSource.close();
+  }
+
+  eventSource =
+    new EventSource(
+      API.events
+    );
+
+  eventSource.addEventListener(
+    "connected",
+    () => {
+
+      console.log(
+        "PROJECT FILE HUB live connection established."
+      );
+
+    }
+  );
+
+  eventSource.addEventListener(
+    "library-update",
+    () => {
+
+      console.log(
+        "Library updated — refreshing."
+      );
+
+      refresh();
+
+    }
+  );
+
+  eventSource.addEventListener(
+    "download",
+    () => {
+
+      refresh();
+
+    }
+  );
+
+  eventSource.addEventListener(
+    "delete",
+    () => {
+
+      refresh();
+
+    }
+  );
+
+  eventSource.onerror =
+    () => {
+
+      console.warn(
+        "Live connection interrupted. Browser will retry automatically."
+      );
+
+    };
+}
+
+connectLiveUpdates();
+
+
+/* =========================================================
+   HASH FILE LINKS
+========================================================= */
+
+function openHashFile() {
+
+  const match =
+    location.hash.match(
+      /^#file=(.+)$/
+    );
+
+  if (!match) {
+    return;
+  }
+
+  const id =
+    decodeURIComponent(
+      match[1]
+    );
+
+  const file =
+    files.find(
+      item =>
+        item.id === id
+    );
+
+  if (!file) {
+    return;
+  }
+
+  setTimeout(
+    () => {
+
+      if (
+        isScript(file)
+      ) {
+
+        openScript(
+          file
+        );
+
+      }
+      else {
+
+        openDetails(
+          file
+        );
+
+      }
+
+    },
+    100
+  );
+}
+
+window.addEventListener(
+  "hashchange",
+  openHashFile
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+$("#year")
+  .textContent =
+  new Date()
+    .getFullYear();
+
+showIntro();
+
+refresh();
+
+</script>
 
 </body>
 </html>
