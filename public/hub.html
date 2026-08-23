@@ -1,264 +1,1522 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     >
 
-    <meta
-        name="theme-color"
-        content="#030612"
-    >
+    <title>Project File Hub</title>
 
-    <meta
-        name="description"
-        content="MIL Project Game Development Project Hub"
-    >
-
-    <title>Project Hub • MIL Game Development</title>
-
-    <link
-        rel="stylesheet"
-        href="/style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
-
 <body class="hub-page">
 
-
-    <!-- ==================================================
-         PARTICLES
-    =================================================== -->
-
-    <canvas
-        id="particleCanvas"
-        aria-hidden="true"
-    ></canvas>
-
-
-    <!-- ==================================================
-         BACKGROUND
-    =================================================== -->
+    <canvas id="particleCanvas"></canvas>
 
     <div class="ambient ambient-one"></div>
-
     <div class="ambient ambient-two"></div>
 
-    <div class="ambient ambient-three"></div>
 
-    <div class="background-grid"></div>
+    <main class="hub-container">
 
+        <!-- ============================================
+             HEADER
+        ============================================= -->
 
-    <!-- ==================================================
-         HUB
-    =================================================== -->
+        <header class="hub-header">
 
-    <main class="hub">
+            <div class="brand-row">
 
-
-        <!-- ==================================================
-             TOP BAR
-        =================================================== -->
-
-        <header class="hub-topbar">
-
-
-            <div class="hub-brand">
-
-                <div class="hub-logo">
-                    MIL
+                <div class="brand-icon">
+                    ✦
                 </div>
 
+                <div class="brand-title">
 
-                <div class="hub-brand-text">
+                    <h2>
+                        Project File Hub
+                    </h2>
 
-                    <strong>
-                        PROJECT FILE HUB
-                    </strong>
-
-                    <span>
-                        Game Development
-                    </span>
+                    <p>
+                        MIL Project · Game Development
+                    </p>
 
                 </div>
 
             </div>
 
 
-            <a
-                href="/"
-                class="back-button"
-            >
-                ← Back
-            </a>
+            <div class="server-status">
+
+                <span class="status-dot"></span>
+
+                Server Online
+
+            </div>
 
         </header>
 
 
-        <!-- ==================================================
-             HERO
-        =================================================== -->
+        <!-- ============================================
+             WELCOME
+        ============================================= -->
 
-        <section class="hub-hero">
+        <section class="welcome-section">
 
-            <div class="hub-kicker">
-                MIL PROJECT • GAME DEVELOPMENT
+            <div class="section-eyebrow">
+                MIL PROJECT · GAME DEVELOPMENT
             </div>
 
 
             <h1>
-                Project Hub
+                WELCOME TO
+                <span>PROJECT FILE HUB</span>
             </h1>
 
 
-            <p>
-                Welcome to the online project workspace.
-                This hub is designed for the MIL Game
-                Development project and its project files,
-                resources, development work, and future
-                project modules.
+            <p class="welcome-copy">
+                This website is handled by:
+            </p>
+
+
+            <div class="hub-people">
+
+                <span class="person featured">
+                    Sunnel John Rebano 🧑🏻‍🔧
+                </span>
+
+                <span class="person">
+                    Rhea Kim
+                </span>
+
+                <span class="person">
+                    Kimberly
+                </span>
+
+                <span class="person">
+                    Charles Tiong
+                </span>
+
+                <span class="person">
+                    Reyden Osia
+                </span>
+
+                <span class="person">
+                    Mc Lawrence Conzaga
+                </span>
+
+                <span class="person">
+                    Kimmy Clavo
+                </span>
+
+                <span class="person">
+                    Dianne Gadia
+                </span>
+
+                <span class="person">
+                    Carl Caabay
+                </span>
+
+                <span class="person">
+                    Mark Camaso
+                </span>
+
+                <span class="person">
+                    Maynard Cabada
+                </span>
+
+                <span class="person">
+                    Mark Anthony Canta
+                </span>
+
+            </div>
+
+
+            <p class="publish-description">
+                For MIL Project Game Development.
             </p>
 
         </section>
 
 
-        <!-- ==================================================
-             HUB CARDS
-        =================================================== -->
+        <!-- ============================================
+             PUBLISH
+        ============================================= -->
 
-        <section class="hub-grid">
+        <section class="publish-card">
 
+            <div class="publish-heading">
 
-            <article class="hub-card">
-
-                <div class="hub-card-icon">
-                    📁
-                </div>
-
-                <h2>
-                    Project Files
-                </h2>
-
-                <p>
-                    Central location for project
-                    documents, files, and development
-                    resources.
-                </p>
-
-            </article>
-
-
-            <article class="hub-card">
-
-                <div class="hub-card-icon">
-                    🎮
-                </div>
-
-                <h2>
-                    Game Development
-                </h2>
-
-                <p>
-                    Game development materials,
-                    concepts, builds, and project
-                    resources.
-                </p>
-
-            </article>
-
-
-            <article class="hub-card">
-
-                <div class="hub-card-icon">
-                    👥
-                </div>
-
-                <h2>
-                    Team
-                </h2>
-
-                <p>
-                    MIL Project Game Development
-                    team and project contributors.
-                </p>
-
-            </article>
-
-
-            <article class="hub-card">
-
-                <div class="hub-card-icon">
-                    🛠️
-                </div>
-
-                <h2>
-                    Development
-                </h2>
-
-                <p>
-                    Development workspace for
-                    future project tools and features.
-                </p>
-
-            </article>
-
-
-            <article class="hub-card">
-
-                <div class="hub-card-icon">
+                <div class="publish-icon">
                     🚀
                 </div>
 
-                <h2>
-                    Builds
-                </h2>
+                <div>
 
-                <p>
-                    Future game builds and project
-                    releases can be organized here.
-                </p>
+                    <h2>
+                        Publish File
+                    </h2>
 
-            </article>
+                    <p>
+                        Upload your project file or custom script.
+                    </p>
 
-
-            <article class="hub-card">
-
-                <div class="hub-card-icon">
-                    ✨
                 </div>
 
-                <h2>
-                    Coming Soon
-                </h2>
+            </div>
 
-                <p>
-                    More Project File Hub features
-                    can be added as development
-                    continues.
-                </p>
 
-            </article>
+            <form id="publishForm">
 
+                <div class="form-group">
+
+                    <label for="uploaderName">
+                        Uploader Name
+                    </label>
+
+                    <input
+                        id="uploaderName"
+                        class="input"
+                        type="text"
+                        placeholder="Enter your name"
+                        maxlength="60"
+                        required
+                    >
+
+                    <p class="form-hint">
+                        Your name will appear publicly as the uploader.
+                    </p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="fileTitle">
+                        File / Project Name
+                    </label>
+
+                    <input
+                        id="fileTitle"
+                        class="input"
+                        type="text"
+                        placeholder="Example: Main Game Script"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="projectFile">
+                        Select File
+                    </label>
+
+                    <input
+                        id="projectFile"
+                        class="file-input"
+                        type="file"
+                        required
+                    >
+
+                    <p class="form-hint">
+                        The selected file will be stored in this browser for this demo.
+                    </p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        class="textarea"
+                        placeholder="Describe your project file..."
+                        maxlength="500"
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    class="publish-button"
+                    type="submit"
+                >
+                    🚀 PUBLISH FILE
+                </button>
+
+            </form>
 
         </section>
 
 
+        <!-- ============================================
+             FILE LIST
+        ============================================= -->
+
+        <section class="files-section">
+
+            <h2 class="files-title">
+                Published Files
+            </h2>
+
+            <div
+                class="files-grid"
+                id="filesGrid"
+            ></div>
+
+        </section>
+
     </main>
 
 
-    <!-- ==================================================
-         PARTICLE ENGINE
-    =================================================== -->
+    <!-- ================================================
+         WARNING / KEY MODAL
+    ================================================= -->
 
-    <script src="/particle.js"></script>
+    <div
+        class="modal warning-modal"
+        id="keyModal"
+    >
+
+        <div class="modal-box">
+
+            <div class="warning-icon">
+                ⚠
+            </div>
+
+            <h2>
+                SAVE YOUR REMOVAL KEY
+            </h2>
+
+            <p>
+                Your file has been published successfully.
+                This key is required to remove your uploaded file.
+            </p>
+
+            <div
+                class="key-display"
+                id="generatedKey"
+            >
+                ---
+            </div>
+
+            <p>
+                <strong>
+                    WARNING:
+                </strong>
+                If you lose this key, this demo cannot recover it for you.
+            </p>
+
+            <div class="modal-actions">
+
+                <button
+                    class="modal-button primary"
+                    id="copyKey"
+                    type="button"
+                >
+                    COPY KEY
+                </button>
+
+                <button
+                    class="modal-button"
+                    id="closeKeyModal"
+                    type="button"
+                >
+                    I SAVED IT
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================
+         DELETE MODAL
+    ================================================= -->
+
+    <div
+        class="modal"
+        id="deleteModal"
+    >
+
+        <div class="modal-box">
+
+            <div class="warning-icon">
+                🔐
+            </div>
+
+            <h2>
+                REMOVE FILE
+            </h2>
+
+            <p>
+                Enter the removal key that was generated
+                when this file was published.
+            </p>
+
+            <input
+                id="deleteKeyInput"
+                class="input"
+                type="text"
+                placeholder="Enter removal key"
+                autocomplete="off"
+            >
+
+            <div class="modal-actions">
+
+                <button
+                    class="modal-button"
+                    id="cancelDelete"
+                    type="button"
+                >
+                    CANCEL
+                </button>
+
+                <button
+                    class="modal-button danger"
+                    id="confirmDelete"
+                    type="button"
+                >
+                    REMOVE
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================
+         PREVIEW MODAL
+    ================================================= -->
+
+    <div
+        class="modal"
+        id="previewModal"
+    >
+
+        <div class="modal-box">
+
+            <h2 id="previewTitle">
+                File Preview
+            </h2>
+
+            <div
+                class="preview-area"
+                id="previewArea"
+            ></div>
+
+            <div class="modal-actions">
+
+                <button
+                    class="modal-button"
+                    id="closePreview"
+                    type="button"
+                >
+                    CLOSE
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="particle.js"></script>
+
+
+    <script>
+
+        /*
+        ====================================================
+        PROJECT FILE HUB APPLICATION
+        ====================================================
+        */
+
+        const STORAGE_KEY =
+            "mil_project_file_hub_files";
+
+
+        let files =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
+
+
+        let deletingFileId = null;
+
+
+        /*
+        ====================================================
+        DOM
+        ====================================================
+        */
+
+        const publishForm =
+            document.getElementById(
+                "publishForm"
+            );
+
+        const filesGrid =
+            document.getElementById(
+                "filesGrid"
+            );
+
+        const keyModal =
+            document.getElementById(
+                "keyModal"
+            );
+
+        const deleteModal =
+            document.getElementById(
+                "deleteModal"
+            );
+
+        const previewModal =
+            document.getElementById(
+                "previewModal"
+            );
+
+        const generatedKey =
+            document.getElementById(
+                "generatedKey"
+            );
+
+        const deleteKeyInput =
+            document.getElementById(
+                "deleteKeyInput"
+            );
+
+        const previewTitle =
+            document.getElementById(
+                "previewTitle"
+            );
+
+        const previewArea =
+            document.getElementById(
+                "previewArea"
+            );
+
+
+        /*
+        ====================================================
+        SAVE
+        ====================================================
+        */
+
+        function saveFiles() {
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(files)
+            );
+        }
+
+
+        /*
+        ====================================================
+        RANDOM KEY
+        ====================================================
+        */
+
+        function generateRemovalKey(name) {
+
+            const cleanName =
+                name
+                    .replace(
+                        /[^a-zA-Z0-9]/g,
+                        ""
+                    )
+                    .toUpperCase()
+                    .slice(0, 5);
+
+            const randomPart =
+                Math.random()
+                    .toString(36)
+                    .substring(2, 8)
+                    .toUpperCase();
+
+            const timePart =
+                Date.now()
+                    .toString(36)
+                    .slice(-4)
+                    .toUpperCase();
+
+            return (
+                "MIL-" +
+                cleanName +
+                "-" +
+                randomPart +
+                timePart
+            );
+        }
+
+
+        /*
+        ====================================================
+        ID
+        ====================================================
+        */
+
+        function generateId() {
+
+            return (
+                Date.now().toString(36) +
+                Math.random()
+                    .toString(36)
+                    .substring(2)
+            );
+        }
+
+
+        /*
+        ====================================================
+        FORMAT SIZE
+        ====================================================
+        */
+
+        function formatSize(bytes) {
+
+            if (bytes < 1024) {
+
+                return bytes + " B";
+            }
+
+            if (bytes < 1024 * 1024) {
+
+                return (
+                    (bytes / 1024)
+                        .toFixed(1) +
+                    " KB"
+                );
+            }
+
+            return (
+                (bytes / (1024 * 1024))
+                    .toFixed(1) +
+                " MB"
+            );
+        }
+
+
+        /*
+        ====================================================
+        ESCAPE HTML
+        ====================================================
+        */
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+
+        /*
+        ====================================================
+        RENDER FILES
+        ====================================================
+        */
+
+        function renderFiles() {
+
+            filesGrid.innerHTML = "";
+
+
+            if (!files.length) {
+
+                filesGrid.innerHTML = `
+                    <div class="empty-state">
+                        No files have been published yet.
+                        Be the first to upload a project.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            files
+                .slice()
+                .reverse()
+                .forEach(file => {
+
+                    const card =
+                        document.createElement(
+                            "article"
+                        );
+
+                    card.className =
+                        "file-card";
+
+
+                    card.innerHTML = `
+
+                        <span class="file-type">
+                            ${escapeHTML(file.extension || "FILE")}
+                        </span>
+
+                        <h3>
+                            ${escapeHTML(file.title)}
+                        </h3>
+
+                        <p class="uploaded-by">
+                            Uploaded by:
+                            <strong>
+                                ${escapeHTML(file.uploader)}
+                            </strong>
+                        </p>
+
+                        <p class="file-meta">
+                            ${escapeHTML(file.name)}
+                            ·
+                            ${formatSize(file.size)}
+                        </p>
+
+                        ${
+                            file.description
+                            ? `
+                                <p class="file-meta">
+                                    ${escapeHTML(
+                                        file.description
+                                    )}
+                                </p>
+                            `
+                            : ""
+                        }
+
+                        <div class="file-actions">
+
+                            <button
+                                class="action-button"
+                                type="button"
+                                data-preview="${file.id}"
+                            >
+                                PREVIEW
+                            </button>
+
+                            <button
+                                class="action-button"
+                                type="button"
+                                data-download="${file.id}"
+                            >
+                                DOWNLOAD
+                            </button>
+
+                            <button
+                                class="action-button delete"
+                                type="button"
+                                data-delete="${file.id}"
+                            >
+                                REMOVE
+                            </button>
+
+                        </div>
+                    `;
+
+
+                    filesGrid.appendChild(card);
+                });
+        }
+
+
+        /*
+        ====================================================
+        PUBLISH
+        ====================================================
+        */
+
+        publishForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const uploader =
+                    document
+                        .getElementById(
+                            "uploaderName"
+                        )
+                        .value
+                        .trim();
+
+                const title =
+                    document
+                        .getElementById(
+                            "fileTitle"
+                        )
+                        .value
+                        .trim();
+
+                const description =
+                    document
+                        .getElementById(
+                            "description"
+                        )
+                        .value
+                        .trim();
+
+                const fileInput =
+                    document
+                        .getElementById(
+                            "projectFile"
+                        );
+
+
+                const selectedFile =
+                    fileInput.files[0];
+
+
+                if (!uploader) {
+
+                    alert(
+                        "Please enter the uploader name."
+                    );
+
+                    return;
+                }
+
+
+                if (!selectedFile) {
+
+                    alert(
+                        "Please select a file."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                Browser localStorage has a
+                practical size limit.
+
+                This implementation stores
+                smaller files as Data URLs.
+                */
+
+                const MAX_SIZE =
+                    3 * 1024 * 1024;
+
+
+                if (
+                    selectedFile.size >
+                    MAX_SIZE
+                ) {
+
+                    alert(
+                        "For this browser-only version, files must be 3 MB or smaller."
+                    );
+
+                    return;
+                }
+
+
+                const dataURL =
+                    await readFile(
+                        selectedFile
+                    );
+
+
+                const extension =
+                    selectedFile.name
+                        .split(".")
+                        .pop()
+                        .toUpperCase();
+
+
+                const removalKey =
+                    generateRemovalKey(
+                        uploader
+                    );
+
+
+                const newFile = {
+
+                    id:
+                        generateId(),
+
+                    title:
+                        title ||
+                        selectedFile.name,
+
+                    uploader,
+
+                    name:
+                        selectedFile.name,
+
+                    size:
+                        selectedFile.size,
+
+                    type:
+                        selectedFile.type,
+
+                    extension,
+
+                    description,
+
+                    dataURL,
+
+                    removalKey,
+
+                    createdAt:
+                        new Date()
+                            .toISOString()
+                };
+
+
+                files.push(
+                    newFile
+                );
+
+
+                saveFiles();
+
+                renderFiles();
+
+                publishForm.reset();
+
+
+                /*
+                Show the warning popup AFTER
+                successful publishing.
+                */
+
+                generatedKey.textContent =
+                    removalKey;
+
+                keyModal.classList.add(
+                    "active"
+                );
+
+            }
+        );
+
+
+        /*
+        ====================================================
+        FILE READER
+        ====================================================
+        */
+
+        function readFile(file) {
+
+            return new Promise(
+                (resolve, reject) => {
+
+                    const reader =
+                        new FileReader();
+
+
+                    reader.onload =
+                        () => {
+
+                            resolve(
+                                reader.result
+                            );
+                        };
+
+
+                    reader.onerror =
+                        reject;
+
+
+                    reader.readAsDataURL(
+                        file
+                    );
+
+                }
+            );
+        }
+
+
+        /*
+        ====================================================
+        COPY KEY
+        ====================================================
+        */
+
+        document
+            .getElementById("copyKey")
+            .addEventListener(
+                "click",
+                async () => {
+
+                    const key =
+                        generatedKey
+                            .textContent;
+
+                    try {
+
+                        await navigator
+                            .clipboard
+                            .writeText(
+                                key
+                            );
+
+                        document
+                            .getElementById(
+                                "copyKey"
+                            )
+                            .textContent =
+                            "COPIED ✓";
+
+                    } catch {
+
+                        alert(
+                            "Copy failed. Please manually save your key."
+                        );
+                    }
+
+                }
+            );
+
+
+        /*
+        ====================================================
+        CLOSE KEY
+        ====================================================
+        */
+
+        document
+            .getElementById(
+                "closeKeyModal"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    keyModal.classList.remove(
+                        "active"
+                    );
+
+                    document
+                        .getElementById(
+                            "copyKey"
+                        )
+                        .textContent =
+                        "COPY KEY";
+                }
+            );
+
+
+        /*
+        ====================================================
+        FILE ACTIONS
+        ====================================================
+        */
+
+        filesGrid.addEventListener(
+            "click",
+            event => {
+
+                const previewId =
+                    event.target.dataset.preview;
+
+                const downloadId =
+                    event.target.dataset.download;
+
+                const deleteId =
+                    event.target.dataset.delete;
+
+
+                if (previewId) {
+
+                    openPreview(
+                        previewId
+                    );
+
+                    return;
+                }
+
+
+                if (downloadId) {
+
+                    downloadFile(
+                        downloadId
+                    );
+
+                    return;
+                }
+
+
+                if (deleteId) {
+
+                    deletingFileId =
+                        deleteId;
+
+                    deleteKeyInput.value =
+                        "";
+
+                    deleteModal.classList.add(
+                        "active"
+                    );
+
+                    setTimeout(
+                        () =>
+                            deleteKeyInput.focus(),
+                        100
+                    );
+                }
+
+            }
+        );
+
+
+        /*
+        ====================================================
+        PREVIEW
+        ====================================================
+        */
+
+        async function openPreview(id) {
+
+            const file =
+                files.find(
+                    item =>
+                        item.id === id
+                );
+
+            if (!file) return;
+
+
+            previewTitle.textContent =
+                file.title;
+
+
+            previewArea.innerHTML = "";
+
+
+            /*
+            Images
+            */
+
+            if (
+                file.type &&
+                file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+                img.src =
+                    file.dataURL;
+
+                img.style.width =
+                    "100%";
+
+                img.style.display =
+                    "block";
+
+                img.style.borderRadius =
+                    "12px";
+
+                previewArea.appendChild(
+                    img
+                );
+
+            }
+
+            /*
+            PDF
+            */
+
+            else if (
+                file.type ===
+                "application/pdf"
+            ) {
+
+                const iframe =
+                    document.createElement(
+                        "iframe"
+                    );
+
+                iframe.src =
+                    file.dataURL;
+
+                previewArea.appendChild(
+                    iframe
+                );
+
+            }
+
+            /*
+            Text / code
+            */
+
+            else if (
+                file.type.startsWith(
+                    "text/"
+                ) ||
+                /\.(js|css|html|json|txt|md|xml|csv)$/i
+                    .test(file.name)
+            ) {
+
+                try {
+
+                    const text =
+                        await fetch(
+                            file.dataURL
+                        ).then(
+                            response =>
+                                response.text()
+                        );
+
+
+                    const pre =
+                        document.createElement(
+                            "pre"
+                        );
+
+                    pre.textContent =
+                        text;
+
+                    previewArea.appendChild(
+                        pre
+                    );
+
+                } catch {
+
+                    previewArea.innerHTML =
+                        `
+                        <div class="empty-state">
+                            Text preview unavailable.
+                        </div>
+                        `;
+                }
+
+            }
+
+            /*
+            Other files
+            */
+
+            else {
+
+                previewArea.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <div style="
+                            font-size:42px;
+                            margin-bottom:12px;
+                        ">
+                            📦
+                        </div>
+
+                        <strong>
+                            Preview unavailable
+                        </strong>
+
+                        <p style="
+                            margin-top:8px;
+                        ">
+                            This file type can still
+                            be downloaded.
+                        </p>
+
+                    </div>
+                `;
+            }
+
+
+            previewModal.classList.add(
+                "active"
+            );
+        }
+
+
+        /*
+        ====================================================
+        DOWNLOAD
+        ====================================================
+        */
+
+        function downloadFile(id) {
+
+            const file =
+                files.find(
+                    item =>
+                        item.id === id
+                );
+
+            if (!file) return;
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+            link.href =
+                file.dataURL;
+
+            link.download =
+                file.name;
+
+            document.body.appendChild(
+                link
+            );
+
+            link.click();
+
+            link.remove();
+        }
+
+
+        /*
+        ====================================================
+        DELETE
+        ====================================================
+        */
+
+        document
+            .getElementById(
+                "confirmDelete"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    const enteredKey =
+                        deleteKeyInput
+                            .value
+                            .trim();
+
+
+                    const file =
+                        files.find(
+                            item =>
+                                item.id ===
+                                deletingFileId
+                        );
+
+
+                    if (!file) {
+
+                        closeDelete();
+
+                        return;
+                    }
+
+
+                    if (
+                        enteredKey !==
+                        file.removalKey
+                    ) {
+
+                        deleteKeyInput.style
+                            .borderColor =
+                            "rgba(255,70,90,.8)";
+
+
+                        deleteKeyInput.value =
+                            "";
+
+
+                        deleteKeyInput.placeholder =
+                            "INVALID KEY — TRY AGAIN";
+
+                        return;
+                    }
+
+
+                    files =
+                        files.filter(
+                            item =>
+                                item.id !==
+                                deletingFileId
+                        );
+
+
+                    saveFiles();
+
+                    renderFiles();
+
+                    closeDelete();
+
+                    /*
+                    Explicit removal confirmation.
+                    */
+
+                    alert(
+                        "File removed successfully."
+                    );
+                }
+            );
+
+
+        /*
+        ====================================================
+        CANCEL DELETE
+        ====================================================
+        */
+
+        document
+            .getElementById(
+                "cancelDelete"
+            )
+            .addEventListener(
+                "click",
+                closeDelete
+            );
+
+
+        function closeDelete() {
+
+            deleteModal.classList.remove(
+                "active"
+            );
+
+            deletingFileId = null;
+
+            deleteKeyInput.value = "";
+
+            deleteKeyInput.style
+                .borderColor = "";
+        }
+
+
+        /*
+        ====================================================
+        CLOSE PREVIEW
+        ====================================================
+        */
+
+        document
+            .getElementById(
+                "closePreview"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    previewModal.classList.remove(
+                        "active"
+                    );
+
+                    previewArea.innerHTML =
+                        "";
+                }
+            );
+
+
+        /*
+        ====================================================
+        CLICK OUTSIDE MODAL
+        ====================================================
+        */
+
+        [
+            keyModal,
+            deleteModal,
+            previewModal
+        ].forEach(modal => {
+
+            modal.addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target ===
+                        modal
+                    ) {
+
+                        modal.classList.remove(
+                            "active"
+                        );
+                    }
+
+                }
+            );
+
+        });
+
+
+        /*
+        ====================================================
+        ESCAPE
+        ====================================================
+        */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    keyModal.classList.remove(
+                        "active"
+                    );
+
+                    deleteModal.classList.remove(
+                        "active"
+                    );
+
+                    previewModal.classList.remove(
+                        "active"
+                    );
+                }
+
+            }
+        );
+
+
+        /*
+        ====================================================
+        INITIAL RENDER
+        ====================================================
+        */
+
+        renderFiles();
+
+    </script>
 
 </body>
-
 </html>
