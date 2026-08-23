@@ -1,11 +1,19 @@
 "use strict";
 
+/*
+========================================================
+PROJECT FILE HUB
+SMOOTH ADAPTIVE PARTICLE ENGINE
+========================================================
+*/
+
 (() => {
 
     const canvas =
         document.getElementById(
             "particleCanvas"
         );
+
 
     if (!canvas) {
         return;
@@ -16,19 +24,15 @@
         canvas.getContext(
             "2d",
             {
-                alpha: true
+                alpha: true,
+                desynchronized: true
             }
         );
+
 
     if (!ctx) {
         return;
     }
-
-
-    const mobile =
-        window.matchMedia(
-            "(max-width: 700px)"
-        ).matches;
 
 
     const reducedMotion =
@@ -37,24 +41,139 @@
         ).matches;
 
 
-    const particleCount =
-        reducedMotion
-            ? mobile ? 5 : 8
-            : mobile ? 16 : 30;
+    const mobile =
+        window.matchMedia(
+            "(max-width: 700px)"
+        ).matches;
 
 
-    let width = 0;
-    let height = 0;
+    const cores =
+        navigator.hardwareConcurrency || 4;
 
-    let dpr = 1;
+
+    const memory =
+        navigator.deviceMemory || 4;
+
+
+    let quality =
+        "medium";
+
+
+    if (reducedMotion) {
+
+        quality =
+            "minimal";
+
+    }
+    else if (
+        cores <= 2 ||
+        memory <= 2
+    ) {
+
+        quality =
+            "low";
+
+    }
+    else if (
+        cores >= 8 &&
+        memory >= 8
+    ) {
+
+        quality =
+            "high";
+
+    }
+
+
+    const presets = {
+
+        minimal: {
+            desktop: 8,
+            mobile: 5,
+            speed: .10,
+            connections: 0
+        },
+
+        low: {
+            desktop: 18,
+            mobile: 9,
+            speed: .15,
+            connections: 55
+        },
+
+        medium: {
+            desktop: 32,
+            mobile: 15,
+            speed: .20,
+            connections: 75
+        },
+
+        high: {
+            desktop: 48,
+            mobile: 22,
+            speed: .24,
+            connections: 90
+        }
+
+    };
+
+
+    const preset =
+        presets[
+            quality
+        ];
+
+
+    let width =
+        window.innerWidth;
+
+
+    let height =
+        window.innerHeight;
+
+
+    let dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            1.5
+        );
+
 
     let particles = [];
 
-    let animationFrame = null;
 
-    let running = true;
+    let targetCount =
+        mobile
+            ? preset.mobile
+            : preset.desktop;
 
-    let lastTime = 0;
+
+    if (
+        width * height < 300000
+    ) {
+
+        targetCount =
+            Math.min(
+                targetCount,
+                12
+            );
+
+    }
+
+
+    let animationFrame =
+        null;
+
+
+    let running =
+        !document.hidden;
+
+
+    let lastTime =
+        0;
+
+
+    let fpsHistory = [];
 
 
     function random(
@@ -62,10 +181,57 @@
         max
     ) {
 
-        return (
-            Math.random() *
-            (max - min)
-        ) + min;
+        return Math.random() *
+            (max - min) +
+            min;
+
+    }
+
+
+    function resize() {
+
+        width =
+            window.innerWidth;
+
+        height =
+            window.innerHeight;
+
+
+        dpr =
+            Math.min(
+                window.devicePixelRatio || 1,
+                1.5
+            );
+
+
+        canvas.width =
+            Math.floor(
+                width * dpr
+            );
+
+
+        canvas.height =
+            Math.floor(
+                height * dpr
+            );
+
+
+        canvas.style.width =
+            width + "px";
+
+
+        canvas.style.height =
+            height + "px";
+
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
 
     }
 
@@ -88,32 +254,26 @@
 
             vx:
                 random(
-                    -0.06,
-                    0.06
+                    -preset.speed,
+                    preset.speed
                 ),
 
             vy:
                 random(
-                    -0.06,
-                    0.06
+                    -preset.speed,
+                    preset.speed
                 ),
 
             radius:
                 random(
-                    0.7,
-                    1.9
+                    .7,
+                    1.8
                 ),
 
             alpha:
                 random(
-                    0.25,
-                    0.75
-                ),
-
-            hue:
-                random(
-                    180,
-                    280
+                    .25,
+                    .72
                 )
 
         };
@@ -121,82 +281,95 @@
     }
 
 
-    function resize() {
+    function syncParticles() {
 
-        width =
-            window.innerWidth;
+        while (
+            particles.length <
+            targetCount
+        ) {
 
-        height =
-            window.innerHeight;
-
-
-        dpr =
-            Math.min(
-                window.devicePixelRatio || 1,
-                1.5
+            particles.push(
+                createParticle()
             );
 
-
-        canvas.width =
-            width * dpr;
-
-        canvas.height =
-            height * dpr;
+        }
 
 
-        canvas.style.width =
-            width + "px";
+        while (
+            particles.length >
+            targetCount
+        ) {
 
-        canvas.style.height =
-            height + "px";
+            particles.pop();
 
-
-        ctx.setTransform(
-            dpr,
-            0,
-            0,
-            dpr,
-            0,
-            0
-        );
-
-
-        particles =
-            Array.from(
-                {
-                    length:
-                        particleCount
-                },
-                createParticle
-            );
+        }
 
     }
 
 
-    function animate(
-        timestamp
+    function update(
+        delta
     ) {
 
-        if (!running) {
-            return;
+        const factor =
+            delta * .06;
+
+
+        for (
+            const p of particles
+        ) {
+
+            p.x +=
+                p.vx *
+                factor;
+
+
+            p.y +=
+                p.vy *
+                factor;
+
+
+            if (
+                p.x < -10
+            ) {
+
+                p.x =
+                    width + 10;
+
+            }
+            else if (
+                p.x > width + 10
+            ) {
+
+                p.x =
+                    -10;
+
+            }
+
+
+            if (
+                p.y < -10
+            ) {
+
+                p.y =
+                    height + 10;
+
+            }
+            else if (
+                p.y > height + 10
+            ) {
+
+                p.y =
+                    -10;
+
+            }
+
         }
 
-
-        if (!lastTime) {
-            lastTime = timestamp;
-        }
+    }
 
 
-        const delta =
-            Math.min(
-                32,
-                timestamp - lastTime
-            );
-
-
-        lastTime =
-            timestamp;
-
+    function draw() {
 
         ctx.clearRect(
             0,
@@ -206,84 +379,31 @@
         );
 
 
+        /*
+        Particle dots.
+        */
+
+        ctx.fillStyle =
+            "rgba(91, 220, 255, .6)";
+
+
         for (
-            const particle
-            of particles
+            const p of particles
         ) {
 
-            particle.x +=
-                particle.vx *
-                delta;
-
-            particle.y +=
-                particle.vy *
-                delta;
-
-
-            if (
-                particle.x <
-                -10
-            ) {
-
-                particle.x =
-                    width + 10;
-
-            }
-
-
-            if (
-                particle.x >
-                width + 10
-            ) {
-
-                particle.x =
-                    -10;
-
-            }
-
-
-            if (
-                particle.y <
-                -10
-            ) {
-
-                particle.y =
-                    height + 10;
-
-            }
-
-
-            if (
-                particle.y >
-                height + 10
-            ) {
-
-                particle.y =
-                    -10;
-
-            }
+            ctx.globalAlpha =
+                p.alpha;
 
 
             ctx.beginPath();
 
-
-            ctx.fillStyle =
-                `hsla(
-                    ${particle.hue},
-                    100%,
-                    70%,
-                    ${particle.alpha}
-                )`;
-
-
             ctx.arc(
-                particle.x,
-                particle.y,
-                particle.radius,
+                p.x,
+                p.y,
+                p.radius,
                 0,
                 Math.PI * 2
             );
-
 
             ctx.fill();
 
@@ -291,36 +411,56 @@
 
 
         /*
-         * Particle connections
-         */
+        Connections.
+        */
 
-        let connections = 0;
+        if (
+            preset.connections <= 0
+        ) {
 
-        const maxConnections = 90;
+            ctx.globalAlpha = 1;
 
-        const maxDistance = 125;
+            return;
 
-        const maxDistanceSquared =
-            maxDistance *
-            maxDistance;
+        }
+
+
+        const limit =
+            preset.connections;
+
+
+        const limitSquared =
+            limit * limit;
+
+
+        let connections =
+            0;
 
 
         for (
             let i = 0;
-            i < particles.length &&
-            connections < maxConnections;
+            i < particles.length;
             i++
         ) {
 
-            for (
-                let j = i + 1;
-                j < particles.length &&
-                connections < maxConnections;
-                j++
+            if (
+                connections >= 75
             ) {
 
-                const a =
-                    particles[i];
+                break;
+
+            }
+
+
+            const a =
+                particles[i];
+
+
+            for (
+                let j = i + 1;
+                j < particles.length;
+                j++
+            ) {
 
                 const b =
                     particles[j];
@@ -328,6 +468,7 @@
 
                 const dx =
                     a.x - b.x;
+
 
                 const dy =
                     a.y - b.y;
@@ -340,9 +481,11 @@
 
                 if (
                     distanceSquared >
-                    maxDistanceSquared
+                    limitSquared
                 ) {
+
                     continue;
+
                 }
 
 
@@ -352,41 +495,32 @@
                     );
 
 
-                const opacity =
+                const alpha =
                     (
                         1 -
-                        distance /
-                        maxDistance
-                    ) * 0.12;
-
-
-                ctx.beginPath();
+                        distance / limit
+                    ) * .11;
 
 
                 ctx.strokeStyle =
-                    `rgba(
-                        91,
-                        152,
-                        255,
-                        ${opacity}
-                    )`;
+                    `rgba(110, 130, 255, ${alpha})`;
 
 
                 ctx.lineWidth =
-                    0.55;
+                    .55;
 
+
+                ctx.beginPath();
 
                 ctx.moveTo(
                     a.x,
                     a.y
                 );
 
-
                 ctx.lineTo(
                     b.x,
                     b.y
                 );
-
 
                 ctx.stroke();
 
@@ -394,6 +528,162 @@
                 connections++;
 
             }
+
+        }
+
+
+        ctx.globalAlpha =
+            1;
+
+    }
+
+
+    function optimize() {
+
+        if (
+            fpsHistory.length < 20
+        ) {
+
+            return;
+
+        }
+
+
+        const average =
+            fpsHistory.reduce(
+                (
+                    total,
+                    value
+                ) =>
+                    total + value,
+                0
+            ) /
+            fpsHistory.length;
+
+
+        const fps =
+            1000 /
+            average;
+
+
+        if (
+            fps < 32 &&
+            targetCount > 7
+        ) {
+
+            targetCount =
+                Math.max(
+                    7,
+                    Math.floor(
+                        targetCount * .65
+                    )
+                );
+
+
+            syncParticles();
+
+        }
+        else if (
+            fps < 45 &&
+            targetCount > 10
+        ) {
+
+            targetCount =
+                Math.max(
+                    10,
+                    Math.floor(
+                        targetCount * .82
+                    )
+                );
+
+
+            syncParticles();
+
+        }
+
+
+        fpsHistory =
+            [];
+
+    }
+
+
+    let performanceTimer =
+        0;
+
+
+    function animate(
+        timestamp
+    ) {
+
+        if (!running) {
+
+            animationFrame =
+                null;
+
+            return;
+
+        }
+
+
+        if (!lastTime) {
+
+            lastTime =
+                timestamp;
+
+        }
+
+
+        let delta =
+            timestamp -
+            lastTime;
+
+
+        lastTime =
+            timestamp;
+
+
+        delta =
+            Math.min(
+                delta,
+                40
+            );
+
+
+        fpsHistory.push(
+            delta
+        );
+
+
+        if (
+            fpsHistory.length > 30
+        ) {
+
+            fpsHistory.shift();
+
+        }
+
+
+        update(
+            delta
+        );
+
+
+        draw();
+
+
+        performanceTimer +=
+            delta;
+
+
+        if (
+            performanceTimer > 2000
+        ) {
+
+            optimize();
+
+            performanceTimer =
+                0;
 
         }
 
@@ -410,27 +700,39 @@
         "visibilitychange",
         () => {
 
+            running =
+                !document.hidden;
+
+
             if (
-                document.hidden
+                !running
             ) {
 
-                running =
-                    false;
-
-                cancelAnimationFrame(
+                if (
                     animationFrame
-                );
+                ) {
+
+                    cancelAnimationFrame(
+                        animationFrame
+                    );
+
+                }
+
+                animationFrame =
+                    null;
 
                 return;
 
             }
 
 
-            running =
-                true;
-
             lastTime =
                 0;
+
+
+            fpsHistory =
+                [];
+
 
             animationFrame =
                 requestAnimationFrame(
@@ -455,8 +757,12 @@
 
             resizeTimer =
                 setTimeout(
-                    resize,
-                    160
+                    () => {
+
+                        resize();
+
+                    },
+                    150
                 );
 
         },
@@ -467,6 +773,19 @@
 
 
     resize();
+
+    syncParticles();
+
+
+    if (
+        reducedMotion
+    ) {
+
+        draw();
+
+        return;
+
+    }
 
 
     animationFrame =
