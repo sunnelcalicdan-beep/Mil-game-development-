@@ -1,355 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     >
 
     <meta
         name="theme-color"
-        content="#080b18"
+        content="#070817"
     >
 
-    <title>
-        Project File Hub
-    </title>
+    <meta
+        name="description"
+        content="MIL Project Game Development — Project File Hub"
+    >
+
+    <title>Project File Hub • MIL Project</title>
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet"
-        href="/style.css"
     >
-
 </head>
-
 
 <body>
 
-<canvas
-    id="particleCanvas"
-    aria-hidden="true"
-></canvas>
+    <!-- =====================================================
+         PARTICLE BACKGROUND
+    ====================================================== -->
 
+    <canvas id="particleCanvas"></canvas>
 
-<div class="ambient ambient-one"></div>
-<div class="ambient ambient-two"></div>
-<div class="ambient ambient-three"></div>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
 
 
-<header class="topbar">
+    <!-- =====================================================
+         MAIN APP
+    ====================================================== -->
 
-    <div class="brand">
+    <main class="app-shell">
 
-        <div class="brand-logo">
-            ✦
-        </div>
 
-        <div>
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
-            <h1>
-                Project File Hub
-            </h1>
+        <header class="site-header">
 
-            <p>
-                MIL Project • Game Development
-            </p>
+            <div class="brand-area">
 
-        </div>
-
-    </div>
-
-
-    <div
-        id="serverStatus"
-        class="status offline"
-    >
-        <span class="status-dot"></span>
-        Checking server...
-    </div>
-
-</header>
-
-
-<main class="container">
-
-
-    <!-- HERO -->
-
-    <section class="team-section">
-    <p class="eyebrow">MIL PROJECT • GAME DEVELOPMENT</p>
-
-    <h1>
-        WELCOME TO<br>
-        <span>PROJECT FILE HUB</span>
-    </h1>
-
-    <p class="handled-title">
-        This website is handled by:
-    </p>
-
-    <div class="team-list">
-
-        <span class="team-member featured">
-            Sunnel John Rebano 🧑🏻‍🔧
-        </span>
-
-        <span class="team-member">Rhea Kim</span>
-
-        <span class="team-member">Kimberly</span>
-
-        <span class="team-member">Charles Tiong</span>
-
-        <span class="team-member">Reyden Osia</span>
-
-        <span class="team-member">
-            Mc Lawrence Conzaga
-        </span>
-
-        <span class="team-member">Kimmy Clavo</span>
-
-        <span class="team-member">Dianne Gadia</span>
-
-        <span class="team-member">Carl Caabay</span>
-
-        <span class="team-member">Mark Camaso</span>
-
-        <span class="team-member">Maynard Cabada</span>
-
-        <span class="team-member">
-            Mark Anthony Canta
-        </span>
-
-    </div>
-
-    <p class="project-description">
-        For MIL Project Game Development.
-    </p>
-
-    <button id="enterProject" class="enter-button">
-        ENTER PROJECT
-        <span>→</span>
-    </button>
-
-</section>
-
-    <!-- PUBLISH -->
-
-    <section class="card publish-card">
-
-        <div class="section-heading">
-
-            <div class="section-icon">
-                🚀
-            </div>
-
-            <div>
-
-                <h2>
-                    Publish File
-                </h2>
-
-                <p>
-                    Upload your project file or custom script.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <form id="publishForm">
-
-            <label for="username">
-                Uploader Name
-            </label>
-
-            <input
-                id="username"
-                name="username"
-                type="text"
-                maxlength="80"
-                placeholder="Enter your name"
-                autocomplete="off"
-                required
-            >
-
-            <small>
-                Your name will appear publicly as the uploader.
-            </small>
-
-
-            <label for="displayName">
-                Display Name
-            </label>
-
-            <input
-                id="displayName"
-                name="displayName"
-                type="text"
-                maxlength="100"
-                placeholder="Example: Player Controller"
-            >
-
-
-            <label for="fileInput">
-                Project File
-            </label>
-
-            <input
-                id="fileInput"
-                name="file"
-                type="file"
-                required
-            >
-
-
-            <div
-                id="selectedFile"
-                class="selected-file"
-            >
-                <span>📁</span>
-                No file selected.
-            </div>
-
-
-            <button
-                id="publishButton"
-                type="submit"
-                class="primary-button"
-            >
-                <span>🚀</span>
-                Publish File
-            </button>
-
-
-            <div
-                id="uploadProgress"
-                class="progress-container hidden"
-            >
-
-                <div class="progress-bar">
-
-                    <div
-                        id="progressFill"
-                    ></div>
-
+                <div class="brand-icon">
+                    ✦
                 </div>
 
-                <span id="progressText">
-                    Starting upload...
-                </span>
+                <div class="brand-text">
 
-            </div>
-
-
-            <div
-                id="publishMessage"
-                class="message"
-            ></div>
-
-        </form>
-
-    </section>
-
-
-    <!-- STATS -->
-
-    <section class="stats-grid">
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                📦
-            </div>
-
-            <span>
-                Files
-            </span>
-
-            <strong id="statFiles">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                💻
-            </div>
-
-            <span>
-                Scripts
-            </span>
-
-            <strong id="statScripts">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                ⚡
-            </div>
-
-            <span>
-                Downloads
-            </span>
-
-            <strong id="statDownloads">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                💾
-            </div>
-
-            <span>
-                Storage
-            </span>
-
-            <strong id="statStorage">
-                0 B
-            </strong>
-
-        </div>
-
-    </section>
-
-
-    <!-- LIBRARY -->
-
-    <section class="card library-card">
-
-        <div class="library-header">
-
-            <div class="section-heading">
-
-                <div class="section-icon">
-                    🌐
-                </div>
-
-                <div>
-
-                    <h2>
-                        Public Library
-                    </h2>
+                    <h1>
+                        Project File Hub
+                    </h1>
 
                     <p>
-                        Browse all published project files.
+                        MIL Project • Game Development
                     </p>
 
                 </div>
@@ -357,312 +80,2053 @@
             </div>
 
 
-            <button
-                id="refreshButton"
-                class="secondary-button"
-                type="button"
-            >
-                ↻ Refresh
-            </button>
+            <div class="server-status">
 
-        </div>
-
-
-        <div class="filters">
-
-            <div class="search-wrapper">
+                <span class="status-dot"></span>
 
                 <span>
-                    🔎
+                    Server Online
                 </span>
 
-                <input
-                    id="searchInput"
-                    type="search"
-                    placeholder="Search files, projects or uploaders..."
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             ORIGINAL HERO DESIGN
+        ================================================== -->
+
+        <section class="hero-section">
+
+            <div class="hero-grid"></div>
+
+            <div class="hero-content">
+
+
+                <div class="eyebrow">
+                    MIL PROJECT • GAME DEVELOPMENT
+                </div>
+
+
+                <div class="hero-title-row">
+
+                    <div>
+
+                        <h2 class="hero-title">
+
+                            WELCOME TO
+
+                            <span>
+                                PROJECT FILE HUB
+                            </span>
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <p class="hero-description">
+                    This website is handled by:
+                </p>
+
+
+                <!-- =================================================
+                     ALL ORIGINAL + ADDED NAMES
+                ================================================== -->
+
+                <div class="members-list">
+
+
+                    <div class="member-chip featured">
+                        Sunnel John Rebano
+                        <span>🧑🏻‍🔧</span>
+                    </div>
+
+
+                    <div class="member-chip">
+                        Rhea Kim
+                    </div>
+
+
+                    <div class="member-chip">
+                        Kimberly
+                    </div>
+
+
+                    <div class="member-chip">
+                        Charles Tiong
+                    </div>
+
+
+                    <div class="member-chip">
+                        Reyden Osia
+                    </div>
+
+
+                    <div class="member-chip">
+                        Mc Lawrence Conzaga
+                    </div>
+
+
+                    <div class="member-chip">
+                        Kimmy Clavo
+                    </div>
+
+
+                    <div class="member-chip">
+                        Dianne Gadia
+                    </div>
+
+
+                    <div class="member-chip">
+                        Carl Caabay
+                    </div>
+
+
+                    <div class="member-chip">
+                        Mark Camaso
+                    </div>
+
+
+                    <div class="member-chip">
+                        Maynard Cabada
+                    </div>
+
+
+                    <div class="member-chip">
+                        Mark Anthony Canta
+                    </div>
+
+
+                </div>
+
+
+                <p class="hero-footer-text">
+                    For MIL Project Game Development.
+                </p>
+
+
+                <!-- =================================================
+                     ENTER PROJECT
+                ================================================== -->
+
+                <button
+                    type="button"
+                    class="enter-project-button"
+                    id="enterProjectButton"
                 >
 
+                    <span>
+                        ENTER PROJECT
+                    </span>
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+
+                <div
+                    class="project-online-label"
+                    id="projectOnlineLabel"
+                >
+                    PROJECT HUB ONLINE
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PROJECT UPLOADER
+        ================================================== -->
+
+        <section
+            class="upload-section"
+            id="uploadSection"
+        >
+
+
+            <div class="section-heading">
+
+
+                <div class="section-icon">
+                    🚀
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Publish File
+                    </h2>
+
+                    <p>
+                        Upload your project file or custom script.
+                    </p>
+
+                </div>
+
+
             </div>
 
 
-            <select
-                id="uploaderFilter"
-            >
 
-                <option value="">
-                    All uploaders
-                </option>
+            <!-- =================================================
+                 UPLOADER NAME
+            ================================================== -->
 
-            </select>
+            <div class="form-group">
 
-
-            <select
-                id="sortSelect"
-            >
-
-                <option value="newest">
-                    Newest
-                </option>
-
-                <option value="oldest">
-                    Oldest
-                </option>
-
-                <option value="name">
-                    Name
-                </option>
-
-                <option value="largest">
-                    Largest
-                </option>
-
-                <option value="downloads">
-                    Most Downloaded
-                </option>
-
-            </select>
-
-        </div>
+                <label for="uploaderName">
+                    Uploader Name
+                </label>
 
 
-        <div
-            id="library"
-            class="library"
-        >
+                <input
+                    type="text"
+                    id="uploaderName"
+                    name="uploaderName"
+                    placeholder="Enter your name"
+                    autocomplete="name"
+                    maxlength="80"
+                >
 
-            <div class="empty">
-                Loading library...
+
+                <small>
+                    Your name will appear publicly as the uploader.
+                </small>
+
             </div>
 
-        </div>
-
-    </section>
-
-</main>
 
 
-<!-- DELETE KEY MODAL -->
+            <!-- =================================================
+                 FILE SELECTOR
+            ================================================== -->
 
-<div
-    id="deleteKeyModal"
-    class="modal hidden"
->
+            <div class="form-group">
 
-    <div
-        class="modal-backdrop"
-        data-close-delete-key
-    ></div>
+                <label for="fileInput">
+                    Project File
+                </label>
 
 
-    <div class="delete-key-modal">
-
-        <div class="warning-animation">
-            ⚠️
-        </div>
-
-
-        <div class="warning-label">
-            IMPORTANT
-        </div>
+                <div
+                    class="file-drop-zone"
+                    id="fileDropZone"
+                >
 
 
-        <h2>
-            File Published!
-        </h2>
+                    <input
+                        type="file"
+                        id="fileInput"
+                        hidden
+                    >
 
 
-        <p class="key-warning-text">
-            Your file is now publicly available.
-            Before continuing, save your delete key.
-        </p>
+                    <div class="upload-icon">
+                        ↑
+                    </div>
 
 
-        <div class="danger-warning">
-
-            <strong>
-                ⚠️ SAVE THIS DELETE KEY
-            </strong>
-
-            <p>
-                This key is required to remove your
-                uploaded file later. It cannot be recovered
-                if you lose it.
-            </p>
-
-        </div>
+                    <h3>
+                        Choose a file
+                    </h3>
 
 
-        <label>
-            Your Delete Key
-        </label>
+                    <p>
+                        Tap here to select your project file
+                    </p>
 
 
-        <div class="delete-key-row">
+                    <span class="file-types">
+                        Any supported file type
+                    </span>
 
-            <input
-                id="generatedDeleteKey"
-                type="text"
-                readonly
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FILE PREVIEW
+            ================================================== -->
+
+            <div
+                class="file-preview"
+                id="filePreview"
+                hidden
             >
+
+
+                <div class="preview-icon">
+                    📄
+                </div>
+
+
+                <div class="preview-information">
+
+                    <strong id="previewFileName">
+                        No file selected
+                    </strong>
+
+
+                    <span id="previewFileSize">
+                        —
+                    </span>
+
+
+                    <span id="previewUploader">
+                        Uploaded by: —
+                    </span>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="remove-file-button"
+                    id="removeFileButton"
+                    aria-label="Remove selected file"
+                >
+                    ×
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PUBLISH BUTTON
+            ================================================== -->
 
             <button
-                id="copyKeyButton"
                 type="button"
+                class="publish-button"
+                id="publishButton"
             >
-                Copy
-            </button>
 
-        </div>
-
-
-        <div
-            id="copyMessage"
-            class="copy-message"
-        ></div>
-
-
-        <button
-            id="savedKeyButton"
-            type="button"
-            class="saved-key-button"
-        >
-            ✓ I've Saved My Key
-        </button>
-
-
-        <p class="final-warning">
-            You will need this key when deleting your file.
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- DELETE MODAL -->
-
-<div
-    id="deleteModal"
-    class="modal hidden"
->
-
-    <div
-        class="modal-backdrop"
-        data-close-delete
-    ></div>
-
-
-    <div class="modal-box">
-
-        <div class="modal-icon danger">
-            🗑️
-        </div>
-
-        <h2>
-            Delete File
-        </h2>
-
-        <p>
-            Enter the delete key generated when
-            this file was published.
-        </p>
-
-
-        <input
-            id="deleteTokenInput"
-            type="text"
-            placeholder="USERNAME-MIL-RANDOMKEY"
-            autocomplete="off"
-        >
-
-
-        <div
-            id="deleteMessage"
-            class="message"
-        ></div>
-
-
-        <div class="modal-actions">
-
-            <button
-                id="cancelDeleteButton"
-                type="button"
-                class="secondary-button"
-            >
-                Cancel
-            </button>
-
-            <button
-                id="confirmDeleteButton"
-                type="button"
-                class="danger-button"
-            >
-                Delete File
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- PREVIEW MODAL -->
-
-<div
-    id="previewModal"
-    class="modal hidden"
->
-
-    <div
-        class="modal-backdrop"
-        data-close-preview
-    ></div>
-
-
-    <div class="modal-box preview-box">
-
-        <div class="modal-heading">
-
-            <div>
-
-                <span class="preview-label">
-                    CODE PREVIEW
+                <span class="publish-icon">
+                    🚀
                 </span>
 
-                <h2 id="previewTitle">
-                    Script Preview
-                </h2>
+                <span>
+                    PUBLISH FILE
+                </span>
+
+            </button>
+
+
+            <div
+                class="upload-message"
+                id="uploadMessage"
+                aria-live="polite"
+            ></div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PUBLIC FILES
+        ================================================== -->
+
+        <section
+            class="files-section"
+            id="filesSection"
+        >
+
+
+            <div class="section-heading">
+
+
+                <div class="section-icon">
+                    📁
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Public Project Files
+                    </h2>
+
+                    <p>
+                        Published files appear here.
+                    </p>
+
+                </div>
+
 
             </div>
 
 
+            <div
+                class="files-container"
+                id="filesContainer"
+            >
+
+                <div
+                    class="empty-files"
+                    id="emptyFiles"
+                >
+
+                    <div>
+                        ✦
+                    </div>
+
+                    <strong>
+                        No files published yet
+                    </strong>
+
+                    <span>
+                        Be the first to publish a project file.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="site-footer">
+
+            <div class="footer-line"></div>
+
+            <p>
+                MIL Project • Game Development
+            </p>
+
+            <span>
+                Project File Hub
+            </span>
+
+        </footer>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         REMOVE FILE / KEY WARNING MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="warningModal"
+        hidden
+    >
+
+        <div
+            class="warning-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="warningTitle"
+        >
+
+
+            <div class="warning-animation">
+
+                <div class="warning-ring"></div>
+
+                <div class="warning-symbol">
+                    !
+                </div>
+
+            </div>
+
+
+            <h2 id="warningTitle">
+                IMPORTANT — SAVE YOUR KEY
+            </h2>
+
+
+            <p class="warning-main-text">
+
+                Your file has been published successfully.
+
+                <br><br>
+
+                <strong>
+                    This key is required to remove your uploaded file.
+                </strong>
+
+            </p>
+
+
+            <div class="generated-key-box">
+
+                <span>
+                    YOUR REMOVAL KEY
+                </span>
+
+
+                <strong id="generatedKey">
+                    --------
+                </strong>
+
+
+                <button
+                    type="button"
+                    id="copyKeyButton"
+                >
+                    COPY KEY
+                </button>
+
+            </div>
+
+
+            <p class="warning-small">
+
+                Save this key somewhere safe.
+                It cannot be recovered if lost.
+
+            </p>
+
+
             <button
                 type="button"
-                data-close-preview
-                class="close-button"
+                class="modal-close-button"
+                id="closeWarningButton"
             >
-                ×
+                I SAVED MY KEY
             </button>
+
 
         </div>
 
+    </div>
 
-        <pre id="previewContent"></pre>
+
+
+    <!-- =====================================================
+         REMOVE FILE MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="removeModal"
+        hidden
+    >
+
+        <div
+            class="remove-modal"
+            role="dialog"
+            aria-modal="true"
+        >
+
+            <div class="remove-modal-icon">
+                🔐
+            </div>
+
+
+            <h2>
+                Remove Uploaded File
+            </h2>
+
+
+            <p>
+                Enter the removal key that was generated
+                when this file was published.
+            </p>
+
+
+            <input
+                type="text"
+                id="removeKeyInput"
+                placeholder="Enter removal key"
+                autocomplete="off"
+            >
+
+
+            <div
+                class="remove-error"
+                id="removeError"
+            ></div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelRemoveButton"
+                    class="secondary-button"
+                >
+                    CANCEL
+                </button>
+
+
+                <button
+                    type="button"
+                    id="confirmRemoveButton"
+                    class="danger-button"
+                >
+                    REMOVE FILE
+                </button>
+
+            </div>
+
+        </div>
 
     </div>
 
-</div>
 
 
-<script
-    src="/particle.js"
-></script>
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
 
-<script
-    src="/app.js"
-></script>
+    <div
+        class="toast"
+        id="toast"
+        aria-live="polite"
+    >
+
+        <span id="toastIcon">
+            ✓
+        </span>
+
+        <span id="toastText">
+            Done
+        </span>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="particle.js"></script>
+
+
+    <script>
+
+        "use strict";
+
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const enterProjectButton =
+            document.getElementById(
+                "enterProjectButton"
+            );
+
+        const uploadSection =
+            document.getElementById(
+                "uploadSection"
+            );
+
+        const uploaderName =
+            document.getElementById(
+                "uploaderName"
+            );
+
+        const fileInput =
+            document.getElementById(
+                "fileInput"
+            );
+
+        const fileDropZone =
+            document.getElementById(
+                "fileDropZone"
+            );
+
+        const filePreview =
+            document.getElementById(
+                "filePreview"
+            );
+
+        const previewFileName =
+            document.getElementById(
+                "previewFileName"
+            );
+
+        const previewFileSize =
+            document.getElementById(
+                "previewFileSize"
+            );
+
+        const previewUploader =
+            document.getElementById(
+                "previewUploader"
+            );
+
+        const removeFileButton =
+            document.getElementById(
+                "removeFileButton"
+            );
+
+        const publishButton =
+            document.getElementById(
+                "publishButton"
+            );
+
+        const uploadMessage =
+            document.getElementById(
+                "uploadMessage"
+            );
+
+        const filesContainer =
+            document.getElementById(
+                "filesContainer"
+            );
+
+        const emptyFiles =
+            document.getElementById(
+                "emptyFiles"
+            );
+
+        const warningModal =
+            document.getElementById(
+                "warningModal"
+            );
+
+        const generatedKey =
+            document.getElementById(
+                "generatedKey"
+            );
+
+        const copyKeyButton =
+            document.getElementById(
+                "copyKeyButton"
+            );
+
+        const closeWarningButton =
+            document.getElementById(
+                "closeWarningButton"
+            );
+
+        const removeModal =
+            document.getElementById(
+                "removeModal"
+            );
+
+        const removeKeyInput =
+            document.getElementById(
+                "removeKeyInput"
+            );
+
+        const removeError =
+            document.getElementById(
+                "removeError"
+            );
+
+        const cancelRemoveButton =
+            document.getElementById(
+                "cancelRemoveButton"
+            );
+
+        const confirmRemoveButton =
+            document.getElementById(
+                "confirmRemoveButton"
+            );
+
+        const toast =
+            document.getElementById(
+                "toast"
+            );
+
+        const toastText =
+            document.getElementById(
+                "toastText"
+            );
+
+        const toastIcon =
+            document.getElementById(
+                "toastIcon"
+            );
+
+
+
+        /* =====================================================
+           STATE
+        ===================================================== */
+
+        let selectedFile = null;
+
+        let pendingPublishedFile = null;
+
+        let currentRemoveId = null;
+
+        let toastTimer = null;
+
+
+
+        /* =====================================================
+           ENTER PROJECT
+        ===================================================== */
+
+        enterProjectButton.addEventListener(
+            "click",
+            () => {
+
+                uploadSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+                setTimeout(
+                    () => {
+
+                        uploaderName.focus();
+
+                    },
+                    650
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           FILE DROP ZONE
+        ===================================================== */
+
+        fileDropZone.addEventListener(
+            "click",
+            () => {
+
+                fileInput.click();
+
+            }
+        );
+
+
+        fileDropZone.addEventListener(
+            "dragover",
+            event => {
+
+                event.preventDefault();
+
+                fileDropZone.classList.add(
+                    "drag-active"
+                );
+
+            }
+        );
+
+
+        fileDropZone.addEventListener(
+            "dragleave",
+            () => {
+
+                fileDropZone.classList.remove(
+                    "drag-active"
+                );
+
+            }
+        );
+
+
+        fileDropZone.addEventListener(
+            "drop",
+            event => {
+
+                event.preventDefault();
+
+                fileDropZone.classList.remove(
+                    "drag-active"
+                );
+
+
+                const files =
+                    event.dataTransfer.files;
+
+
+                if (
+                    files.length
+                ) {
+
+                    selectFile(
+                        files[0]
+                    );
+
+                }
+
+            }
+        );
+
+
+        fileInput.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    fileInput.files.length
+                ) {
+
+                    selectFile(
+                        fileInput.files[0]
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           SELECT FILE
+        ===================================================== */
+
+        function selectFile(file) {
+
+            selectedFile =
+                file;
+
+
+            previewFileName.textContent =
+                file.name;
+
+
+            previewFileSize.textContent =
+                formatFileSize(
+                    file.size
+                );
+
+
+            previewUploader.textContent =
+                "Uploaded by: " +
+                (
+                    uploaderName.value.trim() ||
+                    "Not entered yet"
+                );
+
+
+            filePreview.hidden =
+                false;
+
+
+            fileDropZone.classList.add(
+                "has-file"
+            );
+
+
+            showToast(
+                "File selected",
+                "✓"
+            );
+
+        }
+
+
+
+        /* =====================================================
+           REMOVE SELECTED FILE
+        ===================================================== */
+
+        removeFileButton.addEventListener(
+            "click",
+            () => {
+
+                clearSelectedFile();
+
+            }
+        );
+
+
+        function clearSelectedFile() {
+
+            selectedFile =
+                null;
+
+
+            fileInput.value =
+                "";
+
+
+            filePreview.hidden =
+                true;
+
+
+            fileDropZone.classList.remove(
+                "has-file"
+            );
+
+        }
+
+
+
+        /* =====================================================
+           FORMAT FILE SIZE
+        ===================================================== */
+
+        function formatFileSize(bytes) {
+
+            if (
+                bytes < 1024
+            ) {
+
+                return bytes + " B";
+
+            }
+
+
+            if (
+                bytes < 1024 * 1024
+            ) {
+
+                return (
+                    bytes / 1024
+                ).toFixed(1) + " KB";
+
+            }
+
+
+            if (
+                bytes < 1024 * 1024 * 1024
+            ) {
+
+                return (
+                    bytes /
+                    (
+                        1024 *
+                        1024
+                    )
+                ).toFixed(1) + " MB";
+
+            }
+
+
+            return (
+                bytes /
+                (
+                    1024 *
+                    1024 *
+                    1024
+                )
+            ).toFixed(1) + " GB";
+
+        }
+
+
+
+        /* =====================================================
+           GENERATE SECURE RANDOM REMOVAL KEY
+        ===================================================== */
+
+        function generateRemovalKey(
+            name
+        ) {
+
+            const cleanName =
+                name
+                    .replace(
+                        /[^a-zA-Z0-9]/g,
+                        ""
+                    )
+                    .toUpperCase()
+                    .slice(
+                        0,
+                        5
+                    );
+
+
+            const chars =
+                "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+
+            let randomPart =
+                "";
+
+
+            if (
+                window.crypto &&
+                crypto.getRandomValues
+            ) {
+
+                const values =
+                    new Uint32Array(8);
+
+
+                crypto.getRandomValues(
+                    values
+                );
+
+
+                for (
+                    let i = 0;
+                    i < values.length;
+                    i++
+                ) {
+
+                    randomPart +=
+                        chars[
+                            values[i] %
+                            chars.length
+                        ];
+
+                }
+
+            }
+            else {
+
+                for (
+                    let i = 0;
+                    i < 8;
+                    i++
+                ) {
+
+                    randomPart +=
+                        chars[
+                            Math.floor(
+                                Math.random() *
+                                chars.length
+                            )
+                        ];
+
+                }
+
+            }
+
+
+            return (
+                "MIL-" +
+                cleanName +
+                "-" +
+                randomPart
+            );
+
+        }
+
+
+
+        /* =====================================================
+           PUBLISH
+        ===================================================== */
+
+        publishButton.addEventListener(
+            "click",
+            () => {
+
+                const name =
+                    uploaderName.value.trim();
+
+
+                if (!name) {
+
+                    showUploadMessage(
+                        "Please enter your uploader name first.",
+                        "error"
+                    );
+
+
+                    uploaderName.focus();
+
+                    return;
+
+                }
+
+
+                if (!selectedFile) {
+
+                    showUploadMessage(
+                        "Please select a file before publishing.",
+                        "error"
+                    );
+
+
+                    return;
+
+                }
+
+
+                const key =
+                    generateRemovalKey(
+                        name
+                    );
+
+
+                const id =
+                    createId();
+
+
+                const publishedFile = {
+
+                    id,
+
+                    name:
+                        selectedFile.name,
+
+                    size:
+                        selectedFile.size,
+
+                    type:
+                        selectedFile.type ||
+                        "Unknown file type",
+
+                    uploader:
+                        name,
+
+                    key,
+
+                    createdAt:
+                        new Date().toISOString()
+
+                };
+
+
+                /*
+                 * Save metadata locally.
+                 *
+                 * The actual binary upload to a server requires
+                 * a backend endpoint. This frontend keeps the
+                 * published metadata functional for preview/demo
+                 * purposes and is ready to connect to your backend.
+                 */
+
+                savePublishedFile(
+                    publishedFile
+                );
+
+
+                renderFiles();
+
+
+                pendingPublishedFile =
+                    publishedFile;
+
+
+                generatedKey.textContent =
+                    key;
+
+
+                warningModal.hidden =
+                    false;
+
+
+                document.body.classList.add(
+                    "modal-open"
+                );
+
+
+                clearSelectedFile();
+
+                uploaderName.value =
+                    "";
+
+
+                showUploadMessage(
+                    "",
+                    ""
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           CREATE ID
+        ===================================================== */
+
+        function createId() {
+
+            if (
+                window.crypto &&
+                crypto.randomUUID
+            ) {
+
+                return crypto.randomUUID();
+
+            }
+
+
+            return (
+                Date.now().toString(
+                    36
+                ) +
+                Math.random()
+                    .toString(36)
+                    .slice(2)
+            );
+
+        }
+
+
+
+        /* =====================================================
+           STORAGE
+        ===================================================== */
+
+        function getPublishedFiles() {
+
+            try {
+
+                return JSON.parse(
+                    localStorage.getItem(
+                        "mil_project_files"
+                    )
+                ) || [];
+
+            }
+            catch {
+
+                return [];
+
+            }
+
+        }
+
+
+        function savePublishedFile(
+            file
+        ) {
+
+            const files =
+                getPublishedFiles();
+
+
+            files.unshift(
+                file
+            );
+
+
+            localStorage.setItem(
+                "mil_project_files",
+                JSON.stringify(
+                    files
+                )
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RENDER FILES
+        ===================================================== */
+
+        function renderFiles() {
+
+            const files =
+                getPublishedFiles();
+
+
+            filesContainer.innerHTML =
+                "";
+
+
+            if (
+                !files.length
+            ) {
+
+                filesContainer.appendChild(
+                    emptyFiles
+                );
+
+                return;
+
+            }
+
+
+            files.forEach(
+                file => {
+
+                    const card =
+                        createFileCard(
+                            file
+                        );
+
+
+                    filesContainer.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           FILE CARD
+        ===================================================== */
+
+        function createFileCard(
+            file
+        ) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "file-card";
+
+
+            const icon =
+                document.createElement(
+                    "div"
+                );
+
+
+            icon.className =
+                "file-card-icon";
+
+
+            icon.textContent =
+                getFileIcon(
+                    file.name
+                );
+
+
+            const information =
+                document.createElement(
+                    "div"
+                );
+
+
+            information.className =
+                "file-card-information";
+
+
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+
+            title.textContent =
+                file.name;
+
+
+            const uploader =
+                document.createElement(
+                    "p"
+                );
+
+
+            uploader.textContent =
+                "Uploaded by: " +
+                file.uploader;
+
+
+            const metadata =
+                document.createElement(
+                    "span"
+                );
+
+
+            metadata.textContent =
+                formatFileSize(
+                    file.size
+                ) +
+                " • " +
+                formatDate(
+                    file.createdAt
+                );
+
+
+            information.appendChild(
+                title
+            );
+
+            information.appendChild(
+                uploader
+            );
+
+            information.appendChild(
+                metadata
+            );
+
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "file-card-actions";
+
+
+            const removeButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            removeButton.type =
+                "button";
+
+
+            removeButton.className =
+                "file-remove-button";
+
+
+            removeButton.textContent =
+                "REMOVE";
+
+
+            removeButton.addEventListener(
+                "click",
+                () => {
+
+                    openRemoveModal(
+                        file.id
+                    );
+
+                }
+            );
+
+
+            actions.appendChild(
+                removeButton
+            );
+
+
+            card.appendChild(
+                icon
+            );
+
+
+            card.appendChild(
+                information
+            );
+
+
+            card.appendChild(
+                actions
+            );
+
+
+            return card;
+
+        }
+
+
+
+        /* =====================================================
+           FILE ICON
+        ===================================================== */
+
+        function getFileIcon(
+            filename
+        ) {
+
+            const extension =
+                filename
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const icons = {
+
+                js: "JS",
+                html: "HTML",
+                css: "CSS",
+                json: "{}",
+                pdf: "PDF",
+                doc:
+                    "DOC",
+                docx:
+                    "DOC",
+                zip:
+                    "ZIP",
+                rar:
+                    "RAR",
+                png:
+                    "IMG",
+                jpg:
+                    "IMG",
+                jpeg:
+                    "IMG",
+                gif:
+                    "IMG",
+                mp4:
+                    "VID",
+                mp3:
+                    "AUD"
+
+            };
+
+
+            return (
+                icons[extension] ||
+                "FILE"
+            );
+
+        }
+
+
+
+        /* =====================================================
+           DATE
+        ===================================================== */
+
+        function formatDate(
+            date
+        ) {
+
+            try {
+
+                return new Date(
+                    date
+                ).toLocaleDateString(
+                    undefined,
+                    {
+                        year:
+                            "numeric",
+                        month:
+                            "short",
+                        day:
+                            "numeric"
+                    }
+                );
+
+            }
+            catch {
+
+                return "Recently";
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           WARNING MODAL
+        ===================================================== */
+
+        closeWarningButton.addEventListener(
+            "click",
+            () => {
+
+                closeModal(
+                    warningModal
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           COPY KEY
+        ===================================================== */
+
+        copyKeyButton.addEventListener(
+            "click",
+            async () => {
+
+                const key =
+                    generatedKey.textContent;
+
+
+                try {
+
+                    await navigator.clipboard.writeText(
+                        key
+                    );
+
+
+                    copyKeyButton.textContent =
+                        "COPIED ✓";
+
+
+                    showToast(
+                        "Removal key copied",
+                        "✓"
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            copyKeyButton.textContent =
+                                "COPY KEY";
+
+                        },
+                        1800
+                    );
+
+                }
+                catch {
+
+                    showToast(
+                        "Copy failed — save the key manually.",
+                        "!"
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           REMOVE MODAL
+        ===================================================== */
+
+        function openRemoveModal(
+            id
+        ) {
+
+            currentRemoveId =
+                id;
+
+
+            removeKeyInput.value =
+                "";
+
+
+            removeError.textContent =
+                "";
+
+
+            removeModal.hidden =
+                false;
+
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    removeKeyInput.focus();
+
+                },
+                100
+            );
+
+        }
+
+
+        cancelRemoveButton.addEventListener(
+            "click",
+            () => {
+
+                closeModal(
+                    removeModal
+                );
+
+            }
+        );
+
+
+        confirmRemoveButton.addEventListener(
+            "click",
+            () => {
+
+                const enteredKey =
+                    removeKeyInput.value.trim();
+
+
+                if (
+                    !enteredKey
+                ) {
+
+                    removeError.textContent =
+                        "Enter your removal key.";
+
+                    return;
+
+                }
+
+
+                const files =
+                    getPublishedFiles();
+
+
+                const index =
+                    files.findIndex(
+                        file =>
+                            file.id ===
+                            currentRemoveId
+                    );
+
+
+                if (
+                    index === -1
+                ) {
+
+                    removeError.textContent =
+                        "This file could not be found.";
+
+                    return;
+
+                }
+
+
+                if (
+                    files[index].key !==
+                    enteredKey
+                ) {
+
+                    removeError.textContent =
+                        "Invalid removal key.";
+
+                    removeKeyInput.classList.add(
+                        "input-error"
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            removeKeyInput.classList.remove(
+                                "input-error"
+                            );
+
+                        },
+                        500
+                    );
+
+
+                    return;
+
+                }
+
+
+                files.splice(
+                    index,
+                    1
+                );
+
+
+                localStorage.setItem(
+                    "mil_project_files",
+                    JSON.stringify(
+                        files
+                    )
+                );
+
+
+                closeModal(
+                    removeModal
+                );
+
+
+                renderFiles();
+
+
+                showToast(
+                    "File removed successfully",
+                    "✓"
+                );
+
+
+                currentRemoveId =
+                    null;
+
+            }
+        );
+
+
+
+        /* =====================================================
+           CLOSE MODAL
+        ===================================================== */
+
+        function closeModal(
+            modal
+        ) {
+
+            modal.hidden =
+                true;
+
+
+            if (
+                warningModal.hidden &&
+                removeModal.hidden
+            ) {
+
+                document.body.classList.remove(
+                    "modal-open"
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           ESCAPE KEY
+        ===================================================== */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key !==
+                    "Escape"
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    !warningModal.hidden
+                ) {
+
+                    closeModal(
+                        warningModal
+                    );
+
+                }
+
+
+                if (
+                    !removeModal.hidden
+                ) {
+
+                    closeModal(
+                        removeModal
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           UPLOAD MESSAGE
+        ===================================================== */
+
+        function showUploadMessage(
+            message,
+            type
+        ) {
+
+            uploadMessage.textContent =
+                message;
+
+
+            uploadMessage.className =
+                "upload-message";
+
+
+            if (
+                type
+            ) {
+
+                uploadMessage.classList.add(
+                    type
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        function showToast(
+            message,
+            icon
+        ) {
+
+            clearTimeout(
+                toastTimer
+            );
+
+
+            toastText.textContent =
+                message;
+
+
+            toastIcon.textContent =
+                icon;
+
+
+            toast.classList.add(
+                "show"
+            );
+
+
+            toastTimer =
+                setTimeout(
+                    () => {
+
+                        toast.classList.remove(
+                            "show"
+                        );
+
+                    },
+                    2500
+                );
+
+        }
+
+
+
+        /* =====================================================
+           UPDATE PREVIEW UPLOADER
+        ===================================================== */
+
+        uploaderName.addEventListener(
+            "input",
+            () => {
+
+                if (
+                    selectedFile
+                ) {
+
+                    previewUploader.textContent =
+                        "Uploaded by: " +
+                        (
+                            uploaderName.value.trim() ||
+                            "Not entered yet"
+                        );
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           INITIAL LOAD
+        ===================================================== */
+
+        renderFiles();
+
+    </script>
 
 </body>
-
 </html>
