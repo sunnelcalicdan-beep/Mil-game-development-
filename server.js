@@ -2,785 +2,421 @@
 
 /*
 ========================================================
-PROJECT FILE HUB
-BACKEND
-========================================================
+PROJECT FILE HUB — UPGRADED BACKEND
+MIL PROJECT • GAME DEVELOPMENT
 
-Features:
-- Express server
-- File uploads
-- 50 MB upload limit
-- Random delete keys
-- Uploader names
-- Download counter
-- Search
-- Uploader filtering
-- Sorting
-- Script preview
-- Statistics
-- Server health
-- Server-Sent Events
-- Persistent JSON database
-- Secure delete-key comparison
+Stack:
+  Node.js
+  Express 5
+  PostgreSQL
+  Multer
+
+Key systems:
+  - Server-side delete-key generation
+  - SHA-256 delete-key hashing
+  - Constant-time hash comparison
+  - One-time display of delete key after upload
+  - Upload/download/delete/search/statistics APIs
+  - Script preview for TXT only
+  - Server-Sent Events for live library updates
+  - Rate limiting without an extra dependency
+  - Security headers without an extra dependency
+  - Request body limits
+  - Filename sanitization
+  - Content-disposition protection
+  - PostgreSQL parameterized queries
+  - Graceful shutdown
 ========================================================
 */
 
 const express = require("express");
 const multer = require("multer");
 const crypto = require("crypto");
-const fs = require("fs");
 const path = require("path");
-
-
-/*
-========================================================
-CONFIG
-========================================================
-*/
+const { Pool } = require("pg");
 
 const app = express();
 
-const PORT =
-    process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 10000;
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MAX_JSON_SIZE = "2mb";
+const MAX_LIBRARY_RESULTS = 500;
 
-const ROOT =
-    __dirname;
+const ALLOWED_EXTENSIONS = new Set([
+    "txt", "json", "gd", "js", "css", "html",
+    "glb", "gltf",
+    "png", "jpg", "jpeg", "webp",
+    "wav", "mp3",
+    "zip"
+]);
 
-const PUBLIC_DIR =
-    path.join(
-        ROOT,
-        "public"
-    );
+const SCRIPT_EXTENSIONS = new Set(["txt"]);
 
-const STORAGE_DIR =
-    path.join(
-        ROOT,
-        "storage"
-    );
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl:
+        process.env.NODE_ENV === "production"
+            ? { rejectUnauthorized: false }
+            : false,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000
+});
 
-const UPLOAD_DIR =
-    path.join(
-        STORAGE_DIR,
-        "uploads"
-    );
-
-const DATABASE_FILE =
-    path.join(
-        STORAGE_DIR,
-        "files.json"
-    );
-
+if (!process.env.DATABASE_URL) {
+    console.warn("WARNING: DATABASE_URL is not configured.");
+}
 
 /*
 ========================================================
-CREATE DIRECTORIES
+BASIC SECURITY / HTTP CONFIGURATION
 ========================================================
 */
 
-fs.mkdirSync(
-    UPLOAD_DIR,
-    {
-        recursive: true
+app.disable("x-powered-by");
+
+app.use((req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=()"
+    );
+
+    if (process.env.NODE_ENV === "production") {
+        res.setHeader(
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        );
     }
-);
 
+    next();
+});
+
+app.use(express.json({ limit: MAX_JSON_SIZE }));
+app.use(express.urlencoded({ extended: true, limit: MAX_JSON_SIZE }));
 
 /*
 ========================================================
-DATABASE
+SIMPLE IN-MEMORY RATE LIMITER
+========================================================
+
+This is intentionally dependency-free.
+
+For multiple server instances, replace this with a
+shared Redis/database-backed limiter.
 ========================================================
 */
 
-let files = [];
+const rateBuckets = new Map();
 
+function rateLimit({
+    windowMs = 60_000,
+    max = 60,
+    key = req => req.ip || "unknown"
+} = {}) {
+    return (req, res, next) => {
+        const now = Date.now();
+        const bucketKey = String(key(req));
+        const existing = rateBuckets.get(bucketKey);
 
-function loadDatabase() {
+        if (!existing || now >= existing.resetAt) {
+            rateBuckets.set(bucketKey, {
+                count: 1,
+                resetAt: now + windowMs
+            });
 
-    try {
-
-        if (
-            !fs.existsSync(
-                DATABASE_FILE
-            )
-        ) {
-
-            files = [];
-
-            saveDatabase();
-
-            return;
+            return next();
         }
 
+        existing.count += 1;
 
-        const raw =
-            fs.readFileSync(
-                DATABASE_FILE,
-                "utf8"
+        if (existing.count > max) {
+            const retryAfter =
+                Math.ceil((existing.resetAt - now) / 1000);
+
+            res.setHeader("Retry-After", String(retryAfter));
+
+            return res.status(429).json({
+                success: false,
+                error: "Too many requests. Please try again later."
+            });
+        }
+
+        next();
+    };
+}
+
+setInterval(() => {
+    const now = Date.now();
+
+    for (const [key, value] of rateBuckets) {
+        if (now >= value.resetAt) {
+            rateBuckets.delete(key);
+        }
+    }
+}, 60_000).unref();
+
+/*
+========================================================
+UPLOAD CONFIGURATION
+========================================================
+*/
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+
+    limits: {
+        fileSize: MAX_FILE_SIZE,
+        files: 1
+    },
+
+    fileFilter: (req, file, callback) => {
+        const extension = getExtension(file.originalname);
+
+        if (!ALLOWED_EXTENSIONS.has(extension)) {
+            return callback(
+                new Error("This file type is not supported.")
             );
-
-
-        files =
-            JSON.parse(
-                raw
-            );
-
-
-        if (
-            !Array.isArray(files)
-        ) {
-
-            files = [];
-
         }
 
+        callback(null, true);
     }
-    catch (error) {
+});
 
-        console.error(
-            "Database load error:",
-            error
+/*
+========================================================
+DATABASE INITIALIZATION
+========================================================
+*/
+
+async function initializeDatabase() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS files (
+            id UUID PRIMARY KEY,
+            name TEXT NOT NULL,
+            display_name TEXT NOT NULL,
+            uploader TEXT NOT NULL,
+            extension TEXT NOT NULL,
+            mime_type TEXT NOT NULL,
+            size BIGINT NOT NULL,
+            uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            downloads BIGINT NOT NULL DEFAULT 0,
+            is_script BOOLEAN NOT NULL DEFAULT FALSE,
+            data BYTEA NOT NULL,
+            delete_token_hash TEXT NOT NULL
         );
+    `);
 
-        files = [];
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS files_uploaded_at_idx
+        ON files(uploaded_at DESC);
+    `);
 
-    }
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS files_uploader_idx
+        ON files(uploader);
+    `);
 
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS files_extension_idx
+        ON files(extension);
+    `);
+
+    console.log("Database initialized successfully.");
 }
 
+/*
+========================================================
+HELPERS
+========================================================
+*/
 
-function saveDatabase() {
-
-    fs.writeFileSync(
-        DATABASE_FILE,
-        JSON.stringify(
-            files,
-            null,
-            2
-        ),
-        "utf8"
-    );
-
+function generateId() {
+    return crypto.randomUUID();
 }
 
+function generateRandomCode(length = 10) {
+    const alphabet =
+        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-loadDatabase();
+    const bytes = crypto.randomBytes(length);
+    let code = "";
 
-
-/*
-========================================================
-MIDDLEWARE
-========================================================
-*/
-
-app.use(
-    express.json({
-        limit: "1mb"
-    })
-);
-
-
-app.use(
-    express.urlencoded({
-        extended: true
-    })
-);
-
-
-app.use(
-    express.static(
-        PUBLIC_DIR
-    )
-);
-
-
-/*
-========================================================
-MULTER
-========================================================
-*/
-
-const storage =
-    multer.diskStorage({
-
-        destination:
-            (
-                req,
-                file,
-                callback
-            ) => {
-
-                callback(
-                    null,
-                    UPLOAD_DIR
-                );
-
-            },
-
-
-        filename:
-            (
-                req,
-                file,
-                callback
-            ) => {
-
-                const id =
-                    crypto.randomUUID();
-
-                const safeOriginal =
-                    path
-                        .basename(
-                            file.originalname
-                        )
-                        .replace(
-                            /[^a-zA-Z0-9._-]/g,
-                            "_"
-                        );
-
-
-                callback(
-                    null,
-                    `${id}-${safeOriginal}`
-                );
-
-            }
-
-    });
-
-
-const upload =
-    multer({
-
-        storage,
-
-        limits: {
-            fileSize:
-                50 * 1024 * 1024
-        }
-
-    });
-
-
-/*
-========================================================
-EVENT CLIENTS
-========================================================
-*/
-
-const eventClients =
-    new Set();
-
-
-function broadcastUpdate() {
-
-    for (
-        const response of eventClients
-    ) {
-
-        response.write(
-            "event: library-update\n" +
-            "data: {}\n\n"
-        );
-
+    for (let i = 0; i < length; i++) {
+        code += alphabet[bytes[i] % alphabet.length];
     }
 
+    return code;
 }
 
+function cleanUsernameForKey(username) {
+    let value = String(username || "").trim();
 
-/*
-========================================================
-USERNAME
-========================================================
-*/
+    value = value.replace(/[^a-zA-Z0-9_-]+/g, "-");
+    value = value.replace(/[-_]+/g, "-");
+    value = value.replace(/^-+|-+$/g, "");
 
-function cleanUsername(
-    username
-) {
+    if (!value) {
+        value = "User";
+    }
 
-    return String(
-        username || ""
-    )
-        .trim()
-        .replace(
-            /[^a-zA-Z0-9_-]/g,
-            ""
-        )
-        .slice(
-            0,
-            40
-        );
-
+    return value.slice(0, 40);
 }
 
-
-/*
-========================================================
-DISPLAY NAME
-========================================================
-*/
-
-function cleanDisplayName(
-    value,
-    fallback
-) {
-
-    const result =
-        String(
-            value || ""
-        )
-        .trim()
-        .slice(
-            0,
-            100
-        );
-
-
-    return result ||
-        fallback;
-
+function generateDeleteToken(username) {
+    return `${cleanUsernameForKey(username)}-mil-${generateRandomCode(10)}`;
 }
 
-
-/*
-========================================================
-DELETE KEY
-========================================================
-*/
-
-function generateDeleteKey(
-    username
-) {
-
-    const clean =
-        cleanUsername(
-            username
-        );
-
-
-    const random =
-        crypto
-            .randomBytes(
-                8
-            )
-            .toString(
-                "hex"
-            )
-            .toUpperCase();
-
-
-    return (
-        clean +
-        "-MIL-" +
-        random
-    );
-
-}
-
-
-/*
-========================================================
-HASH DELETE KEY
-========================================================
-
-The raw key is returned only during publishing.
-
-The database stores a hash.
-========================================================
-*/
-
-function hashDeleteKey(
-    key
-) {
-
+function hashToken(token) {
     return crypto
-        .createHash(
-            "sha256"
-        )
-        .update(
-            key
-        )
-        .digest(
-            "hex"
-        );
-
+        .createHash("sha256")
+        .update(token, "utf8")
+        .digest("hex");
 }
 
+function tokensMatch(supplied, storedHash) {
+    const suppliedHash = Buffer.from(hashToken(supplied), "hex");
+    const databaseHash = Buffer.from(storedHash, "hex");
 
-/*
-========================================================
-SAFE KEY COMPARISON
-========================================================
-*/
-
-function verifyDeleteKey(
-    supplied,
-    storedHash
-) {
-
-    const suppliedHash =
-        hashDeleteKey(
-            supplied
-        );
-
-
-    const a =
-        Buffer.from(
-            suppliedHash,
-            "hex"
-        );
-
-    const b =
-        Buffer.from(
-            storedHash,
-            "hex"
-        );
-
-
-    if (
-        a.length !==
-        b.length
-    ) {
-
+    if (suppliedHash.length !== databaseHash.length) {
         return false;
-
     }
-
 
     return crypto.timingSafeEqual(
-        a,
-        b
+        suppliedHash,
+        databaseHash
     );
-
 }
 
+function cleanText(value, maxLength) {
+    if (typeof value !== "string") {
+        return "";
+    }
 
-/*
-========================================================
-FILE TYPE
-========================================================
-*/
+    return value
+        .trim()
+        .replace(/\s+/g, " ")
+        .slice(0, maxLength);
+}
 
-function getExtension(
-    filename
-) {
-
+function getExtension(filename) {
     return path
-        .extname(
-            filename
-        )
-        .replace(
-            ".",
-            ""
-        )
+        .extname(filename || "")
+        .slice(1)
         .toLowerCase();
-
 }
 
+function sanitizeFilename(filename) {
+    const original = String(filename || "file");
 
-function isScript(
-    extension
-) {
+    const basename = path.basename(original);
 
-    return [
-        "js",
-        "mjs",
-        "cjs",
-        "ts",
-        "tsx",
-        "jsx",
-        "css",
-        "html",
-        "htm",
-        "json",
-        "xml",
-        "py",
-        "lua",
-        "java",
-        "cpp",
-        "c",
-        "h",
-        "hpp",
-        "cs",
-        "php",
-        "rb",
-        "go",
-        "rs",
-        "sh",
-        "bat"
-    ].includes(
-        extension
-    );
-
+    return basename
+        .replace(/[\r\n"]/g, "")
+        .replace(/[^\p{L}\p{N}._()\- ]/gu, "_")
+        .slice(0, 180) || "file";
 }
 
+function safePublicFile(row) {
+    return {
+        id: row.id,
+        name: row.name,
+        displayName: row.display_name,
+        uploader: row.uploader,
+        extension: row.extension,
+        type: row.mime_type,
+        size: Number(row.size),
+        date: new Date(row.uploaded_at).getTime(),
+        downloads: Number(row.downloads),
+        script: row.is_script
+    };
+}
 
 /*
 ========================================================
-PUBLIC FILE OBJECT
+REAL-TIME CLIENTS
 ========================================================
 */
 
-function publicFile(
-    file
-) {
+const clients = new Set();
 
-    return {
-
-        id:
-            file.id,
-
-        name:
-            file.name,
-
-        displayName:
-            file.displayName,
-
-        uploader:
-            file.uploader,
-
-        extension:
-            file.extension,
-
-        size:
-            file.size,
-
-        date:
-            file.date,
-
-        downloads:
-            file.downloads,
-
-        script:
-            file.script
-
+function broadcastLibraryUpdate(type = "library-update") {
+    const payload = {
+        type,
+        timestamp: Date.now()
     };
 
+    const message =
+        `event: ${type}\n` +
+        `data: ${JSON.stringify(payload)}\n\n`;
+
+    for (const client of clients) {
+        try {
+            client.write(message);
+        } catch {
+            clients.delete(client);
+        }
+    }
 }
 
-
 /*
 ========================================================
-HEALTH
+RATE LIMIT GROUPS
 ========================================================
 */
 
-app.get(
-    "/api/health",
-    (req, res) => {
+const readLimit = rateLimit({
+    windowMs: 60_000,
+    max: 120
+});
 
-        res.json({
+const writeLimit = rateLimit({
+    windowMs: 60_000,
+    max: 20
+});
 
-            success: true,
-
-            status:
-                "online",
-
-            uptime:
-                process.uptime(),
-
-            time:
-                Date.now()
-
-        });
-
-    }
-);
-
+const deleteLimit = rateLimit({
+    windowMs: 60_000,
+    max: 10
+});
 
 /*
 ========================================================
-PUBLISH FILE
+LIVE EVENTS
 ========================================================
 */
 
-app.post(
-    "/api/files",
-    upload.single("file"),
-    (req, res) => {
+app.get("/api/events", readLimit, (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
 
+    res.flushHeaders();
+
+    res.write(
+        `event: connected\n` +
+        `data: ${JSON.stringify({ connected: true })}\n\n`
+    );
+
+    clients.add(res);
+
+    const heartbeat = setInterval(() => {
         try {
-
-            if (
-                !req.file
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "No file was uploaded."
-
-                });
-
-            }
-
-
-            const username =
-                cleanUsername(
-                    req.body.uploader
-                );
-
-
-            if (!username) {
-
-                fs.unlinkSync(
-                    req.file.path
-                );
-
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Uploader name is required."
-
-                });
-
-            }
-
-
-            const originalName =
-                path.basename(
-                    req.file.originalname
-                );
-
-
-            const extension =
-                getExtension(
-                    originalName
-                );
-
-
-            const displayName =
-                cleanDisplayName(
-                    req.body.displayName,
-                    originalName
-                );
-
-
-            const id =
-                crypto.randomUUID();
-
-
-            const deleteKey =
-                generateDeleteKey(
-                    username
-                );
-
-
-            const record = {
-
-                id,
-
-                name:
-                    originalName,
-
-                displayName,
-
-                uploader:
-                    username,
-
-                extension,
-
-                size:
-                    req.file.size,
-
-                date:
-                    Date.now(),
-
-                downloads:
-                    0,
-
-                script:
-                    isScript(
-                        extension
-                    ),
-
-                storedName:
-                    req.file.filename,
-
-                deleteKeyHash:
-                    hashDeleteKey(
-                        deleteKey
-                    )
-
-            };
-
-
-            files.unshift(
-                record
-            );
-
-
-            saveDatabase();
-
-            broadcastUpdate();
-
-
-            /*
-            IMPORTANT:
-            The raw delete key is returned
-            ONLY at publication time.
-            */
-
-            return res.status(201).json({
-
-                success: true,
-
-                deleteKey,
-
-                file:
-                    publicFile(
-                        record
-                    )
-
-            });
-
+            res.write(": heartbeat\n\n");
+        } catch {
+            clearInterval(heartbeat);
+            clients.delete(res);
         }
-        catch (error) {
+    }, 25_000);
 
-            console.error(
-                "Publish error:",
-                error
-            );
-
-
-            if (
-                req.file &&
-                req.file.path &&
-                fs.existsSync(
-                    req.file.path
-                )
-            ) {
-
-                try {
-
-                    fs.unlinkSync(
-                        req.file.path
-                    );
-
-                }
-                catch {}
-
-            }
-
-
-            return res.status(500).json({
-
-                success: false,
-
-                error:
-                    "Unable to publish file."
-
-            });
-
-        }
-
-    }
-);
-
+    req.on("close", () => {
+        clearInterval(heartbeat);
+        clients.delete(res);
+    });
+});
 
 /*
 ========================================================
@@ -788,176 +424,401 @@ GET FILES
 ========================================================
 */
 
-app.get(
-    "/api/files",
-    (req, res) => {
-
-        let result =
-            [...files];
-
-
-        const search =
-            String(
-                req.query.search || ""
-            )
-            .trim()
+app.get("/api/files", readLimit, async (req, res) => {
+    try {
+        const search = cleanText(req.query.search || "", 100);
+        const uploader = cleanText(req.query.uploader || "", 100);
+        const extension = cleanText(req.query.extension || "", 20)
             .toLowerCase();
 
+        const sort = String(req.query.sort || "newest");
 
-        const uploader =
-            String(
-                req.query.uploader || ""
-            )
-            .trim();
-
-
-        const sort =
-            String(
-                req.query.sort ||
-                "newest"
-            );
-
+        const values = [];
+        const conditions = [];
 
         if (search) {
+            values.push(`%${search}%`);
+            const parameter = `$${values.length}`;
 
-            result =
-                result.filter(
-                    file => {
-
-                        return (
-
-                            file.name
-                                .toLowerCase()
-                                .includes(
-                                    search
-                                )
-
-                            ||
-
-                            file.displayName
-                                .toLowerCase()
-                                .includes(
-                                    search
-                                )
-
-                            ||
-
-                            file.uploader
-                                .toLowerCase()
-                                .includes(
-                                    search
-                                )
-
-                        );
-
-                    }
-                );
-
+            conditions.push(`
+                (
+                    name ILIKE ${parameter}
+                    OR display_name ILIKE ${parameter}
+                    OR uploader ILIKE ${parameter}
+                    OR extension ILIKE ${parameter}
+                )
+            `);
         }
-
 
         if (uploader) {
-
-            result =
-                result.filter(
-                    file =>
-                        file.uploader ===
-                        uploader
-                );
-
+            values.push(uploader);
+            conditions.push(`uploader = $${values.length}`);
         }
 
-
-        switch (
-            sort
-        ) {
-
-            case "oldest":
-
-                result.sort(
-                    (
-                        a,
-                        b
-                    ) =>
-                        a.date -
-                        b.date
-                );
-
-                break;
-
-
-            case "name":
-
-                result.sort(
-                    (
-                        a,
-                        b
-                    ) =>
-                        a.displayName
-                            .localeCompare(
-                                b.displayName
-                            )
-                );
-
-                break;
-
-
-            case "largest":
-
-                result.sort(
-                    (
-                        a,
-                        b
-                    ) =>
-                        b.size -
-                        a.size
-                );
-
-                break;
-
-
-            case "downloads":
-
-                result.sort(
-                    (
-                        a,
-                        b
-                    ) =>
-                        b.downloads -
-                        a.downloads
-                );
-
-                break;
-
-
-            default:
-
-                result.sort(
-                    (
-                        a,
-                        b
-                    ) =>
-                        b.date -
-                        a.date
-                );
-
+        if (extension) {
+            values.push(extension);
+            conditions.push(`extension = $${values.length}`);
         }
 
+        let orderBy = "uploaded_at DESC";
+
+        if (sort === "oldest") {
+            orderBy = "uploaded_at ASC";
+        } else if (sort === "name") {
+            orderBy = "LOWER(display_name) ASC";
+        } else if (sort === "largest") {
+            orderBy = "size DESC";
+        } else if (sort === "downloads") {
+            orderBy = "downloads DESC";
+        }
+
+        const query = `
+            SELECT
+                id,
+                name,
+                display_name,
+                uploader,
+                extension,
+                mime_type,
+                size,
+                uploaded_at,
+                downloads,
+                is_script
+            FROM files
+            ${conditions.length
+                ? `WHERE ${conditions.join(" AND ")}`
+                : ""}
+            ORDER BY ${orderBy}
+            LIMIT ${MAX_LIBRARY_RESULTS}
+        `;
+
+        const result = await pool.query(query, values);
 
         res.json({
-
             success: true,
-
-            files:
-                result.map(
-                    publicFile
-                )
-
+            files: result.rows.map(safePublicFile)
         });
+    } catch (error) {
+        console.error("GET /api/files:", error);
 
+        res.status(500).json({
+            success: false,
+            error: "Unable to load public files."
+        });
+    }
+});
+
+/*
+========================================================
+GET UPLOADERS
+========================================================
+*/
+
+app.get("/api/uploaders", readLimit, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT DISTINCT uploader
+            FROM files
+            ORDER BY LOWER(uploader) ASC
+        `);
+
+        res.json({
+            success: true,
+            uploaders: result.rows.map(row => row.uploader)
+        });
+    } catch (error) {
+        console.error("GET /api/uploaders:", error);
+
+        res.status(500).json({
+            success: false,
+            error: "Unable to load uploaders."
+        });
+    }
+});
+
+/*
+========================================================
+GET EXTENSIONS
+========================================================
+*/
+
+app.get("/api/extensions", readLimit, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                extension,
+                COUNT(*)::BIGINT AS count
+            FROM files
+            GROUP BY extension
+            ORDER BY extension ASC
+        `);
+
+        res.json({
+            success: true,
+            extensions: result.rows.map(row => ({
+                extension: row.extension,
+                count: Number(row.count)
+            }))
+        });
+    } catch (error) {
+        console.error("GET /api/extensions:", error);
+
+        res.status(500).json({
+            success: false,
+            error: "Unable to load extensions."
+        });
+    }
+});
+
+/*
+========================================================
+STATISTICS
+========================================================
+*/
+
+app.get("/api/stats", readLimit, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                COUNT(*)::BIGINT AS files,
+                COUNT(*) FILTER (
+                    WHERE is_script = TRUE
+                )::BIGINT AS scripts,
+                COALESCE(SUM(size), 0)::BIGINT AS total_size,
+                COALESCE(SUM(downloads), 0)::BIGINT AS downloads
+            FROM files
+        `);
+
+        const row = result.rows[0];
+
+        res.json({
+            success: true,
+            stats: {
+                files: Number(row.files),
+                scripts: Number(row.scripts),
+                totalSize: Number(row.total_size),
+                downloads: Number(row.downloads)
+            }
+        });
+    } catch (error) {
+        console.error("GET /api/stats:", error);
+
+        res.status(500).json({
+            success: false,
+            error: "Unable to load statistics."
+        });
+    }
+});
+
+/*
+========================================================
+UPLOAD
+========================================================
+*/
+
+app.post(
+    "/api/files",
+    writeLimit,
+    upload.single("file"),
+    async (req, res) => {
+        try {
+            if (!req.file) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Please select a file."
+                });
+            }
+
+            const uploader = cleanText(req.body.uploader, 80);
+            const displayName = cleanText(
+                req.body.displayName,
+                100
+            );
+
+            const extension =
+                getExtension(req.file.originalname);
+
+            if (!uploader) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Please enter your uploader name."
+                });
+            }
+
+            if (!displayName) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Display name is required."
+                });
+            }
+
+            if (!ALLOWED_EXTENSIONS.has(extension)) {
+                return res.status(400).json({
+                    success: false,
+                    error: "This file type is not allowed."
+                });
+            }
+
+            if (req.file.size > MAX_FILE_SIZE) {
+                return res.status(413).json({
+                    success: false,
+                    error:
+                        "File is too large. Maximum allowed size is 50 MB."
+                });
+            }
+
+            const isScript =
+                SCRIPT_EXTENSIONS.has(extension);
+
+            if (
+                req.body.isScript === "true" &&
+                !isScript
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Custom scripts must be .txt files."
+                });
+            }
+
+            const id = generateId();
+            const deleteToken = generateDeleteToken(uploader);
+            const deleteTokenHash = hashToken(deleteToken);
+
+            const safeName =
+                sanitizeFilename(req.file.originalname);
+
+            await pool.query(
+                `
+                INSERT INTO files (
+                    id,
+                    name,
+                    display_name,
+                    uploader,
+                    extension,
+                    mime_type,
+                    size,
+                    is_script,
+                    data,
+                    delete_token_hash
+                )
+                VALUES (
+                    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+                )
+                `,
+                [
+                    id,
+                    safeName,
+                    displayName,
+                    uploader,
+                    extension,
+                    req.file.mimetype ||
+                        "application/octet-stream",
+                    req.file.size,
+                    isScript,
+                    req.file.buffer,
+                    deleteTokenHash
+                ]
+            );
+
+            broadcastLibraryUpdate();
+
+            /*
+            IMPORTANT:
+            deleteToken is returned only in this upload response.
+            PostgreSQL stores only its SHA-256 hash.
+            */
+
+            res.status(201).json({
+                success: true,
+
+                file: {
+                    id,
+                    name: safeName,
+                    displayName,
+                    uploader,
+                    extension,
+                    type:
+                        req.file.mimetype ||
+                        "application/octet-stream",
+                    size: req.file.size,
+                    script: isScript
+                },
+
+                deleteToken,
+
+                deleteKey: {
+                    format:
+                        "username-mil-RANDOMCODE",
+                    warning:
+                        "Save this key immediately. It cannot be recovered after this response."
+                }
+            });
+        } catch (error) {
+            console.error("POST /api/files:", error);
+
+            if (error.code === "LIMIT_FILE_SIZE") {
+                return res.status(413).json({
+                    success: false,
+                    error:
+                        "File is too large. Maximum allowed size is 50 MB."
+                });
+            }
+
+            res.status(500).json({
+                success: false,
+                error: "Upload failed."
+            });
+        }
     }
 );
 
+/*
+========================================================
+FILE DETAILS
+========================================================
+*/
+
+app.get("/api/files/:id", readLimit, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `
+            SELECT
+                id,
+                name,
+                display_name,
+                uploader,
+                extension,
+                mime_type,
+                size,
+                uploaded_at,
+                downloads,
+                is_script
+            FROM files
+            WHERE id = $1
+            `,
+            [req.params.id]
+        );
+
+        if (!result.rows.length) {
+            return res.status(404).json({
+                success: false,
+                error: "File not found."
+            });
+        }
+
+        res.json({
+            success: true,
+            file: safePublicFile(result.rows[0])
+        });
+    } catch (error) {
+        console.error("GET /api/files/:id:", error);
+
+        res.status(500).json({
+            success: false,
+            error: "Unable to load file."
+        });
+    }
+});
 
 /*
 ========================================================
@@ -967,600 +828,490 @@ DOWNLOAD
 
 app.get(
     "/api/files/:id/download",
-    (req, res) => {
-
-        const file =
-            files.find(
-                item =>
-                    item.id ===
-                    req.params.id
+    readLimit,
+    async (req, res) => {
+        try {
+            const result = await pool.query(
+                `
+                SELECT
+                    name,
+                    mime_type,
+                    data
+                FROM files
+                WHERE id = $1
+                `,
+                [req.params.id]
             );
 
-
-        if (!file) {
-
-            return res.status(404).send(
-                "File not found."
-            );
-
-        }
-
-
-        const filePath =
-            path.join(
-                UPLOAD_DIR,
-                file.storedName
-            );
-
-
-        if (
-            !fs.existsSync(
-                filePath
-            )
-        ) {
-
-            return res.status(404).send(
-                "Stored file not found."
-            );
-
-        }
-
-
-        file.downloads++;
-
-        saveDatabase();
-
-
-        res.download(
-            filePath,
-            file.name,
-            error => {
-
-                if (error) {
-
-                    console.error(
-                        "Download error:",
-                        error
-                    );
-
-                }
-
+            if (!result.rows.length) {
+                return res.status(404).send(
+                    "File not found."
+                );
             }
-        );
 
+            const file = result.rows[0];
+
+            await pool.query(
+                `
+                UPDATE files
+                SET downloads = downloads + 1
+                WHERE id = $1
+                `,
+                [req.params.id]
+            );
+
+            broadcastLibraryUpdate("download");
+
+            const filename =
+                sanitizeFilename(file.name);
+
+            res.setHeader(
+                "Content-Type",
+                file.mime_type ||
+                    "application/octet-stream"
+            );
+
+            res.setHeader(
+                "Content-Disposition",
+                `attachment; filename="${filename}"`
+            );
+
+            res.setHeader(
+                "Content-Length",
+                String(file.data.length)
+            );
+
+            res.send(file.data);
+        } catch (error) {
+            console.error("DOWNLOAD:", error);
+
+            res.status(500).send(
+                "Download failed."
+            );
+        }
     }
 );
 
-
 /*
 ========================================================
-PREVIEW
+SCRIPT PREVIEW
+========================================================
+
+Only TXT uploads are treated as custom scripts.
+The server returns text; it never executes the file.
 ========================================================
 */
 
 app.get(
     "/api/files/:id/preview",
-    (req, res) => {
-
-        const file =
-            files.find(
-                item =>
-                    item.id ===
-                    req.params.id
-            );
-
-
-        if (!file) {
-
-            return res.status(404).json({
-
-                success: false,
-
-                error:
-                    "File not found."
-
-            });
-
-        }
-
-
-        if (!file.script) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                error:
-                    "This file cannot be previewed."
-
-            });
-
-        }
-
-
-        const filePath =
-            path.join(
-                UPLOAD_DIR,
-                file.storedName
-            );
-
-
-        if (
-            !fs.existsSync(
-                filePath
-            )
-        ) {
-
-            return res.status(404).json({
-
-                success: false,
-
-                error:
-                    "Stored file not found."
-
-            });
-
-        }
-
-
+    readLimit,
+    async (req, res) => {
         try {
+            const result = await pool.query(
+                `
+                SELECT
+                    id,
+                    name,
+                    display_name,
+                    uploader,
+                    extension,
+                    mime_type,
+                    size,
+                    uploaded_at,
+                    downloads,
+                    is_script,
+                    data
+                FROM files
+                WHERE id = $1
+                `,
+                [req.params.id]
+            );
 
-            const content =
-                fs.readFileSync(
-                    filePath,
-                    "utf8"
-                );
+            if (!result.rows.length) {
+                return res.status(404).json({
+                    success: false,
+                    error: "File not found."
+                });
+            }
 
+            const file = result.rows[0];
 
-            /*
-            Protect the preview endpoint
-            from extremely large text files.
-            */
+            if (!file.is_script) {
+                return res.status(400).json({
+                    success: false,
+                    error: "This file is not a script."
+                });
+            }
 
-            const limited =
-                content.slice(
-                    0,
-                    500000
-                );
-
+            const content = file.data.toString("utf8");
 
             res.json({
-
                 success: true,
-
                 file: {
-
-                    name:
-                        file.name,
-
-                    content:
-                        limited
-
+                    id: file.id,
+                    name: file.name,
+                    displayName: file.display_name,
+                    uploader: file.uploader,
+                    extension: file.extension,
+                    type: file.mime_type,
+                    size: Number(file.size),
+                    date:
+                        new Date(
+                            file.uploaded_at
+                        ).getTime(),
+                    downloads:
+                        Number(file.downloads),
+                    script: true,
+                    content
                 }
-
             });
-
-        }
-        catch {
+        } catch (error) {
+            console.error("SCRIPT PREVIEW:", error);
 
             res.status(500).json({
-
                 success: false,
-
-                error:
-                    "Unable to preview file."
-
+                error: "Unable to preview script."
             });
-
         }
-
     }
 );
 
-
 /*
 ========================================================
-DELETE
+DELETE FILE
+========================================================
+
+The client sends:
+
+{
+    "deleteToken": "Sunnel-mil-XXXXXXXXXX"
+}
+
+The database contains only the SHA-256 hash.
+
+The server:
+  1. hashes the submitted key
+  2. compares hashes safely
+  3. deletes only the matching file
 ========================================================
 */
 
 app.delete(
     "/api/files/:id",
-    (req, res) => {
-
-        const fileIndex =
-            files.findIndex(
-                item =>
-                    item.id ===
-                    req.params.id
-            );
-
-
-        if (
-            fileIndex === -1
-        ) {
-
-            return res.status(404).json({
-
-                success: false,
-
-                error:
-                    "File not found."
-
-            });
-
-        }
-
-
-        const file =
-            files[fileIndex];
-
-
-        const suppliedKey =
-            String(
-                req.body.deleteKey ||
-                req.body.deleteToken ||
-                ""
-            )
-            .trim();
-
-
-        if (!suppliedKey) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                error:
-                    "Delete key is required."
-
-            });
-
-        }
-
-
-        if (
-            !verifyDeleteKey(
-                suppliedKey,
-                file.deleteKeyHash
-            )
-        ) {
-
-            return res.status(403).json({
-
-                success: false,
-
-                error:
-                    "Invalid delete key."
-
-            });
-
-        }
-
-
-        const filePath =
-            path.join(
-                UPLOAD_DIR,
-                file.storedName
-            );
-
-
+    deleteLimit,
+    async (req, res) => {
         try {
+            const token =
+                typeof req.body?.deleteToken === "string"
+                    ? req.body.deleteToken.trim()
+                    : "";
 
-            if (
-                fs.existsSync(
-                    filePath
-                )
-            ) {
-
-                fs.unlinkSync(
-                    filePath
-                );
-
+            if (!token) {
+                return res.status(401).json({
+                    success: false,
+                    error: "Delete key required."
+                });
             }
 
-        }
-        catch (error) {
+            /*
+            First retrieve the stored hash.
+            */
 
-            console.error(
-                "Physical file deletion error:",
-                error
+            const lookup = await pool.query(
+                `
+                SELECT delete_token_hash
+                FROM files
+                WHERE id = $1
+                `,
+                [req.params.id]
             );
 
-            return res.status(500).json({
+            if (!lookup.rows.length) {
+                return res.status(404).json({
+                    success: false,
+                    error: "File not found."
+                });
+            }
 
-                success: false,
+            const storedHash =
+                lookup.rows[0].delete_token_hash;
 
-                error:
-                    "Unable to remove the stored file."
+            if (!tokensMatch(token, storedHash)) {
+                return res.status(403).json({
+                    success: false,
+                    error:
+                        "Invalid delete key. The file was not deleted."
+                });
+            }
 
+            const result = await pool.query(
+                `
+                DELETE FROM files
+                WHERE id = $1
+                RETURNING id
+                `,
+                [req.params.id]
+            );
+
+            if (!result.rows.length) {
+                return res.status(404).json({
+                    success: false,
+                    error: "File was already deleted."
+                });
+            }
+
+            broadcastLibraryUpdate("delete");
+
+            res.json({
+                success: true,
+                message: "File deleted successfully."
             });
+        } catch (error) {
+            console.error("DELETE:", error);
 
+            res.status(500).json({
+                success: false,
+                error: "Delete failed."
+            });
         }
-
-
-        files.splice(
-            fileIndex,
-            1
-        );
-
-
-        saveDatabase();
-
-        broadcastUpdate();
-
-
-        return res.json({
-
-            success: true,
-
-            message:
-                "File deleted successfully."
-
-        });
-
     }
 );
 
-
 /*
 ========================================================
-UPLOADERS
+HEALTH
 ========================================================
 */
 
-app.get(
-    "/api/uploaders",
-    (req, res) => {
-
-        const uploaders =
-            [
-                ...new Set(
-                    files.map(
-                        file =>
-                            file.uploader
-                    )
-                )
-            ]
-            .sort(
-                (
-                    a,
-                    b
-                ) =>
-                    a.localeCompare(
-                        b
-                    )
-            );
-
+app.get("/api/health", async (req, res) => {
+    try {
+        await pool.query("SELECT 1");
 
         res.json({
-
             success: true,
-
-            uploaders
-
+            status: "online",
+            database: "connected"
         });
+    } catch (error) {
+        console.error("HEALTH CHECK:", error);
 
+        res.status(503).json({
+            success: false,
+            status: "offline",
+            database: "disconnected"
+        });
     }
-);
-
+});
 
 /*
 ========================================================
-STATS
+API 404
 ========================================================
 */
 
-app.get(
-    "/api/stats",
-    (req, res) => {
-
-        const totalSize =
-            files.reduce(
-                (
-                    total,
-                    file
-                ) =>
-                    total +
-                    file.size,
-                0
-            );
-
-
-        const scripts =
-            files.filter(
-                file =>
-                    file.script
-            ).length;
-
-
-        const downloads =
-            files.reduce(
-                (
-                    total,
-                    file
-                ) =>
-                    total +
-                    file.downloads,
-                0
-            );
-
-
-        res.json({
-
-            success: true,
-
-            stats: {
-
-                files:
-                    files.length,
-
-                scripts,
-
-                downloads,
-
-                totalSize
-
-            }
-
-        });
-
-    }
-);
-
+app.use("/api", (req, res) => {
+    res.status(404).json({
+        success: false,
+        error: "API endpoint not found."
+    });
+});
 
 /*
 ========================================================
-REAL-TIME EVENTS
+FRONTEND
 ========================================================
 */
 
-app.get(
-    "/api/events",
-    (req, res) => {
+const publicDirectory =
+    path.join(__dirname, "public");
 
-        res.setHeader(
-            "Content-Type",
-            "text/event-stream"
-        );
+app.use(express.static(publicDirectory));
 
-        res.setHeader(
-            "Cache-Control",
-            "no-cache"
-        );
+/*
+========================================================
+SPA FALLBACK — EXPRESS 5
+========================================================
+*/
 
-        res.setHeader(
-            "Connection",
-            "keep-alive"
-        );
-
-
-        res.flushHeaders();
-
-
-        res.write(
-            "retry: 5000\n\n"
-        );
-
-
-        eventClients.add(
-            res
-        );
-
-
-        req.on(
-            "close",
-            () => {
-
-                eventClients.delete(
-                    res
+app.get("/{*splat}", (req, res) => {
+    res.sendFile(
+        path.join(
+            publicDirectory,
+            "index.html"
+        ),
+        error => {
+            if (error && !res.headersSent) {
+                console.error(
+                    "Frontend error:",
+                    error
                 );
 
+                res.status(404).send(
+                    "PROJECT FILE HUB frontend not found. Make sure public/index.html exists."
+                );
+            }
+        }
+    );
+});
+
+/*
+========================================================
+GLOBAL ERROR HANDLER
+========================================================
+*/
+
+app.use((error, req, res, next) => {
+    console.error("SERVER ERROR:", error);
+
+    if (error instanceof multer.MulterError) {
+        if (error.code === "LIMIT_FILE_SIZE") {
+            return res.status(413).json({
+                success: false,
+                error:
+                    "File is too large. Maximum allowed size is 50 MB."
+            });
+        }
+
+        return res.status(400).json({
+            success: false,
+            error:
+                error.message ||
+                "Upload error."
+        });
+    }
+
+    if (
+        error &&
+        error.message ===
+            "This file type is not supported."
+    ) {
+        return res.status(400).json({
+            success: false,
+            error:
+                "This file type is not supported."
+        });
+    }
+
+    if (res.headersSent) {
+        return next(error);
+    }
+
+    res.status(500).json({
+        success: false,
+        error:
+            "An unexpected server error occurred."
+    });
+});
+
+/*
+========================================================
+START SERVER
+========================================================
+*/
+
+let server;
+
+async function startServer() {
+    try {
+        await initializeDatabase();
+
+        server = app.listen(
+            PORT,
+            "0.0.0.0",
+            () => {
+                console.log(
+                    "=========================================="
+                );
+                console.log(
+                    "PROJECT FILE HUB — UPGRADED BACKEND"
+                );
+                console.log(
+                    "MIL PROJECT • GAME DEVELOPMENT"
+                );
+                console.log(
+                    "=========================================="
+                );
+                console.log(
+                    `Server listening on port ${PORT}`
+                );
+                console.log(
+                    "Database: connected"
+                );
+                console.log(
+                    "Maximum upload: 50 MB"
+                );
+                console.log(
+                    "Delete key: username-mil-RANDOMCODE"
+                );
+                console.log(
+                    "Delete key storage: SHA-256 hash only"
+                );
+                console.log(
+                    "Script execution: disabled"
+                );
+                console.log(
+                    "SSE live updates: enabled"
+                );
             }
         );
-
-    }
-);
-
-
-/*
-========================================================
-MAIN PAGE
-========================================================
-*/
-
-app.get(
-    "/",
-    (req, res) => {
-
-        res.sendFile(
-            path.join(
-                PUBLIC_DIR,
-                "index.html"
-            )
-        );
-
-    }
-);
-
-
-/*
-========================================================
-ERROR HANDLER
-========================================================
-*/
-
-app.use(
-    (
-        error,
-        req,
-        res,
-        next
-    ) => {
-
+    } catch (error) {
         console.error(
+            "Database initialization failed:"
+        );
+        console.error(error);
+
+        process.exit(1);
+    }
+}
+
+/*
+========================================================
+GRACEFUL SHUTDOWN
+========================================================
+*/
+
+async function shutdown(signal) {
+    console.log(
+        `${signal} received. Shutting down...`
+    );
+
+    for (const client of clients) {
+        try {
+            client.end();
+        } catch {
+            // Already closed.
+        }
+    }
+
+    if (server) {
+        await new Promise(resolve => {
+            server.close(resolve);
+        });
+    }
+
+    try {
+        await pool.end();
+        console.log(
+            "Database connection closed."
+        );
+    } catch (error) {
+        console.error(
+            "Database shutdown error:",
             error
         );
-
-
-        if (
-            error instanceof
-            multer.MulterError
-        ) {
-
-            if (
-                error.code ===
-                "LIMIT_FILE_SIZE"
-            ) {
-
-                return res.status(413).json({
-
-                    success: false,
-
-                    error:
-                        "Maximum file size is 50 MB."
-
-                });
-
-            }
-
-        }
-
-
-        res.status(500).json({
-
-            success: false,
-
-            error:
-                "Internal server error."
-
-        });
-
     }
+
+    process.exit(0);
+}
+
+process.on(
+    "SIGTERM",
+    () => shutdown("SIGTERM")
 );
 
-
-/*
-========================================================
-START
-========================================================
-*/
-
-app.listen(
-    PORT,
-    () => {
-
-        console.log(
-            `
-╔══════════════════════════════════════╗
-║       PROJECT FILE HUB ONLINE        ║
-╠══════════════════════════════════════╣
-║ Local: http://localhost:${PORT}       ║
-║ Upload limit: 50 MB                  ║
-║ Delete keys: ENABLED                 ║
-╚══════════════════════════════════════╝
-            `
-        );
-
-    }
+process.on(
+    "SIGINT",
+    () => shutdown("SIGINT")
 );
+
+startServer();
