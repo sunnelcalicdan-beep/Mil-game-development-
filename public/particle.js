@@ -3,188 +3,82 @@
 /*
 ========================================================
 PROJECT FILE HUB
-SMOOTH ADAPTIVE PARTICLE ENGINE
+SMOOTH PARTICLE ENGINE
 ========================================================
 */
 
 (() => {
 
     const canvas =
-        document.getElementById(
-            "particleCanvas"
-        );
+        document.getElementById("particleCanvas");
 
-
-    if (!canvas) {
-        return;
-    }
-
+    if (!canvas) return;
 
     const ctx =
-        canvas.getContext(
-            "2d",
-            {
-                alpha: true,
-                desynchronized: true
-            }
-        );
+        canvas.getContext("2d", {
+            alpha: true
+        });
 
-
-    if (!ctx) {
-        return;
-    }
-
+    if (!ctx) return;
 
     const reducedMotion =
         window.matchMedia(
             "(prefers-reduced-motion: reduce)"
         ).matches;
 
-
     const mobile =
         window.matchMedia(
             "(max-width: 700px)"
         ).matches;
 
-
     const cores =
         navigator.hardwareConcurrency || 4;
-
 
     const memory =
         navigator.deviceMemory || 4;
 
-
-    let quality =
-        "medium";
-
+    let particleCount;
 
     if (reducedMotion) {
 
-        quality =
-            "minimal";
+        particleCount = mobile ? 5 : 8;
 
-    }
-    else if (
+    } else if (
         cores <= 2 ||
         memory <= 2
     ) {
 
-        quality =
-            "low";
+        particleCount = mobile ? 8 : 15;
 
-    }
-    else if (
+    } else if (
         cores >= 8 &&
         memory >= 8
     ) {
 
-        quality =
-            "high";
+        particleCount = mobile ? 18 : 34;
 
+    } else {
+
+        particleCount = mobile ? 12 : 24;
     }
 
 
-    const presets = {
-
-        minimal: {
-            desktop: 8,
-            mobile: 5,
-            speed: .10,
-            connections: 0
-        },
-
-        low: {
-            desktop: 18,
-            mobile: 9,
-            speed: .15,
-            connections: 55
-        },
-
-        medium: {
-            desktop: 32,
-            mobile: 15,
-            speed: .20,
-            connections: 75
-        },
-
-        high: {
-            desktop: 48,
-            mobile: 22,
-            speed: .24,
-            connections: 90
-        }
-
-    };
-
-
-    const preset =
-        presets[
-            quality
-        ];
-
-
-    let width =
-        window.innerWidth;
-
-
-    let height =
-        window.innerHeight;
-
-
-    let dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            1.5
-        );
-
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
 
     let particles = [];
 
+    let animationFrame = null;
 
-    let targetCount =
-        mobile
-            ? preset.mobile
-            : preset.desktop;
+    let lastTime = 0;
 
 
-    if (
-        width * height < 300000
-    ) {
-
-        targetCount =
-            Math.min(
-                targetCount,
-                12
-            );
-
-    }
-
-
-    let animationFrame =
-        null;
-
-
-    let running =
-        !document.hidden;
-
-
-    let lastTime =
-        0;
-
-
-    let fpsHistory = [];
-
-
-    function random(
-        min,
-        max
-    ) {
+    function random(min, max) {
 
         return Math.random() *
             (max - min) +
             min;
-
     }
 
 
@@ -196,6 +90,10 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
         height =
             window.innerHeight;
 
+        /*
+        Limit DPR for smoother
+        performance on high-DPI phones.
+        */
 
         dpr =
             Math.min(
@@ -203,26 +101,21 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
                 1.5
             );
 
-
         canvas.width =
             Math.floor(
                 width * dpr
             );
-
 
         canvas.height =
             Math.floor(
                 height * dpr
             );
 
-
         canvas.style.width =
             width + "px";
 
-
         canvas.style.height =
             height + "px";
-
 
         ctx.setTransform(
             dpr,
@@ -232,140 +125,98 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
             0,
             0
         );
-
     }
 
 
     function createParticle() {
 
+        const colors = [
+            [50, 231, 255],
+            [92, 130, 255],
+            [170, 70, 255]
+        ];
+
+        const color =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
         return {
 
-            x:
-                random(
-                    0,
-                    width
-                ),
+            x: random(0, width),
+            y: random(0, height),
 
-            y:
-                random(
-                    0,
-                    height
-                ),
+            vx: random(-0.10, 0.10),
+            vy: random(-0.10, 0.10),
 
-            vx:
-                random(
-                    -preset.speed,
-                    preset.speed
-                ),
+            radius: random(0.8, 2.0),
 
-            vy:
-                random(
-                    -preset.speed,
-                    preset.speed
-                ),
+            alpha: random(0.20, 0.65),
 
-            radius:
-                random(
-                    .7,
-                    1.8
-                ),
-
-            alpha:
-                random(
-                    .25,
-                    .72
-                )
+            color
 
         };
-
     }
 
 
-    function syncParticles() {
+    function createParticles() {
 
-        while (
-            particles.length <
-            targetCount
+        particles.length = 0;
+
+        for (
+            let i = 0;
+            i < particleCount;
+            i++
         ) {
 
             particles.push(
                 createParticle()
             );
-
         }
-
-
-        while (
-            particles.length >
-            targetCount
-        ) {
-
-            particles.pop();
-
-        }
-
     }
 
 
-    function update(
-        delta
-    ) {
+    function update(delta) {
 
-        const factor =
-            delta * .06;
+        /*
+        Delta is capped to prevent
+        jumps after tab switching.
+        */
 
+        const time =
+            Math.min(delta, 32);
 
         for (
-            const p of particles
+            let i = 0;
+            i < particles.length;
+            i++
         ) {
 
-            p.x +=
-                p.vx *
-                factor;
+            const p =
+                particles[i];
 
+            p.x +=
+                p.vx * time;
 
             p.y +=
-                p.vy *
-                factor;
+                p.vy * time;
 
 
-            if (
-                p.x < -10
-            ) {
+            if (p.x < -20)
+                p.x = width + 20;
 
-                p.x =
-                    width + 10;
+            if (p.x > width + 20)
+                p.x = -20;
 
-            }
-            else if (
-                p.x > width + 10
-            ) {
+            if (p.y < -20)
+                p.y = height + 20;
 
-                p.x =
-                    -10;
-
-            }
-
-
-            if (
-                p.y < -10
-            ) {
-
-                p.y =
-                    height + 10;
-
-            }
-            else if (
-                p.y > height + 10
-            ) {
-
-                p.y =
-                    -10;
-
-            }
-
+            if (p.y > height + 20)
+                p.y = -20;
         }
-
     }
 
 
@@ -380,61 +231,18 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
 
 
         /*
-        Particle dots.
+        Draw connections first.
         */
 
-        ctx.fillStyle =
-            "rgba(91, 220, 255, .6)";
-
-
-        for (
-            const p of particles
-        ) {
-
-            ctx.globalAlpha =
-                p.alpha;
-
-
-            ctx.beginPath();
-
-            ctx.arc(
-                p.x,
-                p.y,
-                p.radius,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fill();
-
-        }
-
-
-        /*
-        Connections.
-        */
-
-        if (
-            preset.connections <= 0
-        ) {
-
-            ctx.globalAlpha = 1;
-
-            return;
-
-        }
-
-
-        const limit =
-            preset.connections;
-
+        const distanceLimit =
+            mobile ? 90 : 120;
 
         const limitSquared =
-            limit * limit;
+            distanceLimit *
+            distanceLimit;
 
 
-        let connections =
-            0;
+        let lines = 0;
 
 
         for (
@@ -443,18 +251,11 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
             i++
         ) {
 
-            if (
-                connections >= 75
-            ) {
-
+            if (lines >= 60)
                 break;
-
-            }
-
 
             const a =
                 particles[i];
-
 
             for (
                 let j = i + 1;
@@ -462,55 +263,47 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
                 j++
             ) {
 
+                if (lines >= 60)
+                    break;
+
                 const b =
                     particles[j];
-
 
                 const dx =
                     a.x - b.x;
 
-
                 const dy =
                     a.y - b.y;
-
 
                 const distanceSquared =
                     dx * dx +
                     dy * dy;
 
-
                 if (
                     distanceSquared >
                     limitSquared
                 ) {
-
                     continue;
-
                 }
-
 
                 const distance =
                     Math.sqrt(
                         distanceSquared
                     );
 
-
-                const alpha =
+                const opacity =
                     (
                         1 -
-                        distance / limit
-                    ) * .11;
-
-
-                ctx.strokeStyle =
-                    `rgba(110, 130, 255, ${alpha})`;
-
-
-                ctx.lineWidth =
-                    .55;
-
+                        distance /
+                        distanceLimit
+                    ) * 0.10;
 
                 ctx.beginPath();
+
+                ctx.strokeStyle =
+                    `rgba(100,150,255,${opacity})`;
+
+                ctx.lineWidth = 0.5;
 
                 ctx.moveTo(
                     a.x,
@@ -524,175 +317,100 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
 
                 ctx.stroke();
 
-
-                connections++;
-
+                lines++;
             }
-
         }
 
 
-        ctx.globalAlpha =
-            1;
+        /*
+        Draw particles.
+        */
 
+        for (
+            let i = 0;
+            i < particles.length;
+            i++
+        ) {
+
+            const p =
+                particles[i];
+
+            const [r, g, b] =
+                p.color;
+
+            ctx.beginPath();
+
+            ctx.globalAlpha =
+                p.alpha;
+
+            ctx.fillStyle =
+                `rgb(${r},${g},${b})`;
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.radius,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
     }
 
 
-    function optimize() {
-
-        if (
-            fpsHistory.length < 20
-        ) {
-
-            return;
-
-        }
-
-
-        const average =
-            fpsHistory.reduce(
-                (
-                    total,
-                    value
-                ) =>
-                    total + value,
-                0
-            ) /
-            fpsHistory.length;
-
-
-        const fps =
-            1000 /
-            average;
-
-
-        if (
-            fps < 32 &&
-            targetCount > 7
-        ) {
-
-            targetCount =
-                Math.max(
-                    7,
-                    Math.floor(
-                        targetCount * .65
-                    )
-                );
-
-
-            syncParticles();
-
-        }
-        else if (
-            fps < 45 &&
-            targetCount > 10
-        ) {
-
-            targetCount =
-                Math.max(
-                    10,
-                    Math.floor(
-                        targetCount * .82
-                    )
-                );
-
-
-            syncParticles();
-
-        }
-
-
-        fpsHistory =
-            [];
-
-    }
-
-
-    let performanceTimer =
-        0;
-
-
-    function animate(
-        timestamp
-    ) {
-
-        if (!running) {
-
-            animationFrame =
-                null;
-
-            return;
-
-        }
-
+    function animate(timestamp) {
 
         if (!lastTime) {
 
             lastTime =
                 timestamp;
-
         }
 
-
-        let delta =
+        const delta =
             timestamp -
             lastTime;
-
 
         lastTime =
             timestamp;
 
-
-        delta =
-            Math.min(
-                delta,
-                40
-            );
-
-
-        fpsHistory.push(
-            delta
-        );
-
-
-        if (
-            fpsHistory.length > 30
-        ) {
-
-            fpsHistory.shift();
-
-        }
-
-
-        update(
-            delta
-        );
-
+        update(delta);
 
         draw();
-
-
-        performanceTimer +=
-            delta;
-
-
-        if (
-            performanceTimer > 2000
-        ) {
-
-            optimize();
-
-            performanceTimer =
-                0;
-
-        }
-
 
         animationFrame =
             requestAnimationFrame(
                 animate
             );
+    }
 
+
+    function start() {
+
+        if (animationFrame)
+            return;
+
+        lastTime = 0;
+
+        animationFrame =
+            requestAnimationFrame(
+                animate
+            );
+    }
+
+
+    function stop() {
+
+        if (!animationFrame)
+            return;
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+        animationFrame = null;
     }
 
 
@@ -700,51 +418,19 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
         "visibilitychange",
         () => {
 
-            running =
-                !document.hidden;
+            if (document.hidden) {
 
+                stop();
 
-            if (
-                !running
-            ) {
+            } else {
 
-                if (
-                    animationFrame
-                ) {
-
-                    cancelAnimationFrame(
-                        animationFrame
-                    );
-
-                }
-
-                animationFrame =
-                    null;
-
-                return;
-
+                start();
             }
-
-
-            lastTime =
-                0;
-
-
-            fpsHistory =
-                [];
-
-
-            animationFrame =
-                requestAnimationFrame(
-                    animate
-                );
-
         }
     );
 
 
     let resizeTimer;
-
 
     window.addEventListener(
         "resize",
@@ -754,16 +440,12 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
                 resizeTimer
             );
 
-
             resizeTimer =
-                setTimeout(
-                    () => {
+                setTimeout(() => {
 
-                        resize();
+                    resize();
 
-                    },
-                    150
-                );
+                }, 120);
 
         },
         {
@@ -774,23 +456,15 @@ SMOOTH ADAPTIVE PARTICLE ENGINE
 
     resize();
 
-    syncParticles();
+    createParticles();
 
+    if (!reducedMotion) {
 
-    if (
-        reducedMotion
-    ) {
+        start();
+
+    } else {
 
         draw();
-
-        return;
-
     }
-
-
-    animationFrame =
-        requestAnimationFrame(
-            animate
-        );
 
 })();
